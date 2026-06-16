@@ -4,3 +4,7 @@ config.json
 # Ignoriere Python-Cache
 __pycache__/
 *.pyc
+.aider*
+
+#ignoriere originales Logo
+media-matrix-logo-original.png

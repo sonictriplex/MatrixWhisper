@@ -55,3 +55,27 @@ Make sure you have Python 3 and the required Qt6 libraries installed on your Lin
 **For Fedora / RedHat:**
 ```bash
 sudo dnf install python3-pyqt6 python3-pyqt6-webengine
+
+For Arch Linux / CachyOS / Manjaro:
+Bash
+
+sudo pacman -S python-pyqt6 python-pyqt6-webengine
+
+Quick Start (Schnellstart)
+
+    Clone the repository into your local directory:
+
+Bash
+
+git clone [https://github.com/sonictriplex/MatrixWhisper.git](https://github.com/sonictriplex/MatrixWhisper.git)
+cd MatrixWhisper
+
+    Run the application:
+
+Bash
+
+python3 matrixwhisper.py
+
+📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

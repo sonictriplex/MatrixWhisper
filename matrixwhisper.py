@@ -81,7 +81,7 @@ class MatrixWhisper(QMainWindow):
 
         # Pfade ermitteln
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
-        self.icon_path = os.path.join(self.script_dir, "media-matrix-logo.png")
+        self.icon_path = os.path.join(self.script_dir, "media", "media-matrix-logo.png") # FIX: Ordner 'media' eingefügt
         self.config_path = os.path.join(self.script_dir, "config.json")
 
         self.autostart_dir = os.path.join(os.path.expanduser("~"), ".config", "autostart")

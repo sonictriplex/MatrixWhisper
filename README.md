@@ -1,6 +1,6 @@
 # 🍏 MatrixWhisper v2.0
 
-> **Fett, fetter, MatrixWhisper!** Ein hochoptimierter, schlanker und nativer WhatsApp-Web-Client für Linux-Desktops, geschrieben in purem Python 3 und PyQt6. Keine Electron-Ressourcenfresser, dafür maximale Performance und volle Kontrolle.
+> **MatrixWhisper!** Ein hochoptimierter, schlanker und nativer WhatsApp-Web-Client für Linux-Desktops, geschrieben in purem Python 3 und PyQt6. Keine Electron-Ressourcenfresser, dafür maximale Performance und volle Kontrolle.
 
 ---
 

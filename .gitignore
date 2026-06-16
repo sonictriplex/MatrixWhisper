@@ -1,0 +1,6 @@
+# Ignoriere die lokale Konfigurationsdatei (enthält private Zustände)
+config.json
+
+# Ignoriere Python-Cache
+__pycache__/
+*.pyc

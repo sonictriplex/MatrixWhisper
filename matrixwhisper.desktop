@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=MatrixWhisper
+Comment=Nativer WhatsApp Web-Client für The Media-Matrix
+Exec=python3 /home/jensmayer/Projekte/matrixwhisper/matrixwhisper.py
+Icon=/home/jensmayer/Projekte/matrixwhisper/media-matrix-logo.png
+Terminal=false
+Categories=Network;InstantMessaging;
+StartupWMClass=matrixwhisper

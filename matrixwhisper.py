@@ -15,6 +15,133 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolygonF, QPen, QBrush
 
+# --- TRANSLATION DICTIONARY (INTERNATIONALIZATION) ---
+TRANSLATIONS = {
+    "de": {
+        "title": "Einstellungen",
+        "as_title": "Systemstart (Autostart)",
+        "as_desc": "Startet MatrixWhisper automatisch mit dem Computer",
+        "dm_title": "Erscheinungsbild (Dark Theme)",
+        "dm_desc": "Erzwingt das dunkle WhatsApp-Theme in der Web-Oberfläche",
+        "tb_title": "Schließen ins Tray (Hintergrund)",
+        "tb_desc": "Fenster beim Schließen ('X') im Systemabschnitt verstecken",
+        "gpu_title": "Stromsparmodus (GPU-Drossel)",
+        "gpu_desc": "Hardware-Beschleunigung der WebEngine abschalten",
+        "gpu_active": "Status: GPU deaktiviert (Stromsparmodus aktiv) ⚠️",
+        "gpu_reboot_on": "Effekt nach Neustart: GPU wird abgeschaltet 🔋",
+        "gpu_reboot_off": "Effekt nach Neustart: GPU wieder aktiv (Standard)",
+        "mute_title": "Lautloser Wächter (Smart Mute)",
+        "mute_active": "Audioausgabe: Aktiv",
+        "mute_btn_1h": "1h Stumm",
+        "mute_btn_8h": "8h Stumm",
+        "mute_btn_reset": "Reset",
+        "lang_title": "Anzeigesprache (Locale Profile)",
+        "lang_header": "Aktueller Header:",
+        "lang_reboot": "Sprache nach Neustart:",
+        "zoom_title": "HiDPI / Ultrawide Zoom-Faktor",
+        "zoom_desc": "Skalierung der WhatsApp Web-Oberfläche",
+        "about_desc": "Ein hochoptimierter, nativer WhatsApp-Client für Linux Desktops.",
+        "tray_whisper": "Flüstert im Hintergrund weiter...",
+        "tray_open": "Öffnen",
+        "tray_quit": "Beenden",
+        "tray_mute_shortcut": "Stummschalten (8h Schnellwahl)"
+    },
+    "en": {
+        "title": "Settings",
+        "as_title": "System Startup (Autostart)",
+        "as_desc": "Launch MatrixWhisper automatically when starting the computer",
+        "dm_title": "Appearance (Dark Theme)",
+        "dm_desc": "Force the dark WhatsApp theme in the web interface",
+        "tb_title": "Minimize to Tray on Close",
+        "tb_desc": "Hide window in the system tray when clicking the close ('X') button",
+        "gpu_title": "Power Saver Mode (GPU Throttle)",
+        "gpu_desc": "Disable WebEngine hardware acceleration to save battery",
+        "gpu_active": "Status: GPU disabled (Power saver active) ⚠️",
+        "gpu_reboot_on": "Effect after restart: GPU will be disabled 🔋",
+        "gpu_reboot_off": "Effect after restart: GPU active (Default)",
+        "mute_title": "Silent Sentinel (Smart Mute)",
+        "mute_active": "Audio output: Active",
+        "mute_btn_1h": "1h Mute",
+        "mute_btn_8h": "8h Mute",
+        "mute_btn_reset": "Reset",
+        "lang_title": "Display Language (Locale Profiles)",
+        "lang_header": "Current Header:",
+        "lang_reboot": "Language after restart:",
+        "zoom_title": "HiDPI / Ultrawide Zoom Factor",
+        "zoom_desc": "Scale the WhatsApp Web interface layout",
+        "about_desc": "A highly optimized, native WhatsApp client for Linux desktops.",
+        "tray_whisper": "Whispering in the background...",
+        "tray_open": "Open",
+        "tray_quit": "Quit",
+        "tray_mute_shortcut": "Mute Audio (8h Shortcut)"
+    },
+    "es": {
+        "title": "Ajustes",
+        "as_title": "Inicio del sistema (Autostart)",
+        "as_desc": "Iniciar MatrixWhisper automáticamente con el ordenador",
+        "dm_title": "Apariencia (Tema oscuro)",
+        "dm_desc": "Forzar el tema oscuro de WhatsApp en la interfaz web",
+        "tb_title": "Cerrar a la bandeja (Segundo plano)",
+        "tb_desc": "Ocultar la ventana en la bandeja del sistema al cerrar ('X')",
+        "gpu_title": "Modo ahorro de energía (Drossel GPU)",
+        "gpu_desc": "Desactivar la aceleración por hardware de WebEngine",
+        "gpu_active": "Estado: GPU desactivada (Ahorro de energía activo) ⚠️",
+        "gpu_reboot_on": "Efecto tras reiniciar: Se desactivará la GPU 🔋",
+        "gpu_reboot_off": "Efecto tras reiniciar: GPU activa (Predeterminado)",
+        "mute_title": "Guardián silencioso (Smart Mute)",
+        "mute_active": "Salida de audio: Activa",
+        "mute_btn_1h": "1h Silencio",
+        "mute_btn_8h": "8h Silencio",
+        "mute_btn_reset": "Reiniciar",
+        "lang_title": "Idioma de visualización (Locales)",
+        "lang_header": "Encabezado actual:",
+        "lang_reboot": "Idioma tras reiniciar:",
+        "zoom_title": "Factor de zoom HiDPI / Ultrawide",
+        "zoom_desc": "Escalar la interfaz web de WhatsApp",
+        "about_desc": "Un cliente nativo de WhatsApp altamente optimizado para Linux.",
+        "tray_whisper": "Susurrando en segundo plano...",
+        "tray_open": "Abrir",
+        "tray_quit": "Salir",
+        "tray_mute_shortcut": "Silenciar (Acceso rápido 8h)"
+    },
+    "fr": {
+        "title": "Paramètres",
+        "as_title": "Démarrage du système (Autostart)",
+        "as_desc": "Lancer MatrixWhisper automatiquement avec l'ordinateur",
+        "dm_title": "Apparence (Thème sombre)",
+        "dm_desc": "Forcer le thème sombre de WhatsApp dans l'interface web",
+        "tb_title": "Fermer dans la zone de notification",
+        "tb_desc": "Masquer la fenêtre dans la barre des tâches lors de la fermeture ('X')",
+        "gpu_title": "Mode économie d'énergie (Drossel GPU)",
+        "gpu_desc": "Désactiver l'accélération matérielle de WebEngine",
+        "gpu_active": "Statut: GPU désactivé (Économie d'énergie active) ⚠️",
+        "gpu_reboot_on": "Effet après redémarrage: Le GPU sera désactivé 🔋",
+        "gpu_reboot_off": "Effet après redémarrage: GPU actif (Par défaut)",
+        "mute_title": "Gardien silencieux (Smart Mute)",
+        "mute_active": "Sortie audio: Active",
+        "mute_btn_1h": "1h Muet",
+        "mute_btn_8h": "8h Muet",
+        "mute_btn_reset": "Réinitialiser",
+        "lang_title": "Langue d'affichage (Profils de langue)",
+        "lang_header": "En-tête actuel:",
+        "lang_reboot": "Langue après redémarrage:",
+        "zoom_title": "Facteur de zoom HiDPI / Ultrawide",
+        "zoom_desc": "Mettre à l'échelle l'interface web de WhatsApp",
+        "about_desc": "Un client WhatsApp natif hautement optimisé pour les bureaux Linux.",
+        "tray_whisper": "Chuchote en arrière-plan...",
+        "tray_open": "Ouvrir",
+        "tray_quit": "Quitter",
+        "tray_mute_shortcut": "Mettre en muet (Raccourci 8h)"
+    }
+}
+
+# Italienisch, Niederländisch, Portugiesisch, Polnisch nutzen Englisch als UI-Fallback, falls nicht definiert
+TRANSLATIONS["it"] = TRANSLATIONS["en"]
+TRANSLATIONS["nl"] = TRANSLATIONS["en"]
+TRANSLATIONS["pt"] = TRANSLATIONS["en"]
+TRANSLATIONS["pl"] = TRANSLATIONS["en"]
+
+
 # --- NATIV GEZEICHNETER SWITCH-TOGGLE ---
 class SwitchToggle(QCheckBox):
     def __init__(self, parent=None):
@@ -51,10 +178,8 @@ class SwitchToggle(QCheckBox):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setPen(Qt.PenStyle.NoPen)
 
-        if self.isChecked():
-            track_color = QColor("#25D366")
-        else:
-            track_color = QColor("#2c313c")
+        if self.isChecked(): track_color = QColor("#25D366")
+        else: track_color = QColor("#2c313c")
 
         painter.setBrush(QBrush(track_color))
         painter.drawRoundedRect(0, 0, self.width(), self.height(), 11, 11)
@@ -79,9 +204,8 @@ class MatrixWhisper(QMainWindow):
         self.setWindowTitle(self.app_name)
         self.resize(1150, 750)
 
-        # Pfade ermitteln
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
-        self.icon_path = os.path.join(self.script_dir, "media", "media-matrix-logo.png") # FIX: Ordner 'media' eingefügt
+        self.icon_path = os.path.join(self.script_dir, "media", "media-matrix-logo.png")
         self.config_path = os.path.join(self.script_dir, "config.json")
 
         self.autostart_dir = os.path.join(os.path.expanduser("~"), ".config", "autostart")
@@ -92,13 +216,14 @@ class MatrixWhisper(QMainWindow):
         self.mute_timer = None
         self.mute_until_time = None
         self.selected_language = "system"
-        self.minimize_to_tray = True          # NEU: Standardmäßig minimieren anstatt schließen
-        self.disable_gpu_accel = False         # NEU: Standardmäßig GPU anlassen
+        self.minimize_to_tray = True
+        self.disable_gpu_accel = False
 
         self.is_initializing = True
 
         # --- CONFIGURATION PRELOAD ---
         self.preload_config_metadata()
+        self.ui_lang = self.determine_ui_language_key() # Aktiven Übersetzungsschlüssel bestimmen
 
         # Session-Profil & Browser laden
         self.profile = QWebEngineProfile.defaultProfile()
@@ -163,7 +288,6 @@ class MatrixWhisper(QMainWindow):
         self.btn_settings.setIcon(self.draw_vector_sliders_icon())
         self.btn_settings.setIconSize(QSize(24, 24))
         self.btn_settings.setCheckable(True)
-        self.btn_settings.setToolTip("Einstellungen")
 
         self.btn_chat.clicked.connect(lambda: self.switch_view(0))
         self.btn_settings.clicked.connect(lambda: self.switch_view(1))
@@ -187,20 +311,18 @@ class MatrixWhisper(QMainWindow):
         self.settings_page.setStyleSheet("background-color: #1a1d24; color: #ffffff;")
         settings_layout = QVBoxLayout(self.settings_page)
         settings_layout.setContentsMargins(30, 30, 30, 30)
-        settings_layout.setSpacing(14) # Minimal kompakter für die neuen Karten
+        settings_layout.setSpacing(14)
 
-        title_label = QLabel("Einstellungen")
-        title_label.setFont(QFont("sans-serif", 18, QFont.Weight.Bold))
-        settings_layout.addWidget(title_label)
+        self.title_label = QLabel()
+        self.title_label.setFont(QFont("sans-serif", 18, QFont.Weight.Bold))
+        settings_layout.addWidget(self.title_label)
 
-        # Trennlinie
         line = QFrame()
         line.setFrameShape(QFrame.Shape.HLine)
         line.setFrameShadow(QFrame.Shadow.Sunken)
         line.setStyleSheet("background-color: #2c313c;")
         settings_layout.addWidget(line)
 
-        # Gemeinsames Stylesheet für alle Einstellungs-Karten
         card_style = """
             QFrame { background-color: #1e222b; border-radius: 12px; border: 1px solid #2c313c; }
             QLabel { border: none; background: transparent; }
@@ -211,22 +333,18 @@ class MatrixWhisper(QMainWindow):
         autostart_frame.setStyleSheet(card_style)
         autostart_layout = QHBoxLayout(autostart_frame)
         autostart_layout.setContentsMargins(15, 12, 15, 12)
-
         as_icon = QLabel("⚙️")
         as_icon.setFont(QFont("sans-serif", 20))
         autostart_layout.addWidget(as_icon)
-
         as_text_layout = QVBoxLayout()
-        as_title = QLabel("Systemstart (Autostart)")
-        as_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        as_desc = QLabel("Startet MatrixWhisper automatisch mit dem Computer")
-        as_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        as_text_layout.addWidget(as_title)
-        as_text_layout.addWidget(as_desc)
+        self.as_title = QLabel()
+        self.as_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.as_desc = QLabel()
+        self.as_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
+        as_text_layout.addWidget(self.as_title)
+        as_text_layout.addWidget(self.as_desc)
         autostart_layout.addLayout(as_text_layout)
-
         autostart_layout.addStretch()
-
         self.cb_autostart = SwitchToggle()
         self.cb_autostart.setChecked(os.path.exists(self.autostart_file))
         self.cb_autostart.thumb_position = 27.0 if self.cb_autostart.isChecked() else 3.0
@@ -239,22 +357,18 @@ class MatrixWhisper(QMainWindow):
         darkmode_frame.setStyleSheet(card_style)
         darkmode_layout = QHBoxLayout(darkmode_frame)
         darkmode_layout.setContentsMargins(15, 12, 15, 12)
-
         dm_icon = QLabel("🌙")
         dm_icon.setFont(QFont("sans-serif", 20))
         darkmode_layout.addWidget(dm_icon)
-
         dm_text_layout = QVBoxLayout()
-        dm_title = QLabel("Erscheinungsbild (Dark Theme)")
-        dm_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        dm_desc = QLabel("Erzwingt das dunkle WhatsApp-Theme in der Web-Oberfläche")
-        dm_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        dm_text_layout.addWidget(dm_title)
-        dm_text_layout.addWidget(dm_desc)
+        self.dm_title = QLabel()
+        self.dm_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.dm_desc = QLabel()
+        self.dm_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
+        dm_text_layout.addWidget(self.dm_title)
+        dm_text_layout.addWidget(self.dm_desc)
         darkmode_layout.addLayout(dm_text_layout)
-
         darkmode_layout.addStretch()
-
         self.cb_darkmode = SwitchToggle()
         self.cb_darkmode.setChecked(True)
         self.cb_darkmode.thumb_position = 27.0 if self.cb_darkmode.isChecked() else 3.0
@@ -262,27 +376,23 @@ class MatrixWhisper(QMainWindow):
         darkmode_layout.addWidget(self.cb_darkmode)
         settings_layout.addWidget(darkmode_frame)
 
-        # --- NEU - CARD 6: TRAY BEHAVIOR ---
+        # --- CARD 6: TRAY BEHAVIOR ---
         tray_behavior_frame = QFrame()
         tray_behavior_frame.setStyleSheet(card_style)
         tray_behavior_layout = QHBoxLayout(tray_behavior_frame)
         tray_behavior_layout.setContentsMargins(15, 12, 15, 12)
-
         tb_icon = QLabel("📥")
         tb_icon.setFont(QFont("sans-serif", 20))
         tray_behavior_layout.addWidget(tb_icon)
-
         tb_text_layout = QVBoxLayout()
-        tb_title = QLabel("Schließen ins Tray (Hintergrund)")
-        tb_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        tb_desc = QLabel("Fenster beim Schließen ('X') im Systemabschnitt verstecken")
-        tb_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        tb_text_layout.addWidget(tb_title)
-        tb_text_layout.addWidget(tb_desc)
+        self.tb_title = QLabel()
+        self.tb_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.tb_desc = QLabel()
+        self.tb_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
+        tb_text_layout.addWidget(self.tb_title)
+        tb_text_layout.addWidget(self.tb_desc)
         tray_behavior_layout.addLayout(tb_text_layout)
-
         tray_behavior_layout.addStretch()
-
         self.cb_tray_behavior = SwitchToggle()
         self.cb_tray_behavior.setChecked(self.minimize_to_tray)
         self.cb_tray_behavior.thumb_position = 27.0 if self.cb_tray_behavior.isChecked() else 3.0
@@ -290,27 +400,23 @@ class MatrixWhisper(QMainWindow):
         tray_behavior_layout.addWidget(self.cb_tray_behavior)
         settings_layout.addWidget(tray_behavior_frame)
 
-        # --- NEU - CARD 7: HARDWARE ACCELERATION CONTROL ---
+        # --- CARD 7: HARDWARE ACCELERATION CONTROL ---
         gpu_frame = QFrame()
         gpu_frame.setStyleSheet(card_style)
         gpu_layout = QHBoxLayout(gpu_frame)
         gpu_layout.setContentsMargins(15, 12, 15, 12)
-
         gpu_icon = QLabel("🔋")
         gpu_icon.setFont(QFont("sans-serif", 20))
         gpu_layout.addWidget(gpu_icon)
-
         gpu_text_layout = QVBoxLayout()
-        gpu_title = QLabel("Stromsparmodus (GPU-Drossel)")
-        gpu_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.gpu_status_label = QLabel("Hardware-Beschleunigung der WebEngine abschalten")
+        self.gpu_title = QLabel()
+        self.gpu_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.gpu_status_label = QLabel()
         self.gpu_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        gpu_text_layout.addWidget(gpu_title)
+        gpu_text_layout.addWidget(self.gpu_title)
         gpu_text_layout.addWidget(self.gpu_status_label)
         gpu_layout.addLayout(gpu_text_layout)
-
         gpu_layout.addStretch()
-
         self.cb_gpu_accel = SwitchToggle()
         self.cb_gpu_accel.setChecked(self.disable_gpu_accel)
         self.cb_gpu_accel.thumb_position = 27.0 if self.cb_gpu_accel.isChecked() else 3.0
@@ -326,33 +432,27 @@ class MatrixWhisper(QMainWindow):
         """)
         mute_layout = QHBoxLayout(mute_frame)
         mute_layout.setContentsMargins(15, 12, 15, 12)
-
         mute_icon_label = QLabel("📢")
         mute_icon_label.setFont(QFont("sans-serif", 20))
         mute_layout.addWidget(mute_icon_label)
-
         mute_text_layout = QVBoxLayout()
-        mute_title = QLabel("Lautloser Wächter (Smart Mute)")
-        mute_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.mute_status_label = QLabel("Audioausgabe: Aktiv")
+        self.mute_title = QLabel()
+        self.mute_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.mute_status_label = QLabel()
         self.mute_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        mute_text_layout.addWidget(mute_title)
+        mute_text_layout.addWidget(self.mute_title)
         mute_text_layout.addWidget(self.mute_status_label)
         mute_layout.addLayout(mute_text_layout)
-
         mute_layout.addStretch()
-
-        btn_mute_1h = QPushButton("1h Stumm")
-        btn_mute_8h = QPushButton("8h Stumm")
-        btn_mute_reset = QPushButton("Reset")
-
-        btn_mute_1h.clicked.connect(lambda: self.activate_smart_mute(1))
-        btn_mute_8h.clicked.connect(lambda: self.activate_smart_mute(8))
-        btn_mute_reset.clicked.connect(self.deactivate_smart_mute)
-
-        mute_layout.addWidget(btn_mute_1h)
-        mute_layout.addWidget(btn_mute_8h)
-        mute_layout.addWidget(btn_mute_reset)
+        self.btn_mute_1h = QPushButton()
+        self.btn_mute_8h = QPushButton()
+        self.btn_mute_reset = QPushButton()
+        self.btn_mute_1h.clicked.connect(lambda: self.activate_smart_mute(1))
+        self.btn_mute_8h.clicked.connect(lambda: self.activate_smart_mute(8))
+        self.btn_mute_reset.clicked.connect(self.deactivate_smart_mute)
+        mute_layout.addWidget(self.btn_mute_1h)
+        mute_layout.addWidget(self.btn_mute_8h)
+        mute_layout.addWidget(self.btn_mute_reset)
         settings_layout.addWidget(mute_frame)
 
         # --- CARD 5: SPRACHEINSTELLUNGEN ---
@@ -377,22 +477,18 @@ class MatrixWhisper(QMainWindow):
         """)
         lang_layout = QHBoxLayout(lang_frame)
         lang_layout.setContentsMargins(15, 12, 15, 12)
-
         lang_icon = QLabel("🌐")
         lang_icon.setFont(QFont("sans-serif", 20))
         lang_layout.addWidget(lang_icon)
-
         lang_text_layout = QVBoxLayout()
-        lang_title = QLabel("Anzeigesprache (Locale Profile)")
-        lang_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.lang_status_label = QLabel(f"Aktueller Header: {resolved_lang.split(',')[0]}")
+        self.lang_title = QLabel()
+        self.lang_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.lang_status_label = QLabel()
         self.lang_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        lang_text_layout.addWidget(lang_title)
+        lang_text_layout.addWidget(self.lang_title)
         lang_text_layout.addWidget(self.lang_status_label)
         lang_layout.addLayout(lang_text_layout)
-
         lang_layout.addStretch()
-
         self.combo_lang = QComboBox()
         self.combo_lang.addItem("Systemstandard", "system")
         self.combo_lang.addItem("Deutsch (DE)", "de")
@@ -403,11 +499,8 @@ class MatrixWhisper(QMainWindow):
         self.combo_lang.addItem("Nederlands (NL)", "nl")
         self.combo_lang.addItem("Português (PT)", "pt")
         self.combo_lang.addItem("Polski (PL)", "pl")
-
         index = self.combo_lang.findData(self.selected_language)
-        if index != -1:
-            self.combo_lang.setCurrentIndex(index)
-
+        if index != -1: self.combo_lang.setCurrentIndex(index)
         self.combo_lang.currentIndexChanged.connect(self.change_language_selection)
         lang_layout.addWidget(self.combo_lang)
         settings_layout.addWidget(lang_frame)
@@ -421,29 +514,24 @@ class MatrixWhisper(QMainWindow):
         """)
         zoom_layout = QHBoxLayout(zoom_frame)
         zoom_layout.setContentsMargins(15, 12, 15, 12)
-
         zoom_icon_label = QLabel("🔍")
         zoom_icon_label.setFont(QFont("sans-serif", 20))
         zoom_layout.addWidget(zoom_icon_label)
-
         zoom_text_layout = QVBoxLayout()
-        zoom_title = QLabel("HiDPI / Ultrawide Zoom-Faktor")
-        zoom_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.zoom_status_label = QLabel("Skalierung der WhatsApp Web-Oberfläche")
-        self.zoom_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        zoom_text_layout.addWidget(zoom_title)
-        zoom_text_layout.addWidget(self.zoom_status_label)
+        self.zoom_title = QLabel()
+        self.zoom_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.zoom_desc_label = QLabel()
+        self.zoom_desc_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
+        zoom_text_layout.addWidget(self.zoom_title)
+        zoom_text_layout.addWidget(self.zoom_desc_label)
         zoom_layout.addLayout(zoom_text_layout)
-
         zoom_layout.addStretch()
-
         self.zoom_slider = QSlider(Qt.Orientation.Horizontal)
         self.zoom_slider.setMinimum(80)
         self.zoom_slider.setMaximum(130)
         self.zoom_slider.setFixedWidth(200)
         self.zoom_slider.valueChanged.connect(self.update_zoom_factor)
         zoom_layout.addWidget(self.zoom_slider)
-
         self.lbl_percent = QLabel("")
         self.lbl_percent.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
         self.lbl_percent.setStyleSheet("color: #25D366; background: transparent; border: none;")
@@ -452,16 +540,12 @@ class MatrixWhisper(QMainWindow):
         zoom_layout.addWidget(self.lbl_percent)
         settings_layout.addWidget(zoom_frame)
 
-        # --- ELEGANTES "ÜBER DIESE APP" MODUL ---
+        # --- "ÜBER DIESE APP" MODUL ---
         about_frame = QFrame()
-        about_frame.setStyleSheet("""
-            QFrame { background-color: #1e222b; border-radius: 12px; border: 1px solid #2c313c; }
-            QLabel { border: none; background: transparent; }
-        """)
+        about_frame.setStyleSheet(card_style)
         about_layout = QHBoxLayout(about_frame)
         about_layout.setContentsMargins(20, 15, 20, 15)
         about_layout.setSpacing(20)
-
         logo_label = QLabel()
         if os.path.exists(self.icon_path):
             logo_pixmap = QPixmap(self.icon_path).scaled(54, 54, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -470,33 +554,26 @@ class MatrixWhisper(QMainWindow):
             logo_label.setText("🤖")
             logo_label.setFont(QFont("sans-serif", 28))
         about_layout.addWidget(logo_label)
-
         text_layout = QVBoxLayout()
         text_layout.setSpacing(2)
-
         app_title = QLabel(f"{self.app_name}")
         app_title.setFont(QFont("sans-serif", 13, QFont.Weight.Bold))
         app_title.setStyleSheet("color: #25D366;")
-
-        app_version = QLabel("Version 2.0 (Ultimate Feature-Complete Brett)")
-        app_version.setFont(QFont("sans-serif", 10))
-        app_version.setStyleSheet("color: #a0a0a0;")
-
-        app_desc = QLabel("Ein hochoptimierter, nativer WhatsApp-Client für Linux Desktops.")
-        app_desc.setFont(QFont("sans-serif", 10))
-        app_desc.setStyleSheet("color: #d1d5db;")
-
-        app_specs = QLabel("Pure Python 3 & PyQt6 | Hardware-Throttle & Custom Vector Engines")
+        self.app_version_lbl = QLabel("Version 2.1 (International Edition)")
+        self.app_version_lbl.setFont(QFont("sans-serif", 10))
+        self.app_version_lbl.setStyleSheet("color: #a0a0a0;")
+        self.app_desc_lbl = QLabel()
+        self.app_desc_lbl.setFont(QFont("sans-serif", 10))
+        self.app_desc_lbl.setStyleSheet("color: #d1d5db;")
+        app_specs = QLabel("Pure Python 3 & PyQt6 | Native Translation Dictionary Engines")
         specs_font = QFont("sans-serif", 9)
         specs_font.setItalic(True)
         app_specs.setFont(specs_font)
         app_specs.setStyleSheet("color: #71717a;")
-
         text_layout.addWidget(app_title)
-        text_layout.addWidget(app_version)
-        text_layout.addWidget(app_desc)
+        text_layout.addWidget(self.app_version_lbl)
+        text_layout.addWidget(self.app_desc_lbl)
         text_layout.addWidget(app_specs)
-
         about_layout.addLayout(text_layout)
         about_layout.addStretch()
         settings_layout.addWidget(about_frame)
@@ -509,15 +586,70 @@ class MatrixWhisper(QMainWindow):
         self.browser.titleChanged.connect(self.check_notifications)
         self.browser.loadFinished.connect(self.apply_darkmode_on_load)
 
+        # UI-Texte initial anwenden
+        self.retranslate_ui()
+
         # System-Tray-Icon einrichten
         self.tray_icon = QSystemTrayIcon(self)
         self.update_app_icons(0)
+        self.setup_tray_menu()
+        self.tray_icon.show()
+        self.tray_icon.activated.connect(self.tray_icon_activated)
 
+        self.sync_loaded_settings_to_ui()
+        self.is_initializing = False
+
+    # --- DYNAMISCHE LOKALISIERUNG DER INTERFACE-TEXTE ---
+    def determine_ui_language_key(self):
+        """ Gibt den passenden Key für das TRANSLATIONS-Dict zurück (mit System-Fallback) """
+        if self.selected_language != "system":
+            return self.selected_language if self.selected_language in TRANSLATIONS else "en"
+        try:
+            sys_locale = locale.getdefaultlocale()[0]
+            if sys_locale:
+                lang_code = sys_locale.split("_")[0]
+                if lang_code in TRANSLATIONS:
+                    return lang_code
+        except Exception:
+            pass
+        return "en" # Internationaler Standard-Fallback
+
+    def retranslate_ui(self):
+        """ Schaltet alle Labels und Titel dynamisch auf die geladene Sprache um """
+        lang = self.ui_lang
+        t = TRANSLATIONS[lang]
+
+        self.btn_settings.setToolTip(t["title"])
+        self.title_label.setText(t["title"])
+        self.as_title.setText(t["as_title"])
+        self.as_desc.setText(t["as_desc"])
+        self.dm_title.setText(t["dm_title"])
+        self.dm_desc.setText(t["dm_desc"])
+        self.tb_title.setText(t["tb_title"])
+        self.tb_desc.setText(t["tb_desc"])
+        self.gpu_title.setText(t["gpu_title"])
+        self.mute_title.setText(t["mute_title"])
+        self.btn_mute_1h.setText(t["mute_btn_1h"])
+        self.btn_mute_8h.setText(t["mute_btn_8h"])
+        self.btn_mute_reset.setText(t["mute_btn_reset"])
+        self.lang_title.setText(t["lang_title"])
+        self.zoom_title.setText(t["zoom_title"])
+        self.zoom_desc_label.setText(t["zoom_desc"])
+        self.app_desc_lbl.setText(t["about_desc"])
+
+        # Status-Texte synchronisieren
+        resolved = self.resolve_http_language_string().split(",")[0]
+        self.lang_status_label.setText(f"{t['lang_header']} {resolved}")
+
+    def setup_tray_menu(self):
+        """ Baut das System-Tray-Menü passend in der Landessprache auf """
+        t = TRANSLATIONS[self.ui_lang]
         tray_menu = QMenu()
-        show_action = QAction("Öffnen", self)
-        quit_action = QAction("Beenden", self)
 
-        self.mute_tray_action = QAction("Stummschalten (8h Schnellwahl)", self)
+        show_action = QAction(t["tray_open"], self)
+        quit_action = QAction(t["tray_quit"], self)
+
+        self.mute_tray_action = QAction(t["tray_mute_shortcut"], self)
         self.mute_tray_action.setCheckable(True)
         self.mute_tray_action.toggled.connect(self.toggle_tray_mute_from_action)
 
@@ -529,13 +661,7 @@ class MatrixWhisper(QMainWindow):
         tray_menu.addAction(self.mute_tray_action)
         tray_menu.addSeparator()
         tray_menu.addAction(quit_action)
-
         self.tray_icon.setContextMenu(tray_menu)
-        self.tray_icon.show()
-        self.tray_icon.activated.connect(self.tray_icon_activated)
-
-        self.sync_loaded_settings_to_ui()
-        self.is_initializing = False
 
     # --- CONFIGURATION (JSON PERSISTENZ) ---
     def preload_config_metadata(self):
@@ -571,6 +697,7 @@ class MatrixWhisper(QMainWindow):
         return "de-DE,de;q=0.9"
 
     def sync_loaded_settings_to_ui(self):
+        t = TRANSLATIONS[self.ui_lang]
         if os.path.exists(self.config_path):
             try:
                 with open(self.config_path, "r", encoding="utf-8") as f:
@@ -582,22 +709,27 @@ class MatrixWhisper(QMainWindow):
                         remaining_seconds = (mute_until - datetime.now()).total_seconds()
                         remaining_hours = max(1, math.ceil(remaining_seconds / 3600.0))
                         self.activate_smart_mute(remaining_hours)
+                    else:
+                        self.mute_status_label.setText(t["mute_active"])
+                else:
+                    self.mute_status_label.setText(t["mute_active"])
             except Exception as e:
                 print(f"Fehler beim Sync der Config: {e}")
+        else:
+            self.mute_status_label.setText(t["mute_active"])
 
         self.zoom_slider.setValue(int(self.zoom_factor * 100))
         self.lbl_percent.setText(f"{int(self.zoom_factor * 100)}%")
         self.browser.setZoomFactor(self.zoom_factor)
 
-        # GPU Statusanzeige initialisieren
         if self.disable_gpu_accel:
-            self.gpu_status_label.setText("Status: GPU deaktiviert (Stromsparmodus aktiv) ⚠️")
+            self.gpu_status_label.setText(t["gpu_active"])
             self.gpu_status_label.setStyleSheet("color: #e03131; font-weight: bold; font-size: 10pt;")
+        else:
+            self.gpu_status_label.setText(t["gpu_reboot_off"])
 
     def save_settings(self):
-        if self.is_initializing:
-            return
-
+        if self.is_initializing: return
         config = {
             "zoom_factor": self.zoom_factor,
             "language_selection": self.selected_language,
@@ -613,26 +745,26 @@ class MatrixWhisper(QMainWindow):
 
     # --- TOGGLE SLIDER LOGIKEN ---
     def toggle_tray_behavior(self, checked):
-        """ Toggelt, ob das Schließen ('X') die App killt oder ins Tray schiebt """
         self.minimize_to_tray = checked
         self.save_settings()
 
     def toggle_gpu_acceleration(self, checked):
-        """ Schaltet die GPU-Beschleunigung um (erfordert Neustart) """
         self.disable_gpu_accel = checked
         self.save_settings()
+        t = TRANSLATIONS[self.ui_lang]
         if checked:
-            self.gpu_status_label.setText("Effekt nach Neustart: GPU wird abgeschaltet 🔋")
+            self.gpu_status_label.setText(t["gpu_reboot_on"])
             self.gpu_status_label.setStyleSheet("color: #e03131; font-weight: bold; font-size: 10pt;")
         else:
-            self.gpu_status_label.setText("Effekt nach Neustart: GPU wieder aktiv (Standard)")
+            self.gpu_status_label.setText(t["gpu_reboot_off"])
             self.gpu_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
 
     def change_language_selection(self, index):
         self.selected_language = self.combo_lang.itemData(index)
         self.save_settings()
+        t = TRANSLATIONS[self.ui_lang]
         resolved = self.resolve_http_language_string().split(",")[0]
-        self.lang_status_label.setText(f"Sprache nach Neustart: {resolved} ⚠️")
+        self.lang_status_label.setText(f"{t['lang_reboot']} {resolved} ⚠️")
         self.lang_status_label.setStyleSheet("color: #e03131; font-weight: bold; font-size: 10pt;")
 
     # --- FUNKTIONEN FÜR SMART MUTE ---
@@ -641,7 +773,10 @@ class MatrixWhisper(QMainWindow):
         self.browser.page().setAudioMuted(True)
         self.mute_until_time = datetime.now() + timedelta(hours=hours)
         formatted_time = self.mute_until_time.strftime("%H:%M")
-        self.mute_status_label.setText(f"Audioausgabe: Stumm (bis {formatted_time})")
+
+        # Präfix je nach Sprache anpassen
+        prefix = "Stumm bis" if self.ui_lang == "de" else ("Silencio hasta" if self.ui_lang == "es" else "Muted until")
+        self.mute_status_label.setText(f"{prefix} {formatted_time}")
         self.mute_status_label.setStyleSheet("color: #e03131; font-weight: bold; font-size: 10pt;")
         if hours == 8:
             self.mute_tray_action.blockSignals(True)
@@ -653,7 +788,8 @@ class MatrixWhisper(QMainWindow):
 
     def deactivate_smart_mute(self):
         self.browser.page().setAudioMuted(False)
-        self.mute_status_label.setText("Audioausgabe: Aktiv")
+        t = TRANSLATIONS[self.ui_lang]
+        self.mute_status_label.setText(t["mute_active"])
         self.mute_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
         self.mute_tray_action.blockSignals(True)
         self.mute_tray_action.setChecked(False)
@@ -798,16 +934,15 @@ StartupWMClass=matrixwhisper.py
             self.update_app_icons(0)
 
     def closeEvent(self, event):
-        """ Reagiert dynamisch auf das eingestellte Schließ-Verhalten """
         if self.minimize_to_tray:
             event.ignore()
             self.hide()
+            t = TRANSLATIONS[self.ui_lang]
             self.tray_icon.showMessage(
-                self.app_name, "Flüstert im Hintergrund weiter...",
+                self.app_name, t["tray_whisper"],
                 QSystemTrayIcon.MessageIcon.Information, 2000
             )
         else:
-            # Wenn Schalter aus ist, App ganz normal beenden
             QApplication.instance().quit()
 
     def tray_icon_activated(self, reason):
@@ -819,8 +954,6 @@ StartupWMClass=matrixwhisper.py
                 self.activateWindow()
 
 if __name__ == "__main__":
-    # --- FRÜHE PRÜFUNG DER HARDWARE-BESCHLEUNIGUNG ---
-    # Wir müssen die config.json auslesen, BEVOR Qt irgendetwas anderes macht!
     script_directory = os.path.dirname(os.path.abspath(__file__))
     cfg_file = os.path.join(script_directory, "config.json")
     if os.path.exists(cfg_file):
@@ -828,10 +961,9 @@ if __name__ == "__main__":
             with open(cfg_file, "r", encoding="utf-8") as f:
                 raw_cfg = json.load(f)
             if raw_cfg.get("disable_gpu_acceleration", False):
-                # Übergibt die Chromium-Flags direkt an das Backend, um die GPU schlafen zu legen
                 sys.argv.append("--disable-gpu")
                 sys.argv.append("--disable-software-rasterizer")
-                print("[MatrixWhisper] Akkusparmodus aktiv: Hardware-Beschleunigung wurde gedrosselt.")
+                print("[MatrixWhisper] Power saver active: Hardware acceleration throttle enabled.")
         except Exception:
             pass
 

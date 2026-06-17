@@ -26,6 +26,8 @@ TRANSLATIONS = {
         "dm_desc": "Erzwingt das dunkle WhatsApp-Theme in der Web-Oberfläche",
         "tb_title": "Schließen ins Tray (Hintergrund)",
         "tb_desc": "Fenster beim Schließen ('X') im Systemabschnitt verstecken",
+        "nt_title": "Native Benachrichtigungen (Tray-Notifications)",
+        "nt_desc": "Legt fest, ob Web-Notifications bei geschlossenem/verstecktem Fenster als native System-Benachrichtigungen aufpoppen",
         "gpu_title": "Stromsparmodus (GPU-Drossel)",
         "gpu_desc": "Hardware-Beschleunigung der WebEngine abschalten",
         "gpu_active": "Status: GPU deaktiviert (Stromsparmodus aktiv) ⚠️",
@@ -42,13 +44,13 @@ TRANSLATIONS = {
         "zoom_title": "HiDPI / Ultrawide Zoom-Faktor",
         "zoom_desc": "Skalierung der WhatsApp Web-Oberfläche",
         "cache_title": "Bereinigung & Session-Reset",
-        "cache_desc": "Meldet dich ab, löscht Cookies und leert den lokalen Cache komplett",
+        "cache_desc": "Einbau eines Buttons, der den lokalen storage-Ordner leert, um sich bei Bedarf mit neuem QR-Code anzumelden",
         "cache_btn": "Session & Cache zurücksetzen",
         "about_desc": "Ein hochoptimierter, nativer WhatsApp-Client für Linux Desktops.",
         "tray_whisper": "Flüstert im Hintergrund weiter...",
         "tray_open": "Öffnen",
         "tray_quit": "Beenden",
-        "tray_mute_shortcut": "Stummschalten (8h Schnellwahl)"
+        "tray_mute_shortcut": "Stumlschalten (8h Schnellwahl)"
     },
     "en": {
         "title": "Settings",
@@ -58,6 +60,8 @@ TRANSLATIONS = {
         "dm_desc": "Force the dark WhatsApp theme in the web interface",
         "tb_title": "Minimize to Tray on Close",
         "tb_desc": "Hide window in the system tray when clicking the close ('X') button",
+        "nt_title": "Native Tray Notifications",
+        "nt_desc": "Toggle whether web notifications pop up as native system notifications when window is closed or hidden",
         "gpu_title": "Power Saver Mode (GPU Throttle)",
         "gpu_desc": "Disable WebEngine hardware acceleration to save battery",
         "gpu_active": "Status: GPU disabled (Power saver active) ⚠️",
@@ -74,7 +78,7 @@ TRANSLATIONS = {
         "zoom_title": "HiDPI / Ultrawide Zoom Factor",
         "zoom_desc": "Scale the WhatsApp Web interface layout",
         "cache_title": "Session Reset & Cache Clear",
-        "cache_desc": "Logs you out, deletes cookies and flushes the local storage cache",
+        "cache_desc": "Clear the local storage directories to enforce a clean logout and fresh QR code scan",
         "cache_btn": "Reset Session & Cache",
         "about_desc": "A highly optimized, native WhatsApp client for Linux desktops.",
         "tray_whisper": "Whispering in the background...",
@@ -90,6 +94,8 @@ TRANSLATIONS = {
         "dm_desc": "Forzar el tema oscuro de WhatsApp en la interfaz web",
         "tb_title": "Cerrar a la bandeja (Segundo plano)",
         "tb_desc": "Ocultar la ventana en la bandeja del sistema al cerrar ('X')",
+        "nt_title": "Notificaciones nativas del sistema",
+        "nt_desc": "Establece si las notificaciones web deben aparecer como notificaciones del sistema cuando la ventana está cerrada",
         "gpu_title": "Modo ahorro de energía (Drossel GPU)",
         "gpu_desc": "Desactivar la aceleración por hardware de WebEngine",
         "gpu_active": "Estado: GPU desactivada (Ahorro de energía activo) ⚠️",
@@ -122,6 +128,8 @@ TRANSLATIONS = {
         "dm_desc": "Forcer le thème sombre de WhatsApp dans l'interface web",
         "tb_title": "Fermer dans la zone de notification",
         "tb_desc": "Masquer la fenêtre dans la barre des tâches lors de la fermeture ('X')",
+        "nt_title": "Notifications natives du système",
+        "nt_desc": "Détermine si les notifications web doivent s'afficher sous forme de notifications système lorsque la fenêtre est fermée",
         "gpu_title": "Mode économie d'énergie (Drossel GPU)",
         "gpu_desc": "Désactiver l'accélération matérielle de WebEngine",
         "gpu_active": "Statut: GPU désactivé (Économie d'énergie active) ⚠️",
@@ -154,6 +162,8 @@ TRANSLATIONS = {
         "dm_desc": "Forza il tema scuro di WhatsApp nell'interfaccia web",
         "tb_title": "Riduci nel vassoio di sistema",
         "tb_desc": "Nascondi la finestra nel vassoio di sistema quando si chiude ('X')",
+        "nt_title": "Notifiche native di sistema",
+        "nt_desc": "Stabilisce se le notifiche web devono apparire come notifiche di sistema quando la finestra è chiusa",
         "gpu_title": "Risparmio energetico (GPU)",
         "gpu_desc": "Disattiva l'accelerazione hardware della WebEngine",
         "gpu_active": "Stato: GPU disattivata (Risparmio energetico attivo) ⚠️",
@@ -186,6 +196,8 @@ TRANSLATIONS = {
         "dm_desc": "Forceer het donkere WhatsApp-thema in de webinterface",
         "tb_title": "Sluiten naar systeemvak",
         "tb_desc": "Verberg het venster in het systeemvak bij het klikken op sluiten ('X')",
+        "nt_title": "Native systeemnotificaties",
+        "nt_desc": "Bepaalt of webnotificaties als native systeemnotificaties moeten verschijnen wanneer het venster is gesloten",
         "gpu_title": "Energiebesparingsmodus (GPU)",
         "gpu_desc": "Schakel WebEngine hardwareversnelling uit om batterij te sparen",
         "gpu_active": "Status: GPU uitgeschakeld (Energiebesparing actief) ⚠️",
@@ -218,6 +230,8 @@ TRANSLATIONS = {
         "dm_desc": "Forçar o tema escuro do WhatsApp na interface web",
         "tb_title": "Fechar para a bandeja de sistema",
         "tb_desc": "Ocultar a janela na bandeja do sistema ao clicar no botão fechar ('X')",
+        "nt_title": "Notificações nativas do sistema",
+        "nt_desc": "Define se as notificações web devem aparecer como notificações nativas do sistema quando a janela está fechada",
         "gpu_title": "Modo de economia de energia (GPU)",
         "gpu_desc": "Desativar a aceleração de hardware do WebEngine",
         "gpu_active": "Status: GPU desativada (Economia de energia activa) ⚠️",
@@ -250,6 +264,8 @@ TRANSLATIONS = {
         "dm_desc": "Wymuś ciemny motyw WhatsApp w interfejsie webowym",
         "tb_title": "Zamknij do zasobnika systemowego",
         "tb_desc": "Ukryj okno w zasobnika systemowym przy kliknięciu zamknięcia ('X')",
+        "nt_title": "Natywne powiadomienia systemowe",
+        "nt_desc": "Określa, czy powiadomienia webowe powinny pojawiać się jako natywne powiadomienia systemowe, gdy okno jest zamknięte",
         "gpu_title": "Tryb oszczędzania energii (GPU)",
         "gpu_desc": "Wyłącz akcelerację sprzętową WebEngine",
         "gpu_active": "Status: GPU wyłączone (Oszczędzanie energii aktywne) ⚠️",
@@ -379,13 +395,13 @@ class MatrixWhisper(QMainWindow):
         self.mute_until_time = None
         self.selected_language = "system"
         self.minimize_to_tray = True
+        self.native_notifications = True  # Variable für den Benachrichtigungs-Switch
         self.disable_gpu_accel = False
         self.is_initializing = True
 
         self.preload_config_metadata()
         self.ui_lang = self.determine_ui_language_key()
 
-        # Pfade als Instanzvariablen deklarieren für den Session-Reset
         self.storage_path = os.path.expanduser("~/.local/share/MatrixWhisper/storage")
         self.cache_path = os.path.expanduser("~/.cache/MatrixWhisper/cache")
         os.makedirs(self.storage_path, exist_ok=True)
@@ -396,7 +412,7 @@ class MatrixWhisper(QMainWindow):
         self.profile.setCachePath(self.cache_path)
         self.profile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.ForcePersistentCookies)
 
-        # Feature 1: Rechtschreibprüfung Engine Setup
+        # Rechtschreibprüfung (Spellchecking Engine) Integration
         self.profile.setSpellCheckEnabled(True)
         if self.selected_language == "system":
             try:
@@ -408,7 +424,7 @@ class MatrixWhisper(QMainWindow):
             lang_code = "en-US" if self.selected_language == "en" else self.selected_language
             self.profile.setSpellCheckLanguages([lang_code])
 
-        # Feature 2: Native HTML5 Benachrichtigungen an das Tray-System binden
+        # Benachrichtigungs-Verhalten an den Handler binden
         self.profile.setNotificationPresenter(self.handle_web_notification)
 
         resolved_lang = self.resolve_http_language_string()
@@ -614,6 +630,30 @@ class MatrixWhisper(QMainWindow):
         tray_behavior_layout.addWidget(self.cb_tray_behavior)
         settings_layout.addWidget(tray_behavior_frame)
 
+        # --- CARD 3.5: NATIVE NOTIFICATIONS TOGGLE (Der fehlende Switch) ---
+        nt_frame = QFrame()
+        nt_frame.setStyleSheet(card_style)
+        nt_layout = QHBoxLayout(nt_frame)
+        nt_layout.setContentsMargins(15, 12, 15, 12)
+        nt_icon_lbl = QLabel("🔔")
+        nt_icon_lbl.setFont(QFont("sans-serif", 20))
+        nt_layout.addWidget(nt_icon_lbl)
+        nt_text_layout = QVBoxLayout()
+        self.nt_title = QLabel()
+        self.nt_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.nt_desc = QLabel()
+        self.nt_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
+        nt_text_layout.addWidget(self.nt_title)
+        nt_text_layout.addWidget(self.nt_desc)
+        nt_layout.addLayout(nt_text_layout)
+        nt_layout.addStretch()
+        self.cb_native_notifications = SwitchToggle()
+        self.cb_native_notifications.setChecked(self.native_notifications)
+        self.cb_native_notifications.thumb_position = 27.0 if self.cb_native_notifications.isChecked() else 3.0
+        self.cb_native_notifications.toggled.connect(self.toggle_native_notifications)
+        nt_layout.addWidget(self.cb_native_notifications)
+        settings_layout.addWidget(nt_frame)
+
         # --- CARD 4: GPU THROTTLE ---
         gpu_frame = QFrame()
         gpu_frame.setStyleSheet(card_style)
@@ -754,7 +794,7 @@ class MatrixWhisper(QMainWindow):
         zoom_layout.addWidget(self.lbl_percent)
         settings_layout.addWidget(zoom_frame)
 
-        # --- Feature 3: CARD 8: CACHE RESET ENGINE ---
+        # --- CARD 8: CACHE RESET ENGINE (Aus deiner Feature-Liste) ---
         cache_frame = QFrame()
         cache_frame.setStyleSheet(card_style + """
             QPushButton { background-color: #e03131; color: #ffffff; border-radius: 6px; padding: 8px 16px; border: none; font-weight: bold; }
@@ -817,7 +857,7 @@ class MatrixWhisper(QMainWindow):
         about_layout.addStretch()
         settings_layout.addWidget(about_frame)
 
-        # In die ScrollArea mappen
+        # ScrollArea-Inhalt mappen
         scroll_area.setWidget(scroll_content)
         page_main_layout.addWidget(scroll_area)
 
@@ -865,6 +905,8 @@ class MatrixWhisper(QMainWindow):
         self.dm_desc.setText(t["dm_desc"])
         self.tb_title.setText(t["tb_title"])
         self.tb_desc.setText(t["tb_desc"])
+        self.nt_title.setText(t["nt_title"])
+        self.nt_desc.setText(t["nt_desc"])
         self.gpu_title.setText(t["gpu_title"])
         self.mute_title.setText(t["mute_title"])
         self.btn_mute_1h.setText(t["mute_btn_1h"])
@@ -918,6 +960,7 @@ class MatrixWhisper(QMainWindow):
                 self.zoom_factor = config.get("zoom_factor", 1.1)
                 self.selected_language = config.get("language_selection", "system")
                 self.minimize_to_tray = config.get("minimize_to_tray", True)
+                self.native_notifications = config.get("native_notifications", True)
                 self.disable_gpu_accel = config.get("disable_gpu_acceleration", False)
             except Exception as e:
                 print(f"Fehler beim Preload der Config: {e}")
@@ -980,6 +1023,7 @@ class MatrixWhisper(QMainWindow):
             "zoom_factor": self.zoom_factor,
             "language_selection": self.selected_language,
             "minimize_to_tray": self.minimize_to_tray,
+            "native_notifications": self.native_notifications,
             "disable_gpu_acceleration": self.disable_gpu_accel,
             "mute_until": self.mute_until_time.isoformat() if self.mute_until_time else None
         }
@@ -993,9 +1037,13 @@ class MatrixWhisper(QMainWindow):
         self.minimize_to_tray = checked
         self.save_settings()
 
-    # Feature 2: Handler für HTML5 Web Notifications
+    def toggle_native_notifications(self, checked):
+        self.native_notifications = checked
+        self.save_settings()
+
+    # Handler für HTML5 Web Notifications
     def handle_web_notification(self, notification: QWebEngineNotification):
-        if not self.isVisible() or self.isMinimized():
+        if self.native_notifications and (not self.isVisible() or self.isMinimized()):
             self.tray_icon.showMessage(
                 notification.title(),
                 notification.message(),
@@ -1004,7 +1052,7 @@ class MatrixWhisper(QMainWindow):
             )
         notification.accept()
 
-    # Feature 3: Löschen der physischen Speicherordner
+    # Löschen der physischen Speicherordner
     def reset_cache_and_session(self):
         self.browser.setUrl(QUrl("about:blank"))
         self.profile.clearHttpCache()

@@ -8,3 +8,4 @@ __pycache__/
 
 #ignoriere originales Logo
 media/media-matrix-logo-original.png
+make_logo.py

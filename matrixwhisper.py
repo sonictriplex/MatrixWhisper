@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QSystemTrayIcon, QMenu,
                              QWidget, QHBoxLayout, QVBoxLayout, QPushButton,
                              QStackedWidget, QCheckBox, QLabel, QFrame, QSlider,
-                             QComboBox)
+                             QComboBox, QScrollArea)
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
@@ -444,26 +444,62 @@ class MatrixWhisper(QMainWindow):
         self.browser.setUrl(QUrl("https://web.whatsapp.com"))
         self.container.addWidget(self.browser)
 
+        # --- EINSTELLUNGSSEITE ARCHITEKTUR ---
         self.settings_page = QWidget()
         self.settings_page.setStyleSheet("background-color: #1a1d24; color: #ffffff;")
-        settings_layout = QVBoxLayout(self.settings_page)
-        settings_layout.setContentsMargins(30, 30, 30, 30)
-        settings_layout.setSpacing(14)
+
+        page_main_layout = QVBoxLayout(self.settings_page)
+        page_main_layout.setContentsMargins(30, 30, 30, 30)
+        page_main_layout.setSpacing(14)
 
         self.title_label = QLabel()
         self.title_label.setFont(QFont("sans-serif", 18, QFont.Weight.Bold))
-        settings_layout.addWidget(self.title_label)
+        page_main_layout.addWidget(self.title_label)
 
         line = QFrame()
         line.setFrameShape(QFrame.Shape.HLine)
         line.setFrameShadow(QFrame.Shadow.Sunken)
         line.setStyleSheet("background-color: #2c313c;")
-        settings_layout.addWidget(line)
+        page_main_layout.addWidget(line)
 
         card_style = """
             QFrame { background-color: #1e222b; border-radius: 12px; border: 1px solid #2c313c; }
             QLabel { border: none; background: transparent; }
         """
+
+        # --- SCROLL AREA ENGINE (Verhindert das Quetschen aus image_29a25f.png) ---
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll_area.setStyleSheet("""
+            QScrollArea { background-color: transparent; border: none; }
+            QScrollBar:vertical {
+                border: none;
+                background: #1a1d24;
+                width: 8px;
+                margin: 0px;
+            }
+            QScrollBar::handle:vertical {
+                background: #2c313c;
+                min-height: 20px;
+                border-radius: 4px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background: #25D366;
+            }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                border: none;
+                background: none;
+            }
+        """)
+
+        scroll_content = QWidget()
+        scroll_content.setStyleSheet("background-color: #1a1d24;")
+        settings_layout = QVBoxLayout(scroll_content)
+        settings_layout.setContentsMargins(0, 5, 10, 5)
+        settings_layout.setSpacing(14)
 
         # --- CARD 1: SYSTEMSTART ---
         autostart_frame = QFrame()
@@ -677,7 +713,7 @@ class MatrixWhisper(QMainWindow):
         zoom_layout.addWidget(self.lbl_percent)
         settings_layout.addWidget(zoom_frame)
 
-        # --- "ÜBER DIESE APP" ---
+        # --- CARD 8: "ÜBER DIESE APP" ---
         about_frame = QFrame()
         about_frame.setStyleSheet(card_style)
         about_layout = QHBoxLayout(about_frame)
@@ -714,6 +750,10 @@ class MatrixWhisper(QMainWindow):
         about_layout.addLayout(text_layout)
         about_layout.addStretch()
         settings_layout.addWidget(about_frame)
+
+        # ScrollArea-Inhalt mappen
+        scroll_area.setWidget(scroll_content)
+        page_main_layout.addWidget(scroll_area)
 
         self.container.addWidget(self.settings_page)
         main_layout.addWidget(self.sidebar)

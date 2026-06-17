@@ -13,14 +13,14 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QSystemTrayIcon, QMenu,
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
-from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolygonF, QPen, QBrush
+from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolygonF, QPen, QBrush, QDesktopServices
 
 # --- TRANSLATION DICTIONARY (INTERNATIONALIZATION) ---
 TRANSLATIONS = {
     "de": {
         "title": "Einstellungen",
         "as_title": "Systemstart (Autostart)",
-        "as_desc": "Startet MatrixWhisper automatically mit dem Computer",
+        "as_desc": "Startet MatrixWhisper automatisch mit dem Computer",
         "dm_title": "Erscheinungsbild (Dark Theme)",
         "dm_desc": "Erzwingt das dunkle WhatsApp-Theme in der Web-Oberfläche",
         "tb_title": "Schließen ins Tray (Hintergrund)",
@@ -156,7 +156,7 @@ TRANSLATIONS = {
         "lang_reboot": "Lingua dopo il riavvio:",
         "zoom_title": "Fattore di zoom HiDPI / Ultrawide",
         "zoom_desc": "Ridimensiona il layout dell'interfaccia web di WhatsApp",
-        "about_desc": "Un client WhatsApp nativo e altamente ottimizzato per desktop Linux.",
+        "about_desc": "Un client WhatsApp nativo e altamente optimizzato per desktop Linux.",
         "tray_whisper": "Sussurrando in background...",
         "tray_open": "Apri",
         "tray_quit": "Esci",
@@ -203,7 +203,7 @@ TRANSLATIONS = {
         "gpu_desc": "Desativar a aceleração de hardware do WebEngine",
         "gpu_active": "Status: GPU desativada (Economia de energia activa) ⚠️",
         "gpu_reboot_on": "Efeito após reiniciar: A GPU será desativada 🔋",
-        "gpu_reboot_off": "Efecto após reiniciar: GPU ativa (Padrão)",
+        "gpu_reboot_off": "Efecto após reiniciar: GPU activa (Padrão)",
         "mute_title": "Sentinela silenciosa (Smart Mute)",
         "mute_active": "Saída de áudio: Ativa",
         "mute_btn_1h": "1h Silenciar",
@@ -227,7 +227,7 @@ TRANSLATIONS = {
         "dm_title": "Wygląd (Ciemny motyw)",
         "dm_desc": "Wymuś ciemny motyw WhatsApp w interfejsie webowym",
         "tb_title": "Zamknij do zasobnika systemowego",
-        "tb_desc": "Ukryj okno w zasobniku systemowym przy kliknięciu zamknięcia ('X')",
+        "tb_desc": "Ukryj okno w zasobnika systemowym przy kliknięciu zamknięcia ('X')",
         "gpu_title": "Tryb oszczędzania energii (GPU)",
         "gpu_desc": "Wyłącz akcelerację sprzętową WebEngine",
         "gpu_active": "Status: GPU wyłączone (Oszczędzanie energii aktywne) ⚠️",
@@ -306,6 +306,21 @@ class SwitchToggle(QCheckBox):
         painter.end()
 
 
+# --- CUSTOM PAGE-KLASSE FÜR HYPERLINKS ---
+class CustomWebEnginePage(QWebEnginePage):
+    def acceptNavigationRequest(self, url, nav_type, is_main_frame):
+        # Fängt normale Navigationsversuche ab, die nicht zu WhatsApp gehören
+        if "whatsapp.com" not in url.toString() and url.toString() != "about:blank":
+            QDesktopServices.openUrl(url)
+            return False
+        return super().acceptNavigationRequest(url, nav_type, is_main_frame)
+
+    def createWindow(self, window_type):
+        # WICHTIG: target="_blank" Links zwingen, sich auf dieser Page zu öffnen.
+        # Dadurch greift sofort die Methode acceptNavigationRequest von oben!
+        return self
+
+
 class MatrixWhisper(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -335,13 +350,12 @@ class MatrixWhisper(QMainWindow):
         self.preload_config_metadata()
         self.ui_lang = self.determine_ui_language_key()
 
-        # PERSISTENTER STORAGE-FIX: Dediziertes Profil mit festem Speicherpfad erstellen
+        # PERSISTENTER STORAGE-PFAD
         storage_path = os.path.expanduser("~/.local/share/MatrixWhisper/storage")
         cache_path = os.path.expanduser("~/.cache/MatrixWhisper/cache")
         os.makedirs(storage_path, exist_ok=True)
         os.makedirs(cache_path, exist_ok=True)
 
-        # Ein benanntes Profil erzwingt die Persistenz bei Qt
         self.profile = QWebEngineProfile("MatrixWhisperStorage", self)
         self.profile.setPersistentStoragePath(storage_path)
         self.profile.setCachePath(cache_path)
@@ -419,12 +433,10 @@ class MatrixWhisper(QMainWindow):
 
         # Karte 0: WhatsApp Browser
         self.browser = QWebEngineView()
-        self.web_page = QWebEnginePage(self.profile, self.browser)
+        self.web_page = CustomWebEnginePage(self.profile, self.browser)
         self.browser.setPage(self.web_page)
 
-        # Fokus-Verbesserung: Sorgt dafür, dass Klicks ins Fenster direkt als Aktivität gewertet werden
         self.browser.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-
         self.browser.setUrl(QUrl("https://web.whatsapp.com"))
         self.container.addWidget(self.browser)
 
@@ -681,7 +693,7 @@ class MatrixWhisper(QMainWindow):
         app_title = QLabel(f"{self.app_name}")
         app_title.setFont(QFont("sans-serif", 13, QFont.Weight.Bold))
         app_title.setStyleSheet("color: #25D366;")
-        self.app_version_lbl = QLabel("Version 2.3 (Complete Translation Matrices)")
+        self.app_version_lbl = QLabel("Version 2.4 (Hyperlink Bridge Engine)")
         self.app_version_lbl.setFont(QFont("sans-serif", 10))
         self.app_version_lbl.setStyleSheet("color: #a0a0a0;")
         self.app_desc_lbl = QLabel()
@@ -757,7 +769,6 @@ class MatrixWhisper(QMainWindow):
         self.zoom_desc_label.setText(t["zoom_desc"])
         self.app_desc_lbl.setText(t["about_desc"])
 
-        # Status-Texte synchronisieren
         resolved = self.resolve_http_language_string().split(",")[0]
         self.lang_status_label.setText(f"{t['lang_header']} {resolved}")
 
@@ -870,7 +881,6 @@ class MatrixWhisper(QMainWindow):
         except Exception as e:
             print(f"Fehler beim Speichern der Konfiguration: {e}")
 
-    # --- TOGGLE SLIDER LOGIKEN ---
     def toggle_tray_behavior(self, checked):
         self.minimize_to_tray = checked
         self.save_settings()
@@ -886,13 +896,10 @@ class MatrixWhisper(QMainWindow):
             self.gpu_status_label.setText(t["gpu_reboot_off"])
             self.gpu_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
 
-    # --- INTERFACE LIVE-RETRANSLATION (ON-THE-FLY) ---
     def change_language_selection(self, index):
         self.selected_language = self.combo_lang.itemData(index)
         self.save_settings()
-
         self.ui_lang = self.determine_ui_language_key()
-
         self.retranslate_ui()
         self.setup_tray_menu()
 
@@ -901,14 +908,12 @@ class MatrixWhisper(QMainWindow):
         self.lang_status_label.setText(f"{t['lang_reboot']} {resolved} ⚠️")
         self.lang_status_label.setStyleSheet("color: #e03131; font-weight: bold; font-size: 10pt;")
 
-    # --- FUNKTIONEN FÜR SMART MUTE ---
     def activate_smart_mute(self, hours):
         if self.mute_timer: self.mute_timer.stop()
         self.browser.page().setAudioMuted(True)
         self.mute_until_time = datetime.now() + timedelta(hours=hours)
         formatted_time = self.mute_until_time.strftime("%H:%M")
 
-        # Lokalisierter Präfix-Wechsel
         if self.ui_lang == "de": prefix = "Stumm bis"
         elif self.ui_lang == "es": prefix = "Silencio hasta"
         elif self.ui_lang == "it": prefix = "Silenzioso fino alle"

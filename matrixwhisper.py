@@ -5,12 +5,13 @@ import math
 import time
 import json
 import locale
+import shutil
 from datetime import datetime, timedelta
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QSystemTrayIcon, QMenu,
                              QWidget, QHBoxLayout, QVBoxLayout, QPushButton,
                              QStackedWidget, QCheckBox, QLabel, QFrame, QSlider,
                              QComboBox, QScrollArea)
-from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage
+from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage, QWebEngineNotification
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolygonF, QPen, QBrush, QDesktopServices
@@ -40,6 +41,9 @@ TRANSLATIONS = {
         "lang_reboot": "Sprache nach Neustart:",
         "zoom_title": "HiDPI / Ultrawide Zoom-Faktor",
         "zoom_desc": "Skalierung der WhatsApp Web-Oberfläche",
+        "cache_title": "Bereinigung & Session-Reset",
+        "cache_desc": "Meldet dich ab, löscht Cookies und leert den lokalen Cache komplett",
+        "cache_btn": "Session & Cache zurücksetzen",
         "about_desc": "Ein hochoptimierter, nativer WhatsApp-Client für Linux Desktops.",
         "tray_whisper": "Flüstert im Hintergrund weiter...",
         "tray_open": "Öffnen",
@@ -69,6 +73,9 @@ TRANSLATIONS = {
         "lang_reboot": "Language after restart:",
         "zoom_title": "HiDPI / Ultrawide Zoom Factor",
         "zoom_desc": "Scale the WhatsApp Web interface layout",
+        "cache_title": "Session Reset & Cache Clear",
+        "cache_desc": "Logs you out, deletes cookies and flushes the local storage cache",
+        "cache_btn": "Reset Session & Cache",
         "about_desc": "A highly optimized, native WhatsApp client for Linux desktops.",
         "tray_whisper": "Whispering in the background...",
         "tray_open": "Open",
@@ -98,6 +105,9 @@ TRANSLATIONS = {
         "lang_reboot": "Idioma tras reiniciar:",
         "zoom_title": "Factor de zoom HiDPI / Ultrawide",
         "zoom_desc": "Escalar la interfaz web de WhatsApp",
+        "cache_title": "Restablecer sesión y borrar caché",
+        "cache_desc": "Cierra la sesión, elimina las cookies y vacía la caché local",
+        "cache_btn": "Restablecer sesión y caché",
         "about_desc": "Un cliente nativo de WhatsApp altamente optimizado para Linux.",
         "tray_whisper": "Susurrando en segundo plano...",
         "tray_open": "Abrir",
@@ -127,6 +137,9 @@ TRANSLATIONS = {
         "lang_reboot": "Langue après redémarrage:",
         "zoom_title": "Facteur de zoom HiDPI / Ultrawide",
         "zoom_desc": "Mettre à l'échelle l'interface web de WhatsApp",
+        "cache_title": "Réinitialisation de la session & Vidage du cache",
+        "cache_desc": "Vous déconnecte, supprime les cookies et vide le cache local",
+        "cache_btn": "Réinitialiser la session & le cache",
         "about_desc": "Un client WhatsApp natif hautement optimisé pour les bureaux Linux.",
         "tray_whisper": "Chuchote en arrière-plan...",
         "tray_open": "Ouvrir",
@@ -156,6 +169,9 @@ TRANSLATIONS = {
         "lang_reboot": "Lingua dopo il riavvio:",
         "zoom_title": "Fattore di zoom HiDPI / Ultrawide",
         "zoom_desc": "Ridimensiona il layout dell'interfaccia web di WhatsApp",
+        "cache_title": "Ripristino Sessione & Svuotamento Cache",
+        "cache_desc": "Disconnette l'utente, elimina i cookie e svuota la cache locale",
+        "cache_btn": "Ripristina Sessione & Cache",
         "about_desc": "Un client WhatsApp nativo e altamente optimizzato per desktop Linux.",
         "tray_whisper": "Sussurrando in background...",
         "tray_open": "Apri",
@@ -185,6 +201,9 @@ TRANSLATIONS = {
         "lang_reboot": "Taal na herstart:",
         "zoom_title": "HiDPI / Ultrawide zoomfactor",
         "zoom_desc": "Schaal de WhatsApp Web interface-lay-out",
+        "cache_title": "Sessiereset & Cache Wissen",
+        "cache_desc": "Logt je uit, verwijdert cookies en leegt de lokale cache",
+        "cache_btn": "Sessie & Cache herstellen",
         "about_desc": "Een sterk geoptimaliseerde, native WhatsApp-client voor Linux-desktops.",
         "tray_whisper": "Fluistert op de achtergrond...",
         "tray_open": "Openen",
@@ -214,6 +233,9 @@ TRANSLATIONS = {
         "lang_reboot": "Idioma após reiniciar:",
         "zoom_title": "Fator de zoom HiDPI / Ultrawide",
         "zoom_desc": "Ajustar o tamanho da interface web do WhatsApp",
+        "cache_title": "Redefinição de Sessão & Limpeza de Cache",
+        "cache_desc": "Termina a sessão, apaga os cookies e limpa a cache local",
+        "cache_btn": "Redefinir Sessão & Cache",
         "about_desc": "Um client WhatsApp nativo e altamente otimizado para desktops Linux.",
         "tray_whisper": "Sussurrando em segundo plano...",
         "tray_open": "Abrir",
@@ -243,6 +265,9 @@ TRANSLATIONS = {
         "lang_reboot": "Język po restarcie:",
         "zoom_title": "Współczynnik skalowania HiDPI / Ultrawide",
         "zoom_desc": "Skaluj układ interfejsu WhatsApp Web",
+        "cache_title": "Resetowanie Sesji & Czyszczenie Pamięci Podręcznej",
+        "cache_desc": "Wylogowuje użytkownika, usuwa pliki cookie i czyści pamięć cache",
+        "cache_btn": "Resetuj Sesję & Pamięć Cache",
         "about_desc": "Wysoce zoptymalizowany, natywny klient WhatsApp dla pulpitów Linux.",
         "tray_whisper": "Szepta w tle...",
         "tray_open": "Otwórz",
@@ -360,15 +385,31 @@ class MatrixWhisper(QMainWindow):
         self.preload_config_metadata()
         self.ui_lang = self.determine_ui_language_key()
 
-        storage_path = os.path.expanduser("~/.local/share/MatrixWhisper/storage")
-        cache_path = os.path.expanduser("~/.cache/MatrixWhisper/cache")
-        os.makedirs(storage_path, exist_ok=True)
-        os.makedirs(cache_path, exist_ok=True)
+        # Pfade als Instanzvariablen deklarieren für den Session-Reset
+        self.storage_path = os.path.expanduser("~/.local/share/MatrixWhisper/storage")
+        self.cache_path = os.path.expanduser("~/.cache/MatrixWhisper/cache")
+        os.makedirs(self.storage_path, exist_ok=True)
+        os.makedirs(self.cache_path, exist_ok=True)
 
         self.profile = QWebEngineProfile("MatrixWhisperStorage", self)
-        self.profile.setPersistentStoragePath(storage_path)
-        self.profile.setCachePath(cache_path)
+        self.profile.setPersistentStoragePath(self.storage_path)
+        self.profile.setCachePath(self.cache_path)
         self.profile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.ForcePersistentCookies)
+
+        # Feature 1: Rechtschreibprüfung Engine Setup
+        self.profile.setSpellCheckEnabled(True)
+        if self.selected_language == "system":
+            try:
+                sys_lang = locale.getdefaultlocale()[0].split("_")[0]
+                self.profile.setSpellCheckLanguages([sys_lang, "en-US"])
+            except Exception:
+                self.profile.setSpellCheckLanguages(["de", "en-US"])
+        else:
+            lang_code = "en-US" if self.selected_language == "en" else self.selected_language
+            self.profile.setSpellCheckLanguages([lang_code])
+
+        # Feature 2: Native HTML5 Benachrichtigungen an das Tray-System binden
+        self.profile.setNotificationPresenter(self.handle_web_notification)
 
         resolved_lang = self.resolve_http_language_string()
         self.profile.setHttpAcceptLanguage(resolved_lang)
@@ -467,7 +508,7 @@ class MatrixWhisper(QMainWindow):
             QLabel { border: none; background: transparent; }
         """
 
-        # --- SCROLL AREA ENGINE (Verhindert das Quetschen aus image_29a25f.png) ---
+        # --- SCROLL AREA ENGINE (Verhindert das Quetschen) ---
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setFrameShape(QFrame.Shape.NoFrame)
@@ -713,7 +754,32 @@ class MatrixWhisper(QMainWindow):
         zoom_layout.addWidget(self.lbl_percent)
         settings_layout.addWidget(zoom_frame)
 
-        # --- CARD 8: "ÜBER DIESE APP" ---
+        # --- Feature 3: CARD 8: CACHE RESET ENGINE ---
+        cache_frame = QFrame()
+        cache_frame.setStyleSheet(card_style + """
+            QPushButton { background-color: #e03131; color: #ffffff; border-radius: 6px; padding: 8px 16px; border: none; font-weight: bold; }
+            QPushButton:hover { background-color: #ff4a4a; }
+        """)
+        cache_layout = QHBoxLayout(cache_frame)
+        cache_layout.setContentsMargins(15, 12, 15, 12)
+        cache_icon = QLabel("🗑️")
+        cache_icon.setFont(QFont("sans-serif", 20))
+        cache_layout.addWidget(cache_icon)
+        cache_text_layout = QVBoxLayout()
+        self.cache_title = QLabel()
+        self.cache_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.cache_desc = QLabel()
+        self.cache_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
+        cache_text_layout.addWidget(self.cache_title)
+        cache_text_layout.addWidget(self.cache_desc)
+        cache_layout.addLayout(cache_text_layout)
+        cache_layout.addStretch()
+        self.btn_reset_cache = QPushButton()
+        self.btn_reset_cache.clicked.connect(self.reset_cache_and_session)
+        cache_layout.addWidget(self.btn_reset_cache)
+        settings_layout.addWidget(cache_frame)
+
+        # --- CARD 9: "ÜBER DIESE APP" ---
         about_frame = QFrame()
         about_frame.setStyleSheet(card_style)
         about_layout = QHBoxLayout(about_frame)
@@ -751,7 +817,7 @@ class MatrixWhisper(QMainWindow):
         about_layout.addStretch()
         settings_layout.addWidget(about_frame)
 
-        # ScrollArea-Inhalt mappen
+        # In die ScrollArea mappen
         scroll_area.setWidget(scroll_content)
         page_main_layout.addWidget(scroll_area)
 
@@ -807,6 +873,9 @@ class MatrixWhisper(QMainWindow):
         self.lang_title.setText(t["lang_title"])
         self.zoom_title.setText(t["zoom_title"])
         self.zoom_desc_label.setText(t["zoom_desc"])
+        self.cache_title.setText(t["cache_title"])
+        self.cache_desc.setText(t["cache_desc"])
+        self.btn_reset_cache.setText(t["cache_btn"])
         self.app_desc_lbl.setText(t["about_desc"])
 
         resolved = self.resolve_http_language_string().split(",")[0]
@@ -923,6 +992,36 @@ class MatrixWhisper(QMainWindow):
     def toggle_tray_behavior(self, checked):
         self.minimize_to_tray = checked
         self.save_settings()
+
+    # Feature 2: Handler für HTML5 Web Notifications
+    def handle_web_notification(self, notification: QWebEngineNotification):
+        if not self.isVisible() or self.isMinimized():
+            self.tray_icon.showMessage(
+                notification.title(),
+                notification.message(),
+                QSystemTrayIcon.MessageIcon.Information,
+                4000
+            )
+        notification.accept()
+
+    # Feature 3: Löschen der physischen Speicherordner
+    def reset_cache_and_session(self):
+        self.browser.setUrl(QUrl("about:blank"))
+        self.profile.clearHttpCache()
+        self.profile.cookieStore().deleteAllCookies()
+
+        try:
+            if os.path.exists(self.storage_path):
+                shutil.rmtree(self.storage_path)
+            if os.path.exists(self.cache_path):
+                shutil.rmtree(self.cache_path)
+            os.makedirs(self.storage_path, exist_ok=True)
+            os.makedirs(self.cache_path, exist_ok=True)
+        except Exception as e:
+            print(f"Fehler beim physischen Löschen des Caches: {e}")
+
+        self.browser.setUrl(QUrl("https://web.whatsapp.com"))
+        self.switch_view(0)
 
     def toggle_gpu_acceleration(self, checked):
         self.disable_gpu_accel = checked
@@ -1135,6 +1234,16 @@ StartupWMClass=matrixwhisper.py
 
 if __name__ == "__main__":
     script_directory = os.path.dirname(os.path.abspath(__file__))
+
+    # Automatisches .gitignore für saubere Git-Updates
+    gitignore_file = os.path.join(script_directory, ".gitignore")
+    if not os.path.exists(gitignore_file):
+        try:
+            with open(gitignore_file, "w", encoding="utf-8") as f:
+                f.write("config.json\n__pycache__/\n*.pyc\n")
+        except Exception:
+            pass
+
     cfg_file = os.path.join(script_directory, "config.json")
     if os.path.exists(cfg_file):
         try:

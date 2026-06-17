@@ -20,7 +20,7 @@ TRANSLATIONS = {
     "de": {
         "title": "Einstellungen",
         "as_title": "Systemstart (Autostart)",
-        "as_desc": "Startet MatrixWhisper automatisch mit dem Computer",
+        "as_desc": "Startet MatrixWhisper automatically mit dem Computer",
         "dm_title": "Erscheinungsbild (Dark Theme)",
         "dm_desc": "Erzwingt das dunkle WhatsApp-Theme in der Web-Oberfläche",
         "tb_title": "Schließen ins Tray (Hintergrund)",
@@ -173,7 +173,7 @@ TRANSLATIONS = {
         "gpu_title": "Energiebesparingsmodus (GPU)",
         "gpu_desc": "Schakel WebEngine hardwareversnelling uit om batterij te sparen",
         "gpu_active": "Status: GPU uitgeschakeld (Energiebesparing actief) ⚠️",
-        "gpu_reboot_on": "Effect na herstart: GPU wordt uitgeschakeld 🔋",
+        "gpu_reboot_on": "Effect na herstart: GPU wird uitgeschakeld 🔋",
         "gpu_reboot_off": "Effect na herstart: GPU actief (Standaard)",
         "mute_title": "Stille schildwacht (Smart Mute)",
         "mute_active": "Audio-uitvoer: Actief",
@@ -335,8 +335,16 @@ class MatrixWhisper(QMainWindow):
         self.preload_config_metadata()
         self.ui_lang = self.determine_ui_language_key()
 
-        # Session-Profil & Browser laden
-        self.profile = QWebEngineProfile.defaultProfile()
+        # PERSISTENTER STORAGE-FIX: Dediziertes Profil mit festem Speicherpfad erstellen
+        storage_path = os.path.expanduser("~/.local/share/MatrixWhisper/storage")
+        cache_path = os.path.expanduser("~/.cache/MatrixWhisper/cache")
+        os.makedirs(storage_path, exist_ok=True)
+        os.makedirs(cache_path, exist_ok=True)
+
+        # Ein benanntes Profil erzwingt die Persistenz bei Qt
+        self.profile = QWebEngineProfile("MatrixWhisperStorage", self)
+        self.profile.setPersistentStoragePath(storage_path)
+        self.profile.setCachePath(cache_path)
         self.profile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.ForcePersistentCookies)
 
         resolved_lang = self.resolve_http_language_string()
@@ -413,6 +421,10 @@ class MatrixWhisper(QMainWindow):
         self.browser = QWebEngineView()
         self.web_page = QWebEnginePage(self.profile, self.browser)
         self.browser.setPage(self.web_page)
+
+        # Fokus-Verbesserung: Sorgt dafür, dass Klicks ins Fenster direkt als Aktivität gewertet werden
+        self.browser.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+
         self.browser.setUrl(QUrl("https://web.whatsapp.com"))
         self.container.addWidget(self.browser)
 

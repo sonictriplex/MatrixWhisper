@@ -50,7 +50,7 @@ TRANSLATIONS = {
         "tray_whisper": "Flüstert im Hintergrund weiter...",
         "tray_open": "Öffnen",
         "tray_quit": "Beenden",
-        "tray_mute_shortcut": "Stumlschalten (8h Schnellwahl)"
+        "tray_mute_shortcut": "Stummschalten (8h Schnellwahl)"
     },
     "en": {
         "title": "Settings",
@@ -230,8 +230,6 @@ TRANSLATIONS = {
         "dm_desc": "Forçar o tema escuro do WhatsApp na interface web",
         "tb_title": "Fechar para a bandeja de sistema",
         "tb_desc": "Ocultar a janela na bandeja do sistema ao clicar no botão fechar ('X')",
-        "nt_title": "Notificações nativas do sistema",
-        "nt_desc": "Define se as notificações web devem aparecer como notificações nativas do sistema quando a janela está fechada",
         "gpu_title": "Modo de economia de energia (GPU)",
         "gpu_desc": "Desativar a aceleração de hardware do WebEngine",
         "gpu_active": "Status: GPU desativada (Economia de energia activa) ⚠️",
@@ -395,7 +393,7 @@ class MatrixWhisper(QMainWindow):
         self.mute_until_time = None
         self.selected_language = "system"
         self.minimize_to_tray = True
-        self.native_notifications = True  # Variable für den Benachrichtigungs-Switch
+        self.native_notifications = True
         self.disable_gpu_accel = False
         self.is_initializing = True
 
@@ -412,7 +410,6 @@ class MatrixWhisper(QMainWindow):
         self.profile.setCachePath(self.cache_path)
         self.profile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.ForcePersistentCookies)
 
-        # Rechtschreibprüfung (Spellchecking Engine) Integration
         self.profile.setSpellCheckEnabled(True)
         if self.selected_language == "system":
             try:
@@ -424,7 +421,6 @@ class MatrixWhisper(QMainWindow):
             lang_code = "en-US" if self.selected_language == "en" else self.selected_language
             self.profile.setSpellCheckLanguages([lang_code])
 
-        # Benachrichtigungs-Verhalten an den Handler binden
         self.profile.setNotificationPresenter(self.handle_web_notification)
 
         resolved_lang = self.resolve_http_language_string()
@@ -505,6 +501,7 @@ class MatrixWhisper(QMainWindow):
         self.settings_page = QWidget()
         self.settings_page.setStyleSheet("background-color: #1a1d24; color: #ffffff;")
 
+        # Das Haupt-Layout der Seite behält das vertikale Spacing bei
         page_main_layout = QVBoxLayout(self.settings_page)
         page_main_layout.setContentsMargins(30, 30, 30, 30)
         page_main_layout.setSpacing(14)
@@ -524,7 +521,7 @@ class MatrixWhisper(QMainWindow):
             QLabel { border: none; background: transparent; }
         """
 
-        # --- SCROLL AREA ENGINE (Verhindert das Quetschen) ---
+        # --- SCROLL AREA ENGINE (Nimmt die dynamischen Karten auf) ---
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setFrameShape(QFrame.Shape.NoFrame)
@@ -630,7 +627,7 @@ class MatrixWhisper(QMainWindow):
         tray_behavior_layout.addWidget(self.cb_tray_behavior)
         settings_layout.addWidget(tray_behavior_frame)
 
-        # --- CARD 3.5: NATIVE NOTIFICATIONS TOGGLE (Der fehlende Switch) ---
+        # --- CARD 3.5: NATIVE NOTIFICATIONS TOGGLE ---
         nt_frame = QFrame()
         nt_frame.setStyleSheet(card_style)
         nt_layout = QHBoxLayout(nt_frame)
@@ -794,7 +791,7 @@ class MatrixWhisper(QMainWindow):
         zoom_layout.addWidget(self.lbl_percent)
         settings_layout.addWidget(zoom_frame)
 
-        # --- CARD 8: CACHE RESET ENGINE (Aus deiner Feature-Liste) ---
+        # --- CARD 8: CACHE RESET ENGINE ---
         cache_frame = QFrame()
         cache_frame.setStyleSheet(card_style + """
             QPushButton { background-color: #e03131; color: #ffffff; border-radius: 6px; padding: 8px 16px; border: none; font-weight: bold; }
@@ -819,7 +816,12 @@ class MatrixWhisper(QMainWindow):
         cache_layout.addWidget(self.btn_reset_cache)
         settings_layout.addWidget(cache_frame)
 
-        # --- CARD 9: "ÜBER DIESE APP" ---
+        # ScrollArea-Inhalt mappen
+        scroll_area.setWidget(scroll_content)
+        page_main_layout.addWidget(scroll_area)
+
+        # --- CARD 9: FIXED FOOTER ("ÜBER DIESE APP") ---
+        # Außerhalb der ScrollArea, damit es starr unten verankert bleibt
         about_frame = QFrame()
         about_frame.setStyleSheet(card_style)
         about_layout = QHBoxLayout(about_frame)
@@ -855,11 +857,9 @@ class MatrixWhisper(QMainWindow):
         text_layout.addWidget(app_specs)
         about_layout.addLayout(text_layout)
         about_layout.addStretch()
-        settings_layout.addWidget(about_frame)
 
-        # ScrollArea-Inhalt mappen
-        scroll_area.setWidget(scroll_content)
-        page_main_layout.addWidget(scroll_area)
+        # Direkt an das Hauptlayout übergeben – somit bleibt es am Boden fixiert
+        page_main_layout.addWidget(about_frame)
 
         self.container.addWidget(self.settings_page)
         main_layout.addWidget(self.sidebar)
@@ -1041,7 +1041,6 @@ class MatrixWhisper(QMainWindow):
         self.native_notifications = checked
         self.save_settings()
 
-    # Handler für HTML5 Web Notifications
     def handle_web_notification(self, notification: QWebEngineNotification):
         if self.native_notifications and (not self.isVisible() or self.isMinimized()):
             self.tray_icon.showMessage(
@@ -1052,7 +1051,6 @@ class MatrixWhisper(QMainWindow):
             )
         notification.accept()
 
-    # Löschen der physischen Speicherordner
     def reset_cache_and_session(self):
         self.browser.setUrl(QUrl("about:blank"))
         self.profile.clearHttpCache()
@@ -1283,7 +1281,6 @@ StartupWMClass=matrixwhisper.py
 if __name__ == "__main__":
     script_directory = os.path.dirname(os.path.abspath(__file__))
 
-    # Automatisches .gitignore für saubere Git-Updates
     gitignore_file = os.path.join(script_directory, ".gitignore")
     if not os.path.exists(gitignore_file):
         try:

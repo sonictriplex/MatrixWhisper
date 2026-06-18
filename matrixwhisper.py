@@ -62,7 +62,7 @@ TRANSLATIONS = {
         "audio_title": "Audio-Ausgabegerät",
         "audio_desc": "Standard-Audiokanal für WhatsApp-Töne und Sprachnachrichten festlegen",
         "cli_title": "Globale KDE-Kurzbefehle (CLI Integration):",
-        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Fenster zeigen/verstecken)\n• Meta+M  ➔  matrixwhisper.py --mute    (8h stummschalten)\n• Meta+Q  ➔  matrixwhisper.py --quit    (App sauber beenden)"
+        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Fenster zeigen/verstecken)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (8h stummschalten)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (App sauber beenden)"
     },
     "en": {
         "title": "Settings",
@@ -105,7 +105,7 @@ TRANSLATIONS = {
         "audio_title": "Audio Output Device",
         "audio_desc": "Set the default audio channel for WhatsApp tones and voice messages",
         "cli_title": "Global KDE Shortcuts (CLI Integration):",
-        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Toggle window visibility)\n• Meta+M  ➔  matrixwhisper.py --mute    (Mute audio for 8h)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Cleanly quit application)"
+        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Toggle window visibility)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Mute audio for 8h)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Cleanly quit application)"
     },
     "es": {
         "title": "Ajustes",
@@ -136,7 +136,7 @@ TRANSLATIONS = {
         "cache_desc": "Cierra la sesión, elimina las cookies y vacía la caché local",
         "cache_btn": "Restablecer sesión y caché",
         "about_desc": "Un cliente nativo de WhatsApp altamente optimizado para Linux.",
-        "tray_whisper": "Susurrando en segundo plano...",
+        "tray_whisper": "Susurrando in segundo plano...",
         "tray_open": "Abrir",
         "tray_quit": "Salir",
         "tray_mute_shortcut": "Silenciar (Acceso rápido 8h)",
@@ -148,7 +148,7 @@ TRANSLATIONS = {
         "audio_title": "Dispositivo de salida de audio",
         "audio_desc": "Establecer el canal de audio predeterminado para WhatsApp",
         "cli_title": "Atajos globales de KDE (Integración CLI):",
-        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Mostrar/ocultar ventana)\n• Meta+M  ➔  matrixwhisper.py --mute    (Silenciar por 8h)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Cerrar la aplicação)"
+        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Mostrar/ocultar ventana)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Silenciar por 8h)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Cerrar la aplicación)"
     },
     "fr": {
         "title": "Paramètres",
@@ -191,7 +191,7 @@ TRANSLATIONS = {
         "audio_title": "Périphérique de sortie audio",
         "audio_desc": "Définir le canal audio par défaut pour WhatsApp",
         "cli_title": "Raccourcis globaux KDE (Intégration CLI):",
-        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Afficher/masquer la fenêtre)\n• Meta+M  ➔  matrixwhisper.py --mute    (Rendre muet pour 8h)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Quitter proprement l'application)"
+        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Afficher/masquer la fenêtre)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Rendre muet pour 8h)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Quitter proprement l'application)"
     },
     "it": {
         "title": "Impostazioni",
@@ -234,7 +234,7 @@ TRANSLATIONS = {
         "audio_title": "Dispositivo di uscita audio",
         "audio_desc": "Imposta il canale audio predefinito per WhatsApp",
         "cli_title": "Scorciatoie globali KDE (Integrazione CLI):",
-        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Mostra/nascondi finestra)\n• Meta+M  ➔  matrixwhisper.py --mute    (Silenzia per 8 ore)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Chiudi l'applicazione)"
+        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Mostra/nascondi finestra)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Silenzia per 8 ore)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Chiudi l'applicazione)"
     },
     "nl": {
         "title": "Instellingen",
@@ -243,7 +243,7 @@ TRANSLATIONS = {
         "dm_title": "Uiterlijk (Donker thema)",
         "dm_desc": "Forceer het donkere WhatsApp-thema in de webinterface",
         "tb_title": "Sluiten naar systeemvak",
-        "tb_desc": "Verberg het venster in het systeemvak bij het klikken op sluiten ('X')",
+        "tb_desc": "Verberg het venster in het systeemvak bij het clicking op sluiten ('X')",
         "nt_title": "Native systeemnotificaties",
         "nt_desc": "Bepaalt of webnotificaties als native systeemnotificaties moeten verschijnen wanneer het venster is gesloten",
         "gpu_title": "Energiebesparingsmodus (GPU)",
@@ -273,11 +273,11 @@ TRANSLATIONS = {
         "dl_desc": "Stel een specifieke map in voor WhatsApp-downloads",
         "dl_btn": "Map kiezen",
         "start_title": "Opstartgedrag",
-        "start_desc": "MatrixWhisper bij het opstarten direct naar het systeemvak minimaliseren",
+        "start_desc": "MatrixWhisper bij het opstarten direkt naar het systeemvak minimaliseren",
         "audio_title": "Audio-uitvoerapparaat",
         "audio_desc": "Stel het standaard audiokanaal in voor WhatsApp",
         "cli_title": "Globale KDE Sneltoetsen (CLI Integratie):",
-        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Venster tonen/verbergen)\n• Meta+M  ➔  matrixwhisper.py --mute    (8 uur dempen)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Applicatie netjes afsluiten)"
+        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Venster tonen/verbergen)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (8 uur dempen)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Applicatie netjes afsluiten)"
     },
     "pt": {
         "title": "Configurações",
@@ -288,7 +288,7 @@ TRANSLATIONS = {
         "tb_title": "Fechar para a bandeja de sistema",
         "tb_desc": "Ocultar a janela na bandeja do sistema ao clicar no botão fechar ('X')",
         "gpu_title": "Modo de economia de energia (GPU)",
-        "gpu_desc": "Desativar a aceleração de hardware do WebEngine",
+        "gpu_desc": "Desativar a aceleção de hardware do WebEngine",
         "gpu_active": "Status: GPU desativada (Economia de energia activa) ⚠️",
         "gpu_reboot_on": "Efeito após reiniciar: A GPU será desativada 🔋",
         "gpu_reboot_off": "Efecto após reiniciar: GPU activa (Padrão)",
@@ -318,10 +318,10 @@ TRANSLATIONS = {
         "audio_title": "Dispositivo de saída de áudio",
         "audio_desc": "Definir o canal de áudio padrão para o WhatsApp",
         "cli_title": "Atalhos globais do KDE (Integração CLI):",
-        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Alternar visibilidade da janela)\n• Meta+M  ➔  matrixwhisper.py --mute    (Silenciar por 8h)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Fechar o aplicativo limpamente)"
+        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Alternar visibilidade da janela)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Silenciar por 8h)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Fechar o aplicativo limpamente)"
     },
     "pl": {
-        "title": "Ustawienia",
+        "title": "Uawnia",
         "as_title": "Autostart systemu",
         "as_desc": "Uruchom MatrixWhisper automatisch przy starcie komputera",
         "dm_title": "Wygląd (Ciemny motyw)",
@@ -361,7 +361,7 @@ TRANSLATIONS = {
         "audio_title": "Urządzenie wyjściowe audio",
         "audio_desc": "Ustaw domyślny kanał audio dla WhatsApp",
         "cli_title": "Globalne skróty KDE (Integracja CLI):",
-        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Pokaż/ukryj okno)\n• Meta+M  ➔  matrixwhisper.py --mute    (Wycisz na 8 godz.)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Czyste zakończenie aplikacji)"
+        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Pokaż/ukryj okno)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Wycisz na 8 godz.)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Czyste zakończenie aplikacji)"
     }
 }
 
@@ -636,7 +636,6 @@ class MatrixWhisper(QMainWindow):
 
         # --- CARD 1: SYSTEMSTART ---
         autostart_frame = QFrame()
-        autostart_frame.setStyleSheet(card_style)
         autostart_frame.setStyleSheet(card_style)
         autostart_layout = QHBoxLayout(autostart_frame)
         autostart_layout.setContentsMargins(15, 12, 15, 12)
@@ -1552,6 +1551,12 @@ if __name__ == "__main__":
     parser.add_argument("--toggle", action="store_true", help="Blendet das Fenster der laufenden Instanz ein oder aus")
     parser.add_argument("--mute", action="store_true", help="Schaltet die laufende Instanz sofort für 8 Stunden lautlos")
     parser.add_argument("--quit", action="store_true", help="Beendet die im Hintergrund laufende Instanz sauber")
+
+    # Mappings für die OS-spezifischen Hotkey-Strings hinzufügen
+    parser.add_argument("--ctrl-meta-w", action="store_true", dest="toggle", help="Shortcut-Alias für --toggle")
+    parser.add_argument("--ctrl-meta-m", action="store_true", dest="mute", help="Shortcut-Alias für --mute")
+    parser.add_argument("--ctrl-meta-q", action="store_true", dest="quit", help="Shortcut-Alias für --quit")
+
     args = parser.parse_args()
 
     # 2. IPC Socket-Check: Läuft bereits eine Instanz?

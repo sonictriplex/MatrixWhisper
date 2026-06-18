@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QSystemTrayIcon, QMenu,
                              QWidget, QHBoxLayout, QVBoxLayout, QPushButton,
                              QStackedWidget, QCheckBox, QLabel, QFrame, QSlider,
-                             QComboBox, QScrollArea)
+                             QComboBox, QScrollArea, QFileDialog)
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage, QWebEngineNotification
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
@@ -48,11 +48,16 @@ TRANSLATIONS = {
         "cache_title": "Bereinigung & Session-Reset",
         "cache_desc": "Einbau eines Buttons, der den lokalen storage-Ordner leert, um sich bei Bedarf mit neuem QR-Code anzumelden",
         "cache_btn": "Session & Cache zurücksetzen",
-        "about_desc": "Ein hochoptimierter, nativer WhatsApp-Client für Linux Desktops.",
+        "about_desc": "Ein nativer, hochoptimierter WhatsApp-Client mit IPC-Sperre und CLI-Steuerung für Linux.",
         "tray_whisper": "Flüstert im Hintergrund weiter...",
         "tray_open": "Öffnen",
         "tray_quit": "Beenden",
-        "tray_mute_shortcut": "Stummschalten (8h Schnellwahl)"
+        "tray_mute_shortcut": "Stummschalten (8h Schnellwahl)",
+        "dl_title": "Download-Verzeichnis",
+        "dl_desc": "Dedizierten Ordner für WhatsApp-Downloads festlegen",
+        "dl_btn": "Ordner wählen",
+        "start_title": "Start-Modus (Tray-Start)",
+        "start_desc": "MatrixWhisper beim Öffnen direkt in den Systemabschnitt minimieren"
     },
     "en": {
         "title": "Settings",
@@ -82,11 +87,16 @@ TRANSLATIONS = {
         "cache_title": "Session Reset & Cache Clear",
         "cache_desc": "Clear the local storage directories to enforce a clean logout and fresh QR code scan",
         "cache_btn": "Reset Session & Cache",
-        "about_desc": "A highly optimized, native WhatsApp client for Linux desktops.",
+        "about_desc": "A native, highly optimized WhatsApp client featuring IPC-lock and CLI control for Linux.",
         "tray_whisper": "Whispering in the background...",
         "tray_open": "Open",
         "tray_quit": "Quit",
-        "tray_mute_shortcut": "Mute Audio (8h Shortcut)"
+        "tray_mute_shortcut": "Mute Audio (8h Shortcut)",
+        "dl_title": "Download Directory",
+        "dl_desc": "Set a dedicated folder for WhatsApp downloads",
+        "dl_btn": "Choose Folder",
+        "start_title": "Startup Behavior (Tray Boot)",
+        "start_desc": "Minimize MatrixWhisper directly to system tray on launch"
     },
     "es": {
         "title": "Ajustes",
@@ -120,7 +130,12 @@ TRANSLATIONS = {
         "tray_whisper": "Susurrando en segundo plano...",
         "tray_open": "Abrir",
         "tray_quit": "Salir",
-        "tray_mute_shortcut": "Silenciar (Acceso rápido 8h)"
+        "tray_mute_shortcut": "Silenciar (Acceso rápido 8h)",
+        "dl_title": "Directorio de descargas",
+        "dl_desc": "Establecer una carpeta dedicada para las descargas",
+        "dl_btn": "Seleccionar carpeta",
+        "start_title": "Comportamiento de inicio",
+        "start_desc": "Minimizar directamente a la bandeja al iniciar"
     },
     "fr": {
         "title": "Paramètres",
@@ -154,7 +169,12 @@ TRANSLATIONS = {
         "tray_whisper": "Chuchote en arrière-plan...",
         "tray_open": "Ouvrir",
         "tray_quit": "Quitter",
-        "tray_mute_shortcut": "Mettre en muet (Raccourci 8h)"
+        "tray_mute_shortcut": "Mettre en muet (Raccourci 8h)",
+        "dl_title": "Dossier de téléchargement",
+        "dl_desc": "Définir un dossier dédié pour les téléchargements WhatsApp",
+        "dl_btn": "Choisir un dossier",
+        "start_title": "Comportement au démarrage",
+        "start_desc": "Minimiser directement dans la zone de notification au lancement"
     },
     "it": {
         "title": "Impostazioni",
@@ -188,7 +208,12 @@ TRANSLATIONS = {
         "tray_whisper": "Sussurrando in background...",
         "tray_open": "Apri",
         "tray_quit": "Esci",
-        "tray_mute_shortcut": "Disattiva audio (Scelta rapida 8h)"
+        "tray_mute_shortcut": "Disattiva audio (Scelta rapida 8h)",
+        "dl_title": "Cartella di download",
+        "dl_desc": "Imposta una cartella dedicata per i download di WhatsApp",
+        "dl_btn": "Scegli cartella",
+        "start_title": "Comportamento all'avvio",
+        "start_desc": "Minimizza direttamente nel vassoio di sistema all'avvio"
     },
     "nl": {
         "title": "Instellingen",
@@ -222,7 +247,12 @@ TRANSLATIONS = {
         "tray_whisper": "Fluistert op de achtergrond...",
         "tray_open": "Openen",
         "tray_quit": "Afsluiten",
-        "tray_mute_shortcut": "Audio dempen (8u snelkoppeling)"
+        "tray_mute_shortcut": "Audio dempen (8u snelkoppeling)",
+        "dl_title": "Downloadmap",
+        "dl_desc": "Stel een specifieke map in voor WhatsApp-downloads",
+        "dl_btn": "Map kiezen",
+        "start_title": "Opstartgedrag",
+        "start_desc": "MatrixWhisper bij het opstarten direct naar het systeemvak minimaliseren"
     },
     "pt": {
         "title": "Configurações",
@@ -254,7 +284,12 @@ TRANSLATIONS = {
         "tray_whisper": "Sussurrando em segundo plano...",
         "tray_open": "Abrir",
         "tray_quit": "Sair",
-        "tray_mute_shortcut": "Silenciar áudio (Atalho 8h)"
+        "tray_mute_shortcut": "Silenciar áudio (Atalho 8h)",
+        "dl_title": "Diretório de downloads",
+        "dl_desc": "Definir uma pasta dedicada para downloads do WhatsApp",
+        "dl_btn": "Escolher pasta",
+        "start_title": "Comportamiento de inicialização",
+        "start_desc": "Minimizar diretamente para a bandeja ao iniciar"
     },
     "pl": {
         "title": "Ustawienia",
@@ -288,7 +323,12 @@ TRANSLATIONS = {
         "tray_whisper": "Szepta w tle...",
         "tray_open": "Otwórz",
         "tray_quit": "Zakończ",
-        "tray_mute_shortcut": "Wycisz dźwięk (Skrót 8 godz.)"
+        "tray_mute_shortcut": "Wycisz dźwięk (Skrót 8 godz.)",
+        "dl_title": "Katalog pobierania",
+        "dl_desc": "Ustaw dedykowany folder dla pobieranych plików WhatsApp",
+        "dl_btn": "Wybierz folder",
+        "start_title": "Zachowanie podczas uruchamiania",
+        "start_desc": "Minimalizuj bezpośrednio do zasobnika systemowego przy uruchomieniu"
     }
 }
 
@@ -380,7 +420,7 @@ class MatrixWhisper(QMainWindow):
         super().__init__()
 
         self.app_name = "MatrixWhisper"
-        self.app_version = "2.6.0"
+        self.app_version = "2.7.0"
         self.setWindowTitle(self.app_name)
         self.resize(1150, 750)
 
@@ -398,6 +438,9 @@ class MatrixWhisper(QMainWindow):
         self.minimize_to_tray = True
         self.native_notifications = True
         self.disable_gpu_accel = False
+        self.download_dir = os.path.expanduser("~/Downloads")
+        self.start_minimized = False
+        self.exiting = False
         self.is_initializing = True
 
         self.preload_config_metadata()
@@ -425,6 +468,7 @@ class MatrixWhisper(QMainWindow):
             self.profile.setSpellCheckLanguages([lang_code])
 
         self.profile.setNotificationPresenter(self.handle_web_notification)
+        self.profile.downloadRequested.connect(self.handle_download_requested)
 
         resolved_lang = self.resolve_http_language_string()
         self.profile.setHttpAcceptLanguage(resolved_lang)
@@ -523,7 +567,7 @@ class MatrixWhisper(QMainWindow):
             QLabel { border: none; background: transparent; }
         """
 
-        # --- SCROLL AREA ENGINE (Nimmt die dynamischen Karten auf) ---
+        # --- SCROLL AREA ENGINE ---
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setFrameShape(QFrame.Shape.NoFrame)
@@ -818,6 +862,54 @@ class MatrixWhisper(QMainWindow):
         cache_layout.addWidget(self.btn_reset_cache)
         settings_layout.addWidget(cache_frame)
 
+        # --- CARD 8.2: DOWNLOAD DIRECTORY ENGINE ---
+        download_frame = QFrame()
+        download_frame.setStyleSheet(card_style + """
+            QPushButton { background-color: #3e4451; color: #ffffff; border-radius: 6px; padding: 8px 16px; border: none; }
+            QPushButton:hover { background-color: #4c5264; }
+        """)
+        download_layout = QHBoxLayout(download_frame)
+        download_layout.setContentsMargins(15, 12, 15, 12)
+        dl_icon = QLabel("📂")
+        dl_icon.setFont(QFont("sans-serif", 20))
+        download_layout.addWidget(dl_icon)
+        dl_text_layout = QVBoxLayout()
+        self.dl_title = QLabel()
+        self.dl_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.dl_path_label = QLabel()
+        self.dl_path_label.setStyleSheet("color: #25D366; font-size: 10pt; font-family: monospace;")
+        dl_text_layout.addWidget(self.dl_title)
+        dl_text_layout.addWidget(self.dl_path_label)
+        download_layout.addLayout(dl_text_layout)
+        download_layout.addStretch()
+        self.btn_choose_dl = QPushButton()
+        self.btn_choose_dl.clicked.connect(self.select_download_directory)
+        download_layout.addWidget(self.btn_choose_dl)
+        settings_layout.addWidget(download_frame)
+
+        # --- CARD 8.5: STARTUP BEHAVIOR (START MINIMIZED) ---
+        start_behavior_frame = QFrame()
+        start_behavior_frame.setStyleSheet(card_style)
+        start_behavior_layout = QHBoxLayout(start_behavior_frame)
+        start_behavior_layout.setContentsMargins(15, 12, 15, 12)
+        sb_icon = QLabel("🚀")
+        sb_icon.setFont(QFont("sans-serif", 20))
+        start_behavior_layout.addWidget(sb_icon)
+        sb_text_layout = QVBoxLayout()
+        self.start_title = QLabel()
+        self.start_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.start_desc = QLabel()
+        self.start_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
+        sb_text_layout.addWidget(self.start_title)
+        sb_text_layout.addWidget(self.start_desc)
+        start_behavior_layout.addLayout(sb_text_layout)
+        start_behavior_layout.addStretch()
+        self.cb_start_minimized = SwitchToggle()
+        self.cb_start_minimized.setChecked(self.start_minimized)
+        self.cb_start_minimized.toggled.connect(self.toggle_start_minimized)
+        start_behavior_layout.addWidget(self.cb_start_minimized)
+        settings_layout.addWidget(start_behavior_frame)
+
         # ScrollArea-Inhalt mappen
         scroll_area.setWidget(scroll_content)
         page_main_layout.addWidget(scroll_area)
@@ -841,7 +933,7 @@ class MatrixWhisper(QMainWindow):
         app_title = QLabel(f"{self.app_name}")
         app_title.setFont(QFont("sans-serif", 13, QFont.Weight.Bold))
         app_title.setStyleSheet("color: #25D366;")
-        self.app_version_lbl = QLabel(f"Version {self.app_version} (Single-Instance Build)")
+        self.app_version_lbl = QLabel(f"Version {self.app_version} (Advanced Desktop Build)")
         self.app_version_lbl.setFont(QFont("sans-serif", 10))
         self.app_version_lbl.setStyleSheet("color: #a0a0a0;")
         self.app_desc_lbl = QLabel()
@@ -883,7 +975,6 @@ class MatrixWhisper(QMainWindow):
 
     def init_single_instance_server(self):
         self.instance_server = QLocalServer(self)
-        # Verhindert Überbleibsel von Abstürzen auf Unix-Sockets
         QLocalServer.removeServer("matrixwhisper_socket")
         self.instance_server.listen("matrixwhisper_socket")
         self.instance_server.newConnection.connect(self.handle_remote_activation)
@@ -905,12 +996,33 @@ class MatrixWhisper(QMainWindow):
         elif cmd == "mute":
             self.activate_smart_mute(8)
         elif cmd == "quit":
-            QApplication.instance().quit()
+            self.quit_application()
         elif cmd == "show":
             self.show()
             self.raise_()
             self.activateWindow()
         socket.close()
+
+    def select_download_directory(self):
+        dir_path = QFileDialog.getExistingDirectory(self, "Download Ordner wählen", self.download_dir)
+        if dir_path:
+            self.download_dir = dir_path
+            self.dl_path_label.setText(self.download_dir)
+            self.save_settings()
+
+    def toggle_start_minimized(self, checked):
+        self.start_minimized = checked
+        self.save_settings()
+
+    def handle_download_requested(self, download_item):
+        filename = download_item.downloadFileName() if hasattr(download_item, 'downloadFileName') else os.path.basename(download_item.suggestedFileName())
+        download_item.setDownloadDirectory(self.download_dir)
+        download_item.setDownloadFileName(filename)
+        download_item.accept()
+
+    def quit_application(self):
+        self.exiting = True
+        QApplication.instance().quit()
 
     def determine_ui_language_key(self):
         if self.selected_language != "system":
@@ -951,6 +1063,10 @@ class MatrixWhisper(QMainWindow):
         self.cache_desc.setText(t["cache_desc"])
         self.btn_reset_cache.setText(t["cache_btn"])
         self.app_desc_lbl.setText(t["about_desc"])
+        self.dl_title.setText(t["dl_title"])
+        self.btn_choose_dl.setText(t["dl_btn"])
+        self.start_title.setText(t["start_title"])
+        self.start_desc.setText(t["start_desc"])
 
         resolved = self.resolve_http_language_string().split(",")[0]
         self.lang_status_label.setText(f"{t['lang_header']} {resolved}")
@@ -975,7 +1091,7 @@ class MatrixWhisper(QMainWindow):
         self.mute_tray_action.toggled.connect(self.toggle_tray_mute_from_action)
 
         show_action.triggered.connect(self.show)
-        quit_action.triggered.connect(QApplication.instance().quit)
+        quit_action.triggered.connect(self.quit_application)
 
         self.tray_menu.addAction(show_action)
         self.tray_menu.addSeparator()
@@ -994,6 +1110,8 @@ class MatrixWhisper(QMainWindow):
                 self.minimize_to_tray = config.get("minimize_to_tray", True)
                 self.native_notifications = config.get("native_notifications", True)
                 self.disable_gpu_accel = config.get("disable_gpu_acceleration", False)
+                self.download_dir = config.get("download_directory", os.path.expanduser("~/Downloads"))
+                self.start_minimized = config.get("start_minimized", False)
             except Exception as e:
                 print(f"Fehler beim Preload der Config: {e}")
 
@@ -1049,6 +1167,10 @@ class MatrixWhisper(QMainWindow):
         else:
             self.gpu_status_label.setText(t["gpu_reboot_off"])
 
+        self.dl_path_label.setText(self.download_dir)
+        self.cb_start_minimized.setChecked(self.start_minimized)
+        self.cb_start_minimized.thumb_position = 27.0 if self.start_minimized else 3.0
+
     def save_settings(self):
         if self.is_initializing: return
         config = {
@@ -1057,7 +1179,9 @@ class MatrixWhisper(QMainWindow):
             "minimize_to_tray": self.minimize_to_tray,
             "native_notifications": self.native_notifications,
             "disable_gpu_acceleration": self.disable_gpu_accel,
-            "mute_until": self.mute_until_time.isoformat() if self.mute_until_time else None
+            "mute_until": self.mute_until_time.isoformat() if self.mute_until_time else None,
+            "download_directory": self.download_dir,
+            "start_minimized": self.start_minimized
         }
         try:
             with open(self.config_path, "w", encoding="utf-8") as f:
@@ -1222,12 +1346,13 @@ class MatrixWhisper(QMainWindow):
 Version=1.0
 Type=Application
 Name=MatrixWhisper
-Comment=MatrixWhisper im Hintergrund starten
+Comment=MatrixWhisper im Hintergrund starten (v{self.app_version})
 Exec=python3 {os.path.abspath(__file__)} --minimized
 Icon={self.icon_path}
 Terminal=false
 Categories=Network;InstantMessaging;
 StartupWMClass=matrixwhisper.py
+X-GNOME-Autostart-enabled=true
 """
             try:
                 with open(self.autostart_file, "w", encoding="utf-8") as f:
@@ -1291,6 +1416,10 @@ StartupWMClass=matrixwhisper.py
             self.update_app_icons(0)
 
     def closeEvent(self, event):
+        if self.exiting:
+            event.accept()
+            return
+
         if self.minimize_to_tray:
             event.ignore()
             self.hide()
@@ -1300,7 +1429,7 @@ StartupWMClass=matrixwhisper.py
                 QSystemTrayIcon.MessageIcon.Information, 2000
             )
         else:
-            QApplication.instance().quit()
+            self.quit_application()
 
     def tray_icon_activated(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
@@ -1326,7 +1455,6 @@ if __name__ == "__main__":
     socket.connectToServer("matrixwhisper_socket")
 
     if socket.waitForConnected(500):
-        # Nachricht an Hauptinstanz senden
         if args.toggle:
             socket.write(b"toggle")
         elif args.mute:
@@ -1338,7 +1466,7 @@ if __name__ == "__main__":
 
         socket.waitForBytesWritten()
         socket.close()
-        sys.exit(0) # Sekundäre Instanz beendet sich sofort nach Signalübergabe
+        sys.exit(0)
 
     # 3. Master-Instanz initialisieren, falls noch kein Server läuft
     gitignore_file = os.path.join(script_directory, ".gitignore")
@@ -1368,8 +1496,10 @@ if __name__ == "__main__":
 
     window = MatrixWhisper()
 
-    # Auswertung des Initialstarts (--minimized)
-    if not args.minimized:
+    # Auswertung des Initialstarts (--minimized oder UI-Einstellung)
+    if args.minimized or window.start_minimized:
+        pass
+    else:
         window.show()
 
     sys.exit(app.exec())

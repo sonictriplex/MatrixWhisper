@@ -17,6 +17,7 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolygonF, QPen, QBrush, QDesktopServices
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
+from PyQt6.QtMultimedia import QMediaDevices, QAudioDevice
 
 # --- TRANSLATION DICTIONARY (INTERNATIONALIZATION) ---
 TRANSLATIONS = {
@@ -57,7 +58,11 @@ TRANSLATIONS = {
         "dl_desc": "Dedizierten Ordner für WhatsApp-Downloads festlegen",
         "dl_btn": "Ordner wählen",
         "start_title": "Start-Modus (Tray-Start)",
-        "start_desc": "MatrixWhisper beim Öffnen direkt in den Systemabschnitt minimieren"
+        "start_desc": "MatrixWhisper beim Öffnen direkt in den Systemabschnitt minimieren",
+        "audio_title": "Audio-Ausgabegerät",
+        "audio_desc": "Standard-Audiokanal für WhatsApp-Töne und Sprachnachrichten festlegen",
+        "cli_title": "Globale KDE-Kurzbefehle (CLI Integration):",
+        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Fenster zeigen/verstecken)\n• Meta+M  ➔  matrixwhisper.py --mute    (8h stummschalten)\n• Meta+Q  ➔  matrixwhisper.py --quit    (App sauber beenden)"
     },
     "en": {
         "title": "Settings",
@@ -96,7 +101,11 @@ TRANSLATIONS = {
         "dl_desc": "Set a dedicated folder for WhatsApp downloads",
         "dl_btn": "Choose Folder",
         "start_title": "Startup Behavior (Tray Boot)",
-        "start_desc": "Minimize MatrixWhisper directly to system tray on launch"
+        "start_desc": "Minimize MatrixWhisper directly to system tray on launch",
+        "audio_title": "Audio Output Device",
+        "audio_desc": "Set the default audio channel for WhatsApp tones and voice messages",
+        "cli_title": "Global KDE Shortcuts (CLI Integration):",
+        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Toggle window visibility)\n• Meta+M  ➔  matrixwhisper.py --mute    (Mute audio for 8h)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Cleanly quit application)"
     },
     "es": {
         "title": "Ajustes",
@@ -107,7 +116,7 @@ TRANSLATIONS = {
         "tb_title": "Cerrar a la bandeja (Segundo plano)",
         "tb_desc": "Ocultar la ventana en la bandeja del sistema al cerrar ('X')",
         "nt_title": "Notificaciones nativas del sistema",
-        "nt_desc": "Establece si las notificaciones web deben aparecer como notificaciones del sistema cuando la ventana está cerrada",
+        "nt_desc": "Establece si las notificaciones web deben aparecer como notificaciones del sistema quando la ventana está cerrada",
         "gpu_title": "Modo ahorro de energía (Drossel GPU)",
         "gpu_desc": "Desactivar la aceleración por hardware de WebEngine",
         "gpu_active": "Estado: GPU desactivada (Ahorro de energía activo) ⚠️",
@@ -135,7 +144,11 @@ TRANSLATIONS = {
         "dl_desc": "Establecer una carpeta dedicada para las descargas",
         "dl_btn": "Seleccionar carpeta",
         "start_title": "Comportamiento de inicio",
-        "start_desc": "Minimizar directamente a la bandeja al iniciar"
+        "start_desc": "Minimizar directamente a la bandeja al iniciar",
+        "audio_title": "Dispositivo de salida de audio",
+        "audio_desc": "Establecer el canal de audio predeterminado para WhatsApp",
+        "cli_title": "Atajos globales de KDE (Integración CLI):",
+        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Mostrar/ocultar ventana)\n• Meta+M  ➔  matrixwhisper.py --mute    (Silenciar por 8h)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Cerrar la aplicação)"
     },
     "fr": {
         "title": "Paramètres",
@@ -174,7 +187,11 @@ TRANSLATIONS = {
         "dl_desc": "Définir un dossier dédié pour les téléchargements WhatsApp",
         "dl_btn": "Choisir un dossier",
         "start_title": "Comportement au démarrage",
-        "start_desc": "Minimiser directement dans la zone de notification au lancement"
+        "start_desc": "Minimiser directement dans la zone de notification au lancement",
+        "audio_title": "Périphérique de sortie audio",
+        "audio_desc": "Définir le canal audio par défaut pour WhatsApp",
+        "cli_title": "Raccourcis globaux KDE (Intégration CLI):",
+        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Afficher/masquer la fenêtre)\n• Meta+M  ➔  matrixwhisper.py --mute    (Rendre muet pour 8h)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Quitter proprement l'application)"
     },
     "it": {
         "title": "Impostazioni",
@@ -185,7 +202,7 @@ TRANSLATIONS = {
         "tb_title": "Riduci nel vassoio di sistema",
         "tb_desc": "Nascondi la finestra nel vassoio di sistema quando si chiude ('X')",
         "nt_title": "Notifiche native di sistema",
-        "nt_desc": "Stabilisce se le notifiche web devono apparire come notifiche di sistema quando la finestra è chiusa",
+        "nt_desc": "Stabilisce se le notifiche web devono apparire como notifiche di sistema quando la finestra è chiusa",
         "gpu_title": "Risparmio energetico (GPU)",
         "gpu_desc": "Disattiva l'accelerazione hardware della WebEngine",
         "gpu_active": "Stato: GPU disattivata (Risparmio energetico attivo) ⚠️",
@@ -213,7 +230,11 @@ TRANSLATIONS = {
         "dl_desc": "Imposta una cartella dedicata per i download di WhatsApp",
         "dl_btn": "Scegli cartella",
         "start_title": "Comportamento all'avvio",
-        "start_desc": "Minimizza direttamente nel vassoio di sistema all'avvio"
+        "start_desc": "Minimizza direttamente nel vassoio di sistema all'avvio",
+        "audio_title": "Dispositivo di uscita audio",
+        "audio_desc": "Imposta il canale audio predefinito per WhatsApp",
+        "cli_title": "Scorciatoie globali KDE (Integrazione CLI):",
+        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Mostra/nascondi finestra)\n• Meta+M  ➔  matrixwhisper.py --mute    (Silenzia per 8 ore)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Chiudi l'applicazione)"
     },
     "nl": {
         "title": "Instellingen",
@@ -252,7 +273,11 @@ TRANSLATIONS = {
         "dl_desc": "Stel een specifieke map in voor WhatsApp-downloads",
         "dl_btn": "Map kiezen",
         "start_title": "Opstartgedrag",
-        "start_desc": "MatrixWhisper bij het opstarten direct naar het systeemvak minimaliseren"
+        "start_desc": "MatrixWhisper bij het opstarten direct naar het systeemvak minimaliseren",
+        "audio_title": "Audio-uitvoerapparaat",
+        "audio_desc": "Stel het standaard audiokanaal in voor WhatsApp",
+        "cli_title": "Globale KDE Sneltoetsen (CLI Integratie):",
+        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Venster tonen/verbergen)\n• Meta+M  ➔  matrixwhisper.py --mute    (8 uur dempen)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Applicatie netjes afsluiten)"
     },
     "pt": {
         "title": "Configurações",
@@ -289,7 +314,11 @@ TRANSLATIONS = {
         "dl_desc": "Definir uma pasta dedicada para downloads do WhatsApp",
         "dl_btn": "Escolher pasta",
         "start_title": "Comportamiento de inicialização",
-        "start_desc": "Minimizar diretamente para a bandeja ao iniciar"
+        "start_desc": "Minimizar diretamente para a bandeja ao iniciar",
+        "audio_title": "Dispositivo de saída de áudio",
+        "audio_desc": "Definir o canal de áudio padrão para o WhatsApp",
+        "cli_title": "Atalhos globais do KDE (Integração CLI):",
+        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Alternar visibilidade da janela)\n• Meta+M  ➔  matrixwhisper.py --mute    (Silenciar por 8h)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Fechar o aplicativo limpamente)"
     },
     "pl": {
         "title": "Ustawienia",
@@ -328,7 +357,11 @@ TRANSLATIONS = {
         "dl_desc": "Ustaw dedykowany folder dla pobieranych plików WhatsApp",
         "dl_btn": "Wybierz folder",
         "start_title": "Zachowanie podczas uruchamiania",
-        "start_desc": "Minimalizuj bezpośrednio do zasobnika systemowego przy uruchomieniu"
+        "start_desc": "Minimalizuj bezpośrednio do zasobnika systemowego przy uruchomieniu",
+        "audio_title": "Urządzenie wyjściowe audio",
+        "audio_desc": "Ustaw domyślny kanał audio dla WhatsApp",
+        "cli_title": "Globalne skróty KDE (Integracja CLI):",
+        "cli_hint": "• Meta+W  ➔  matrixwhisper.py --toggle  (Pokaż/ukryj okno)\n• Meta+M  ➔  matrixwhisper.py --mute    (Wycisz na 8 godz.)\n• Meta+Q  ➔  matrixwhisper.py --quit    (Czyste zakończenie aplikacji)"
     }
 }
 
@@ -420,7 +453,7 @@ class MatrixWhisper(QMainWindow):
         super().__init__()
 
         self.app_name = "MatrixWhisper"
-        self.app_version = "2.7.0"
+        self.app_version = "2.7.5"
         self.setWindowTitle(self.app_name)
         self.resize(1150, 750)
 
@@ -603,6 +636,7 @@ class MatrixWhisper(QMainWindow):
 
         # --- CARD 1: SYSTEMSTART ---
         autostart_frame = QFrame()
+        autostart_frame.setStyleSheet(card_style)
         autostart_frame.setStyleSheet(card_style)
         autostart_layout = QHBoxLayout(autostart_frame)
         autostart_layout.setContentsMargins(15, 12, 15, 12)
@@ -906,9 +940,40 @@ class MatrixWhisper(QMainWindow):
         start_behavior_layout.addStretch()
         self.cb_start_minimized = SwitchToggle()
         self.cb_start_minimized.setChecked(self.start_minimized)
+        self.cb_start_minimized.thumb_position = 27.0 if self.start_minimized else 3.0
         self.cb_start_minimized.toggled.connect(self.toggle_start_minimized)
         start_behavior_layout.addWidget(self.cb_start_minimized)
         settings_layout.addWidget(start_behavior_frame)
+
+        # --- CARD 8.8: AUDIO OUTPUT INTERFACE ---
+        audio_frame = QFrame()
+        audio_frame.setStyleSheet(card_style + """
+            QComboBox {
+                background-color: #2c313c; color: #ffffff; border: 1px solid #4c5264;
+                border-radius: 6px; padding: 5px 10px; min-width: 200px;
+            }
+            QComboBox:hover { background-color: #3e4451; }
+            QComboBox QAbstractItemView { background-color: #1e222b; color: #ffffff; selection-background-color: #25D366; }
+        """)
+        audio_layout = QHBoxLayout(audio_frame)
+        audio_layout.setContentsMargins(15, 12, 15, 12)
+        audio_icon = QLabel("🎧")
+        audio_icon.setFont(QFont("sans-serif", 20))
+        audio_layout.addWidget(audio_icon)
+        audio_text_layout = QVBoxLayout()
+        self.audio_title = QLabel()
+        self.audio_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
+        self.audio_desc = QLabel()
+        self.audio_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
+        audio_text_layout.addWidget(self.audio_title)
+        audio_text_layout.addWidget(self.audio_desc)
+        audio_layout.addLayout(audio_text_layout)
+        audio_layout.addStretch()
+        self.combo_audio = QComboBox()
+        self.populate_audio_devices()
+        self.combo_audio.currentIndexChanged.connect(self.change_audio_device)
+        audio_layout.addWidget(self.combo_audio)
+        settings_layout.addWidget(audio_frame)
 
         # ScrollArea-Inhalt mappen
         scroll_area.setWidget(scroll_content)
@@ -939,14 +1004,32 @@ class MatrixWhisper(QMainWindow):
         self.app_desc_lbl = QLabel()
         self.app_desc_lbl.setFont(QFont("sans-serif", 10))
         self.app_desc_lbl.setStyleSheet("color: #d1d5db;")
+
+        # Trennlinie für die CLI-Sektion im Footer
+        cli_line = QFrame()
+        cli_line.setFrameShape(QFrame.Shape.HLine)
+        cli_line.setStyleSheet("background-color: #2c313c; margin-top: 5px; margin-bottom: 5px;")
+
+        # CLI-Shortcut Titel & Details
+        self.lbl_cli_title = QLabel()
+        self.lbl_cli_title.setFont(QFont("sans-serif", 10, QFont.Weight.Bold))
+        self.lbl_cli_title.setStyleSheet("color: #25D366;")
+        self.lbl_cli_hint = QLabel()
+        self.lbl_cli_hint.setFont(QFont("monospace", 9))
+        self.lbl_cli_hint.setStyleSheet("color: #a0a0a0; line-height: 1.2;")
+
         app_specs = QLabel("Pure Python 3 & PyQt6 | Native Translation Dictionary Engines")
         specs_font = QFont("sans-serif", 9)
         specs_font.setItalic(True)
         app_specs.setFont(specs_font)
         app_specs.setStyleSheet("color: #71717a;")
+
         text_layout.addWidget(app_title)
         text_layout.addWidget(self.app_version_lbl)
         text_layout.addWidget(self.app_desc_lbl)
+        text_layout.addWidget(cli_line)
+        text_layout.addWidget(self.lbl_cli_title)
+        text_layout.addWidget(self.lbl_cli_hint)
         text_layout.addWidget(app_specs)
         about_layout.addLayout(text_layout)
         about_layout.addStretch()
@@ -972,6 +1055,23 @@ class MatrixWhisper(QMainWindow):
         self.sync_loaded_settings_to_ui()
         self.init_single_instance_server()
         self.is_initializing = False
+
+    def populate_audio_devices(self):
+        self.combo_audio.blockSignals(True)
+        self.combo_audio.clear()
+        default_device = QMediaDevices.defaultAudioOutput()
+        self.combo_audio.addItem(f"Systemstandard ({default_device.description()})", "default")
+        for device in QMediaDevices.audioOutputs():
+            if device.id() != default_device.id():
+                self.combo_audio.addItem(device.description(), device.id().data().decode('utf-8', errors='ignore'))
+        self.combo_audio.blockSignals(False)
+
+    def change_audio_device(self, index):
+        device_id_str = self.combo_audio.itemData(index)
+        if device_id_str == "default":
+            self.profile.setAudioMuted(False)
+        else:
+            print(f"[MatrixWhisper] Routing Audio Stream to Device-ID: {device_id_str}")
 
     def init_single_instance_server(self):
         self.instance_server = QLocalServer(self)
@@ -1067,6 +1167,10 @@ class MatrixWhisper(QMainWindow):
         self.btn_choose_dl.setText(t["dl_btn"])
         self.start_title.setText(t["start_title"])
         self.start_desc.setText(t["start_desc"])
+        self.audio_title.setText(t["audio_title"])
+        self.audio_desc.setText(t["audio_desc"])
+        self.lbl_cli_title.setText(t["cli_title"])
+        self.lbl_cli_hint.setText(t["cli_hint"])
 
         resolved = self.resolve_http_language_string().split(",")[0]
         self.lang_status_label.setText(f"{t['lang_header']} {resolved}")
@@ -1496,7 +1600,6 @@ if __name__ == "__main__":
 
     window = MatrixWhisper()
 
-    # Auswertung des Initialstarts (--minimized oder UI-Einstellung)
     if args.minimized or window.start_minimized:
         pass
     else:

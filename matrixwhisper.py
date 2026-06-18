@@ -6,6 +6,7 @@ import time
 import json
 import locale
 import shutil
+import argparse
 from datetime import datetime, timedelta
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QSystemTrayIcon, QMenu,
                              QWidget, QHBoxLayout, QVBoxLayout, QPushButton,
@@ -15,6 +16,7 @@ from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEng
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolygonF, QPen, QBrush, QDesktopServices
+from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 
 # --- TRANSLATION DICTIONARY (INTERNATIONALIZATION) ---
 TRANSLATIONS = {
@@ -214,7 +216,7 @@ TRANSLATIONS = {
         "zoom_title": "HiDPI / Ultrawide zoomfactor",
         "zoom_desc": "Schaal de WhatsApp Web interface-lay-out",
         "cache_title": "Sessiereset & Cache Wissen",
-        "cache_desc": "Logt je uit, verwijdert cookies en leegt de lokale cache",
+        "cache_desc": "Logt je uit, verwijdert cookies und leegt de lokale cache",
         "cache_btn": "Sessie & Cache herstellen",
         "about_desc": "Een sterk geoptimaliseerde, native WhatsApp-client voor Linux-desktops.",
         "tray_whisper": "Fluistert op de achtergrond...",
@@ -257,7 +259,7 @@ TRANSLATIONS = {
     "pl": {
         "title": "Ustawienia",
         "as_title": "Autostart systemu",
-        "as_desc": "Uruchom MatrixWhisper automatycznie przy starcie komputera",
+        "as_desc": "Uruchom MatrixWhisper automatisch przy starcie komputera",
         "dm_title": "Wygląd (Ciemny motyw)",
         "dm_desc": "Wymuś ciemny motyw WhatsApp w interfejsie webowym",
         "tb_title": "Zamknij do zasobnika systemowego",
@@ -378,6 +380,7 @@ class MatrixWhisper(QMainWindow):
         super().__init__()
 
         self.app_name = "MatrixWhisper"
+        self.app_version = "2.6.0"
         self.setWindowTitle(self.app_name)
         self.resize(1150, 750)
 
@@ -501,7 +504,6 @@ class MatrixWhisper(QMainWindow):
         self.settings_page = QWidget()
         self.settings_page.setStyleSheet("background-color: #1a1d24; color: #ffffff;")
 
-        # Das Haupt-Layout der Seite behält das vertikale Spacing bei
         page_main_layout = QVBoxLayout(self.settings_page)
         page_main_layout.setContentsMargins(30, 30, 30, 30)
         page_main_layout.setSpacing(14)
@@ -821,7 +823,6 @@ class MatrixWhisper(QMainWindow):
         page_main_layout.addWidget(scroll_area)
 
         # --- CARD 9: FIXED FOOTER ("ÜBER DIESE APP") ---
-        # Außerhalb der ScrollArea, damit es starr unten verankert bleibt
         about_frame = QFrame()
         about_frame.setStyleSheet(card_style)
         about_layout = QHBoxLayout(about_frame)
@@ -840,7 +841,7 @@ class MatrixWhisper(QMainWindow):
         app_title = QLabel(f"{self.app_name}")
         app_title.setFont(QFont("sans-serif", 13, QFont.Weight.Bold))
         app_title.setStyleSheet("color: #25D366;")
-        self.app_version_lbl = QLabel("Version 2.5 (Pure Global Bridge)")
+        self.app_version_lbl = QLabel(f"Version {self.app_version} (Single-Instance Build)")
         self.app_version_lbl.setFont(QFont("sans-serif", 10))
         self.app_version_lbl.setStyleSheet("color: #a0a0a0;")
         self.app_desc_lbl = QLabel()
@@ -858,7 +859,6 @@ class MatrixWhisper(QMainWindow):
         about_layout.addLayout(text_layout)
         about_layout.addStretch()
 
-        # Direkt an das Hauptlayout übergeben – somit bleibt es am Boden fixiert
         page_main_layout.addWidget(about_frame)
 
         self.container.addWidget(self.settings_page)
@@ -878,7 +878,39 @@ class MatrixWhisper(QMainWindow):
         self.tray_icon.activated.connect(self.tray_icon_activated)
 
         self.sync_loaded_settings_to_ui()
+        self.init_single_instance_server()
         self.is_initializing = False
+
+    def init_single_instance_server(self):
+        self.instance_server = QLocalServer(self)
+        # Verhindert Überbleibsel von Abstürzen auf Unix-Sockets
+        QLocalServer.removeServer("matrixwhisper_socket")
+        self.instance_server.listen("matrixwhisper_socket")
+        self.instance_server.newConnection.connect(self.handle_remote_activation)
+
+    def handle_remote_activation(self):
+        socket = self.instance_server.nextPendingConnection()
+        if socket:
+            socket.readyRead.connect(lambda: self.process_remote_command(socket))
+
+    def process_remote_command(self, socket):
+        cmd = socket.readAll().data().decode().strip()
+        if cmd == "toggle":
+            if self.isVisible() and not self.isMinimized():
+                self.hide()
+            else:
+                self.show()
+                self.raise_()
+                self.activateWindow()
+        elif cmd == "mute":
+            self.activate_smart_mute(8)
+        elif cmd == "quit":
+            QApplication.instance().quit()
+        elif cmd == "show":
+            self.show()
+            self.raise_()
+            self.activateWindow()
+        socket.close()
 
     def determine_ui_language_key(self):
         if self.selected_language != "system":
@@ -1281,6 +1313,34 @@ StartupWMClass=matrixwhisper.py
 if __name__ == "__main__":
     script_directory = os.path.dirname(os.path.abspath(__file__))
 
+    # 1. Argument-Parser für CLI definieren
+    parser = argparse.ArgumentParser(description="MatrixWhisper CLI Controller")
+    parser.add_argument("--minimized", action="store_true", help="Startet die App direkt minimiert im System-Tray")
+    parser.add_argument("--toggle", action="store_true", help="Blendet das Fenster der laufenden Instanz ein oder aus")
+    parser.add_argument("--mute", action="store_true", help="Schaltet die laufende Instanz sofort für 8 Stunden lautlos")
+    parser.add_argument("--quit", action="store_true", help="Beendet die im Hintergrund laufende Instanz sauber")
+    args = parser.parse_args()
+
+    # 2. IPC Socket-Check: Läuft bereits eine Instanz?
+    socket = QLocalSocket()
+    socket.connectToServer("matrixwhisper_socket")
+
+    if socket.waitForConnected(500):
+        # Nachricht an Hauptinstanz senden
+        if args.toggle:
+            socket.write(b"toggle")
+        elif args.mute:
+            socket.write(b"mute")
+        elif args.quit:
+            socket.write(b"quit")
+        else:
+            socket.write(b"show")
+
+        socket.waitForBytesWritten()
+        socket.close()
+        sys.exit(0) # Sekundäre Instanz beendet sich sofort nach Signalübergabe
+
+    # 3. Master-Instanz initialisieren, falls noch kein Server läuft
     gitignore_file = os.path.join(script_directory, ".gitignore")
     if not os.path.exists(gitignore_file):
         try:
@@ -1305,7 +1365,11 @@ if __name__ == "__main__":
     app.setQuitOnLastWindowClosed(False)
     app.setOrganizationName("the-media-matrix")
     app.setApplicationName("MatrixWhisper")
+
     window = MatrixWhisper()
-    if "--minimized" not in sys.argv:
+
+    # Auswertung des Initialstarts (--minimized)
+    if not args.minimized:
         window.show()
+
     sys.exit(app.exec())

@@ -2,7 +2,7 @@
   <img src="media/media-matrix-logo.png" alt="MatrixWhisper Logo" width="128" height="128">
 </p>
 
-<h1 align="center">MatrixWhisper v2.7.0</h1>
+<h1 align="center">MatrixWhisper v2.7.5</h1>
 
 <p align="center">
   <strong>Ein hochoptimierter, nativer WhatsApp Web Client für Linux Desktops.</strong><br>
@@ -20,7 +20,7 @@
 
 ## 🇩🇪 Beschreibung (Deutsch)
 
-**MatrixWhisper** ist ein maßgeschneiderter, nativer WhatsApp-Client für Linux-Desktops (perfekt optimiert für KDE Plasma, Fedora, Arch und CachyOS). Im Gegensatz zu offiziellen Desktop-Apps oder generischen Wrappern verzichtet MatrixWhisper komplett auf das ressourcenfressende Electron-Framework und setzt stattdessen auf eine schlanke, native Qt6-Architektur. Version 2.7.0 bringt eine überarbeitete Einstellungsseite mit Scrollbereich, verbesserte GPU-Drosselung, eine neue Single-Instance-Architektur mit CLI-Controller, einstellbares Download-Verzeichnis, Start-Modus (Tray-Start), native Benachrichtigungen und erweiterte Lokalisierung mit 8 Sprachen.
+**MatrixWhisper** ist ein maßgeschneiderter, nativer WhatsApp-Client für Linux-Desktops (perfekt optimiert für KDE Plasma, Fedora, Arch und CachyOS). Im Gegensatz zu offiziellen Desktop-Apps oder generischen Wrappern verzichtet MatrixWhisper komplett auf das ressourcenfressende Electron-Framework und setzt stattdessen auf eine schlanke, native Qt6-Architektur. Version 2.7.5 bringt eine überarbeitete Einstellungsseite mit Scrollbereich, verbesserte GPU-Drosselung, eine neue Single-Instance-Architektur mit CLI-Controller, einstellbares Download-Verzeichnis, Start-Modus (Tray-Start), native Benachrichtigungen, Audio-Ausgabegerät-Auswahl und erweiterte Lokalisierung mit 8 Sprachen.
 
 ### Hauptmerkmale
 
@@ -37,12 +37,13 @@
 - 📂 **Download-Verzeichnis** – Lege einen dedizierten Ordner für WhatsApp-Downloads fest.
 - 🚀 **Start-Modus (Tray-Start)** – MatrixWhisper beim Öffnen direkt in den Systemabschnitt minimieren.
 - 🔔 **Native Benachrichtigungen** – Web-Notifications bei geschlossenem Fenster als native System-Benachrichtigungen anzeigen.
+- 🎧 **Audio-Ausgabegerät** – Wähle das Standard-Audiogerät für WhatsApp-Töne und Sprachnachrichten aus.
 
 ---
 
 ## 🇬🇧 Description (English)
 
-**MatrixWhisper** is a tailored, native WhatsApp client for Linux desktops. By avoiding heavy Electron‑based wrappers, it delivers a high‑performance messaging experience utilizing the native Qt6 ecosystem. Version 2.7.0 introduces a redesigned settings page with scroll area, improved GPU throttling, a new single‑instance architecture with CLI controller, configurable download directory, startup behavior (tray boot), native notifications, and enhanced localization with 8 languages.
+**MatrixWhisper** is a tailored, native WhatsApp client for Linux desktops. By avoiding heavy Electron‑based wrappers, it delivers a high‑performance messaging experience utilizing the native Qt6 ecosystem. Version 2.7.5 introduces a redesigned settings page with scroll area, improved GPU throttling, a new single‑instance architecture with CLI controller, configurable download directory, startup behavior (tray boot), native notifications, audio output device selection, and enhanced localization with 8 languages.
 
 ### Key Features
 
@@ -59,6 +60,7 @@
 - 📂 **Download Directory** – Set a dedicated folder for WhatsApp downloads.
 - 🚀 **Startup Behavior (Tray Boot)** – Minimize MatrixWhisper directly to system tray on launch.
 - 🔔 **Native Notifications** – Show web notifications as native system notifications when the window is closed.
+- 🎧 **Audio Output Device** – Select the default audio device for WhatsApp tones and voice messages.
 
 ---
 
@@ -93,7 +95,7 @@ sudo pacman -S python-pyqt6 python-pyqt6-webengine
    python3 matrixwhisper.py
    ```
 
-### CLI-Controller (ab Version 2.7.0)
+### CLI-Controller (ab Version 2.7.5)
 
 Die App kann über die Kommandozeile gesteuert werden, ohne eine zweite Instanz zu starten:
 
@@ -111,7 +113,7 @@ python3 matrixwhisper.py --quit
 python3 matrixwhisper.py --show
 ```
 
-### CLI Controller (since v2.7.0)
+### CLI Controller (since v2.7.5)
 
 You can control the app from the command line without launching a second instance:
 

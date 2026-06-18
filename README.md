@@ -2,7 +2,7 @@
   <img src="media/media-matrix-logo.png" alt="MatrixWhisper Logo" width="128" height="128">
 </p>
 
-<h1 align="center">MatrixWhisper v2.5</h1>
+<h1 align="center">MatrixWhisper v2.6</h1>
 
 <p align="center">
   <strong>Ein hochoptimierter, nativer WhatsApp Web Client für Linux Desktops.</strong><br>
@@ -20,7 +20,7 @@
 
 ## 🇩🇪 Beschreibung (Deutsch)
 
-**MatrixWhisper** ist ein maßgeschneiderter, nativer WhatsApp-Client für Linux-Desktops (perfekt optimiert für KDE Plasma, Fedora, Arch und CachyOS). Im Gegensatz zu offiziellen Desktop-Apps oder generischen Wrappern verzichtet MatrixWhisper komplett auf das ressourcenfressende Electron-Framework und setzt stattdessen auf eine schlanke, native Qt6-Architektur.
+**MatrixWhisper** ist ein maßgeschneiderter, nativer WhatsApp-Client für Linux-Desktops (perfekt optimiert für KDE Plasma, Fedora, Arch und CachyOS). Im Gegensatz zu offiziellen Desktop-Apps oder generischen Wrappern verzichtet MatrixWhisper komplett auf das ressourcenfressende Electron-Framework und setzt stattdessen auf eine schlanke, native Qt6-Architektur. Version 2.6 bringt eine überarbeitete Einstellungsseite mit Scrollbereich, verbesserte GPU-Drosselung und eine neue Single-Instance-Architektur mit CLI-Controller.
 
 ### Hauptmerkmale
 
@@ -31,6 +31,9 @@
 - 🔍 **HiDPI & Ultrawide Zoom** – Stufenlose Skalierung (80 % – 130 %) für gestochen scharfe Darstellung auf 4K‑ oder 34‑Zoll‑Ultrawide‑Monitoren.
 - 📥 **Tray‑Integration** – Schließen des Fensters minimiert die App elegant in den Systemabschnitt der Taskleiste. Inklusive **Unread‑Nachrichten‑Badge** im App‑ und Tray‑Icon.
 - 🌙 **Erzwungenes Dark Theme** – Injiziert das dunkle WhatsApp‑Design direkt beim Laden der Seite.
+- 🧹 **Session-Reset & Cache-Bereinigung** – Ein Klick löscht alle lokalen Daten und ermöglicht eine saubere Neu-Anmeldung mit QR-Code.
+- 🖥️ **Single-Instance-Architektur** – Nur eine Instanz der App kann gleichzeitig laufen; CLI-Befehle (--toggle, --mute, --quit) steuern die laufende Instanz.
+- ⚙️ **Überarbeitete Einstellungsseite** – Alle Optionen sind jetzt in einem scrollbaren Bereich übersichtlich angeordnet.
 
 ---
 
@@ -47,6 +50,9 @@
 - 🔍 **HiDPI & Ultrawide Scaling** – Fine‑tune your layout scale (80 % – 130 %) optimized for high‑res screens and ultrawide setups.
 - 📥 **Smart Tray Integration** – Minimizes to the system tray on close with a native unread message counter badge on both the window and tray icons.
 - 🌙 **Forced Dark Theme** – Injects the dark WhatsApp design directly when the page loads.
+- 🧹 **Session Reset & Cache Clear** – One click wipes all local data, enabling a clean re‑login with a fresh QR code.
+- 🖥️ **Single‑Instance Architecture** – Only one instance of the app can run at a time; CLI commands (--toggle, --mute, --quit) control the running instance.
+- ⚙️ **Redesigned Settings Page** – All options are now neatly arranged in a scrollable area.
 
 ---
 
@@ -80,6 +86,42 @@ sudo pacman -S python-pyqt6 python-pyqt6-webengine
    ```bash
    python3 matrixwhisper.py
    ```
+
+### CLI-Controller (ab Version 2.6)
+
+Die App kann über die Kommandozeile gesteuert werden, ohne eine zweite Instanz zu starten:
+
+```bash
+# Fenster ein-/ausblenden
+python3 matrixwhisper.py --toggle
+
+# Audio für 8 Stunden stummschalten
+python3 matrixwhisper.py --mute
+
+# App beenden
+python3 matrixwhisper.py --quit
+
+# Fenster anzeigen (falls minimiert)
+python3 matrixwhisper.py --show
+```
+
+### CLI Controller (since v2.6)
+
+You can control the app from the command line without launching a second instance:
+
+```bash
+# Toggle window visibility
+python3 matrixwhisper.py --toggle
+
+# Mute audio for 8 hours
+python3 matrixwhisper.py --mute
+
+# Quit the app
+python3 matrixwhisper.py --quit
+
+# Show the window (if hidden)
+python3 matrixwhisper.py --show
+```
 
 ---
 

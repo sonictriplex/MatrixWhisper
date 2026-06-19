@@ -33,7 +33,7 @@
 - 🌙 **Erzwungenes Dark Theme** – Injiziert das dunkle WhatsApp‑Design direkt beim Laden der Seite.
 - 🧹 **Session-Reset & Cache-Bereinigung** – Ein Klick löscht alle lokalen Daten und ermöglicht eine saubere Neu-Anmeldung mit QR-Code.
 - 🖥️ **Single-Instance-Architektur** – Nur eine Instanz der App kann gleichzeitig laufen; CLI-Befehle (--toggle, --mute, --quit) steuern die laufende Instanz.
-- ⚙️ **Überarbeitete Einstellungsseite** – Alle Optionen sind jetzt in einem scrollbaren Bereich übersichtlich angeordnet.
+- ⚙️ **Überarbeitete Einstellungsseite mit Sub-Sidebar** – Alle Optionen sind jetzt in drei Tabs (Allgemein, Audio & Medien, Erweitert) übersichtlich angeordnet.
 - 📂 **Download-Verzeichnis** – Lege einen dedizierten Ordner für WhatsApp-Downloads fest.
 - 🚀 **Start-Modus (Tray-Start)** – MatrixWhisper beim Öffnen direkt in den Systemabschnitt minimieren.
 - 🔔 **Native Benachrichtigungen** – Web-Notifications bei geschlossenem Fenster als native System-Benachrichtigungen anzeigen.
@@ -56,7 +56,7 @@
 - 🌙 **Forced Dark Theme** – Injects the dark WhatsApp design directly when the page loads.
 - 🧹 **Session Reset & Cache Clear** – One click wipes all local data, enabling a clean re‑login with a fresh QR code.
 - 🖥️ **Single‑Instance Architecture** – Only one instance of the app can run at a time; CLI commands (--toggle, --mute, --quit) control the running instance.
-- ⚙️ **Redesigned Settings Page** – All options are now neatly arranged in a scrollable area.
+- ⚙️ **Redesigned Settings Page with Sub‑Sidebar** – All options are now neatly arranged in three tabs (General, Audio & Media, Advanced).
 - 📂 **Download Directory** – Set a dedicated folder for WhatsApp downloads.
 - 🚀 **Startup Behavior (Tray Boot)** – Minimize MatrixWhisper directly to system tray on launch.
 - 🔔 **Native Notifications** – Show web notifications as native system notifications when the window is closed.
@@ -143,7 +143,10 @@ Die README erwähnt den Befehl `python3 matrixwhisper.py --show`, aber der Argum
 In `activate_smart_mute` wird `self.mute_timer.singleShot(...)` verwendet. `singleShot` ist eine statische Methode, die keinen Timer zurückgibt. Der erstellte `QTimer` wird nie gestartet, sodass die Stummschaltung nie automatisch aufgehoben wird.  
 **Lösung:** Stattdessen `self.mute_timer.timeout.connect(self.deactivate_smart_mute)` und `self.mute_timer.start(hours * 3600000)` verwenden.
 
-### 3. Audio-Ausgabegerät-Umleitung nicht implementiert
+### 3. Sub-Sidebar in den Einstellungen (bereits implementiert)
+Die Einstellungsseite verwendet eine Sub-Sidebar mit drei Tabs (Allgemein, Audio & Medien, Erweitert). Dieses Feature ist voll funktionsfähig und erfordert keine Änderungen.
+
+### 4. Audio-Ausgabegerät-Umleitung nicht implementiert
 Die Methode `change_audio_device` gibt nur eine Print-Anweisung aus, leitet den Audio-Stream aber nicht tatsächlich um. Die Auswahl in den Einstellungen hat derzeit keine Wirkung.  
 **Lösung:** Eine echte Qt-Multimedia-Routing-Implementierung einbauen (z. B. `QAudioSink` mit dem gewählten Gerät).
 

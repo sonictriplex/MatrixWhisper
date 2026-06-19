@@ -977,20 +977,38 @@ class MatrixWhisper(QMainWindow):
         self.selected_language = self.combo_lang.itemData(index); self.save_settings(); self.ui_lang = self.determine_ui_language_key(); self.retranslate_ui(); self.setup_tray_menu()
 
     def activate_smart_mute(self, hours):
-        if self.mute_timer:
-            self.mute_timer.stop()
-        self.browser.page().setAudioMuted(True)
-        self.mute_until_time = datetime.now() + timedelta(hours=hours)
-        self.mute_status_label.setText(f"Stumm bis {self.mute_until_time.strftime('%H:%M')}")
-        self.save_settings()
-        self.mute_timer = QTimer(self)
+        """Schaltet die Audioausgabe für X Stunden stumm"""
+        self.smart_mute_active = True
+        self.web_page.setAudioMuted(True)
+
+        # Falls der Timer schon läuft (z.B. Wechsel von 1h auf 8h), vorher stoppen
+        self.mute_timer.stop()
+
+        # Signal trennen und neu verbinden, um doppelte Registrierungen zu vermeiden
+        try:
+            self.mute_timer.timeout.disconnect()
+        except TypeError:
+            pass  # War noch nicht verbunden
+
         self.mute_timer.timeout.connect(self.deactivate_smart_mute)
-        self.mute_timer.start(hours * 3600000)
+
+        # Stunden in Millisekunden umrechnen und starten
+        milliseconds = int(hours * 3600000)
+        self.mute_timer.start(milliseconds)
+
+        # Sprachneutraler Core-Log fürs Terminal
+        print(f"[Smart Mute] Activated for {hours} hour(s).")
+
+        # Das aktualisiert das Tray-Menü und zieht die korrekte Übersetzung live
+        self.update_tray_menu()
 
     def deactivate_smart_mute(self):
-        self.browser.page().setAudioMuted(False); t = TRANSLATIONS[self.ui_lang]; self.mute_status_label.setText(t["mute_active"])
-        if self.mute_timer: self.mute_timer.stop(); self.mute_timer = None
-        self.mute_until_time = None; self.save_settings()
+        """Hebt die Stummschaltung automatisch wieder auf"""
+        self.smart_mute_active = False
+        self.web_page.setAudioMuted(False)
+        self.mute_timer.stop()
+        print("[Smart Mute] Automatically deactivated. Audio restored.")
+        self.update_tray_menu()
 
     def toggle_tray_mute_from_action(self, checked): self.activate_smart_mute(8) if checked else self.deactivate_smart_mute()
     def update_zoom_factor(self, value): self.zoom_factor = value / 100.0; self.browser.setZoomFactor(self.zoom_factor); self.lbl_percent.setText(f"{value}%"); self.save_settings()
@@ -1085,10 +1103,12 @@ if __name__ == "__main__":
     socket.connectToServer(socket_path)
 
     if socket.waitForConnected(500):
-        cmd = "show"
+        cmd = "show"  # Standard-Fallback
         if args.toggle: cmd = "toggle"
         elif args.mute: cmd = "mute"
         elif args.quit: cmd = "quit"
+        elif args.show: cmd = "show"  # <-- Explizit für das --show Argument
+
         socket.write(cmd.encode()); socket.flush(); socket.waitForBytesWritten(500); socket.disconnectFromServer()
         sys.exit(0)
 

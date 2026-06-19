@@ -532,6 +532,21 @@ class MatrixWhisper(QMainWindow):
         )
         self.profile.setHttpUserAgent(chrome_user_agent)
 
+        # --- HIER DEN STORAGE-FIX WIEDER EINFÜGEN ---
+        fake_storage_script = QWebEngineScript()
+        fake_storage_script.setSourceCode("""
+            if (navigator.storage && navigator.storage.persist) {
+                navigator.storage.persist = function() { return Promise.resolve(true); };
+            }
+            if (navigator.storage && navigator.storage.persisted) {
+                navigator.storage.persisted = function() { return Promise.resolve(true); };
+            }
+        """)
+        fake_storage_script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentCreation)
+        fake_storage_script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
+        fake_storage_script.setRunsOnSubFrames(True)
+        self.profile.scripts().insert(fake_storage_script)
+
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QHBoxLayout(central_widget)

@@ -1077,7 +1077,6 @@ if __name__ == "__main__":
     parser.add_argument("--mute", action="store_true")
     parser.add_argument("--quit", action="store_true")
     parser.add_argument("--show", action="store_true")
-    parser.add_argument("--show", action="store_true")
     args = parser.parse_args()
 
     runtime_dir = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.RuntimeLocation)

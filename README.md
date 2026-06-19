@@ -37,7 +37,7 @@
 - 📂 **Download-Verzeichnis** – Lege einen dedizierten Ordner für WhatsApp-Downloads fest.
 - 🚀 **Start-Modus (Tray-Start)** – MatrixWhisper beim Öffnen direkt in den Systemabschnitt minimieren.
 - 🔔 **Native Benachrichtigungen** – Web-Notifications bei geschlossenem Fenster als native System-Benachrichtigungen anzeigen.
-- 🎧 **Audio-Ausgabegerät** – Wähle das Standard-Audiogerät für WhatsApp-Töne und Sprachnachrichten aus.
+- 🎧 **Audio-Ausgabegerät** – Wähle das Standard-Audiogerät für WhatsApp-Töne und Sprachnachrichten aus. *(Hinweis: Die Umleitung ist derzeit nicht implementiert – siehe Roadmap.)*
 
 ---
 
@@ -60,7 +60,7 @@
 - 📂 **Download Directory** – Set a dedicated folder for WhatsApp downloads.
 - 🚀 **Startup Behavior (Tray Boot)** – Minimize MatrixWhisper directly to system tray on launch.
 - 🔔 **Native Notifications** – Show web notifications as native system notifications when the window is closed.
-- 🎧 **Audio Output Device** – Select the default audio device for WhatsApp tones and voice messages.
+- 🎧 **Audio Output Device** – Select the default audio device for WhatsApp tones and voice messages. *(Note: The routing is not yet implemented – see Roadmap.)*
 
 ---
 
@@ -109,7 +109,7 @@ python3 matrixwhisper.py --mute
 # App beenden
 python3 matrixwhisper.py --quit
 
-# Fenster anzeigen (falls minimiert)
+# Fenster anzeigen (falls minimiert) – Achtung: noch nicht implementiert (siehe Roadmap)
 python3 matrixwhisper.py --show
 ```
 
@@ -127,7 +127,7 @@ python3 matrixwhisper.py --mute
 # Quit the app
 python3 matrixwhisper.py --quit
 
-# Show the window (if hidden)
+# Show the window (if hidden) – Note: not yet implemented (see Roadmap)
 python3 matrixwhisper.py --show
 ```
 

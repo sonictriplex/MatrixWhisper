@@ -977,10 +977,15 @@ class MatrixWhisper(QMainWindow):
         self.selected_language = self.combo_lang.itemData(index); self.save_settings(); self.ui_lang = self.determine_ui_language_key(); self.retranslate_ui(); self.setup_tray_menu()
 
     def activate_smart_mute(self, hours):
-        if self.mute_timer: self.mute_timer.stop()
-        self.browser.page().setAudioMuted(True); self.mute_until_time = datetime.now() + timedelta(hours=hours)
-        self.mute_status_label.setText(f"Stumm bis {self.mute_until_time.strftime('%H:%M')}"); self.save_settings()
-        self.mute_timer = QTimer(self); self.mute_timer.singleShot(hours * 3600000, self.deactivate_smart_mute)
+        if self.mute_timer:
+            self.mute_timer.stop()
+        self.browser.page().setAudioMuted(True)
+        self.mute_until_time = datetime.now() + timedelta(hours=hours)
+        self.mute_status_label.setText(f"Stumm bis {self.mute_until_time.strftime('%H:%M')}")
+        self.save_settings()
+        self.mute_timer = QTimer(self)
+        self.mute_timer.timeout.connect(self.deactivate_smart_mute)
+        self.mute_timer.start(hours * 3600000)
 
     def deactivate_smart_mute(self):
         self.browser.page().setAudioMuted(False); t = TRANSLATIONS[self.ui_lang]; self.mute_status_label.setText(t["mute_active"])
@@ -1071,6 +1076,8 @@ if __name__ == "__main__":
     parser.add_argument("--toggle", action="store_true")
     parser.add_argument("--mute", action="store_true")
     parser.add_argument("--quit", action="store_true")
+    parser.add_argument("--show", action="store_true")
+    parser.add_argument("--show", action="store_true")
     args = parser.parse_args()
 
     runtime_dir = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.RuntimeLocation)

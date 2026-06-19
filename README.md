@@ -133,22 +133,43 @@ python3 matrixwhisper.py --show
 
 ---
 
-## 🗺️ Roadmap / Bekannte Probleme
+## 🗺️ Roadmap / Bekannte Probleme / Known Issues
 
-### 1. `--show`-Argument fehlt im Parser
-Die README erwähnt den Befehl `python3 matrixwhisper.py --show`, aber der Argument-Parser in `matrixwhisper.py` kennt dieses Argument nicht. Ein Aufruf mit `--show` führt zu einem Fehler.  
+### 1. `--show`-Argument fehlt im Parser / `--show` argument missing in parser
+
+**🇩🇪** Die README erwähnt den Befehl `python3 matrixwhisper.py --show`, aber der Argument-Parser in `matrixwhisper.py` kennt dieses Argument nicht. Ein Aufruf mit `--show` führt zu einem Fehler.  
 **Lösung:** `parser.add_argument("--show", action="store_true")` im `__main__`-Block ergänzen.
 
-### 2. Smart-Mute-Timer funktioniert nicht
-In `activate_smart_mute` wird `self.mute_timer.singleShot(...)` verwendet. `singleShot` ist eine statische Methode, die keinen Timer zurückgibt. Der erstellte `QTimer` wird nie gestartet, sodass die Stummschaltung nie automatisch aufgehoben wird.  
+**🇬🇧** The README mentions the command `python3 matrixwhisper.py --show`, but the argument parser in `matrixwhisper.py` does not know this argument. Calling `--show` results in an error.  
+**Solution:** Add `parser.add_argument("--show", action="store_true")` in the `__main__` block.
+
+---
+
+### 2. Smart-Mute-Timer funktioniert nicht / Smart Mute timer not working
+
+**🇩🇪** In `activate_smart_mute` wird `self.mute_timer.singleShot(...)` verwendet. `singleShot` ist eine statische Methode, die keinen Timer zurückgibt. Der erstellte `QTimer` wird nie gestartet, sodass die Stummschaltung nie automatisch aufgehoben wird.  
 **Lösung:** Stattdessen `self.mute_timer.timeout.connect(self.deactivate_smart_mute)` und `self.mute_timer.start(hours * 3600000)` verwenden.
 
-### 3. Sub-Sidebar in den Einstellungen (bereits implementiert)
-Die Einstellungsseite verwendet eine Sub-Sidebar mit drei Tabs (Allgemein, Audio & Medien, Erweitert). Dieses Feature ist voll funktionsfähig und erfordert keine Änderungen.
+**🇬🇧** In `activate_smart_mute`, `self.mute_timer.singleShot(...)` is used. `singleShot` is a static method that does not return a timer. The created `QTimer` is never started, so the mute is never automatically deactivated.  
+**Solution:** Use `self.mute_timer.timeout.connect(self.deactivate_smart_mute)` and `self.mute_timer.start(hours * 3600000)` instead.
 
-### 4. Audio-Ausgabegerät-Umleitung nicht implementiert
-Die Methode `change_audio_device` gibt nur eine Print-Anweisung aus, leitet den Audio-Stream aber nicht tatsächlich um. Die Auswahl in den Einstellungen hat derzeit keine Wirkung.  
+---
+
+### 3. Sub-Sidebar in den Einstellungen (bereits implementiert) / Sub‑Sidebar in settings (already implemented)
+
+**🇩🇪** Die Einstellungsseite verwendet eine Sub-Sidebar mit drei Tabs (Allgemein, Audio & Medien, Erweitert). Dieses Feature ist voll funktionsfähig und erfordert keine Änderungen.
+
+**🇬🇧** The settings page uses a sub‑sidebar with three tabs (General, Audio & Media, Advanced). This feature is fully functional and requires no changes.
+
+---
+
+### 4. Audio-Ausgabegerät-Umleitung nicht implementiert / Audio output device routing not implemented
+
+**🇩🇪** Die Methode `change_audio_device` gibt nur eine Print-Anweisung aus, leitet den Audio-Stream aber nicht tatsächlich um. Die Auswahl in den Einstellungen hat derzeit keine Wirkung.  
 **Lösung:** Eine echte Qt-Multimedia-Routing-Implementierung einbauen (z. B. `QAudioSink` mit dem gewählten Gerät).
+
+**🇬🇧** The `change_audio_device` method only prints a message; it does not actually route the audio stream. The selection in the settings currently has no effect.  
+**Solution:** Implement a proper Qt Multimedia routing (e.g., `QAudioSink` with the selected device).
 
 ---
 

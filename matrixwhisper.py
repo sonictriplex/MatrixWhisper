@@ -61,8 +61,8 @@ TRANSLATIONS = {
         "start_desc": "MatrixWhisper beim Öffnen direkt in den Systemabschnitt minimieren",
         "audio_title": "Audio-Ausgabegerät",
         "audio_desc": "Standard-Audiokanal für WhatsApp-Töne und Sprachnachrichten festlegen",
-        "cli_title": "Globale KDE-Kurzbefehle (CLI Integration):",
-        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Fenster zeigen/verstecken)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (8h stummschalten)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (App sauber beenden)"
+        "cli_title": "Verfügbare CLI-Terminalbefehle:",
+        "cli_hint": "• matrixwhisper.py --toggle  ➔  Fenster zeigen oder verstecken\n• matrixwhisper.py --mute    ➔  Audioausgabe für 8h stummschalten\n• matrixwhisper.py --quit    ➔  Hintergrund-Instanz sauber beenden"
     },
     "en": {
         "title": "Settings",
@@ -104,8 +104,8 @@ TRANSLATIONS = {
         "start_desc": "Minimize MatrixWhisper directly to system tray on launch",
         "audio_title": "Audio Output Device",
         "audio_desc": "Set the default audio channel for WhatsApp tones and voice messages",
-        "cli_title": "Global KDE Shortcuts (CLI Integration):",
-        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Toggle window visibility)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Mute audio for 8h)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Cleanly quit application)"
+        "cli_title": "Available CLI Terminal Commands:",
+        "cli_hint": "• matrixwhisper.py --toggle  ➔  Toggle window visibility\n• matrixwhisper.py --mute    ➔  Mute audio playback for 8h\n• matrixwhisper.py --quit    ➔  Cleanly terminate the running client"
     },
     "es": {
         "title": "Ajustes",
@@ -147,8 +147,8 @@ TRANSLATIONS = {
         "start_desc": "Minimizar directamente a la bandeja al iniciar",
         "audio_title": "Dispositivo de salida de audio",
         "audio_desc": "Establecer el canal de audio predeterminado para WhatsApp",
-        "cli_title": "Atajos globales de KDE (Integración CLI):",
-        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Mostrar/ocultar ventana)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Silenciar por 8h)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Cerrar la aplicación)"
+        "cli_title": "Comandos de terminal CLI disponibles:",
+        "cli_hint": "• matrixwhisper.py --toggle  ➔  Mostrar/ocultar ventana\n• matrixwhisper.py --mute    ➔  Silenciar por 8h\n• matrixwhisper.py --quit    ➔  Cerrar la aplicación por completo"
     },
     "fr": {
         "title": "Paramètres",
@@ -190,8 +190,8 @@ TRANSLATIONS = {
         "start_desc": "Minimiser directement dans la zone de notification au lancement",
         "audio_title": "Périphérique de sortie audio",
         "audio_desc": "Définir le canal audio par défaut pour WhatsApp",
-        "cli_title": "Raccourcis globaux KDE (Intégration CLI):",
-        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Afficher/masquer la fenêtre)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Rendre muet pour 8h)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Quitter proprement l'application)"
+        "cli_title": "Commandes du terminal CLI disponibles:",
+        "cli_hint": "• matrixwhisper.py --toggle  ➔  Afficher/masquer la fenêtre\n• matrixwhisper.py --mute    ➔  Rendre muet pour 8h\n• matrixwhisper.py --quit    ➔  Quitter proprement l'application"
     },
     "it": {
         "title": "Impostazioni",
@@ -233,8 +233,8 @@ TRANSLATIONS = {
         "start_desc": "Minimizza direttamente nel vassoio di sistema all'avvio",
         "audio_title": "Dispositivo di uscita audio",
         "audio_desc": "Imposta il canale audio predefinito per WhatsApp",
-        "cli_title": "Scorciatoie globali KDE (Integrazione CLI):",
-        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Mostra/nascondi finestra)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Silenzia per 8 ore)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Chiudi l'applicazione)"
+        "cli_title": "Comandi del terminale CLI disponibili:",
+        "cli_hint": "• matrixwhisper.py --toggle  ➔  Mostra/nascondi finestra\n• matrixwhisper.py --mute    ➔  Silenzia per 8 ore\n• matrixwhisper.py --quit    ➔  Chiudi l'applicazione in background"
     },
     "nl": {
         "title": "Instellingen",
@@ -276,8 +276,8 @@ TRANSLATIONS = {
         "start_desc": "MatrixWhisper bij het opstarten direkt naar het systeemvak minimaliseren",
         "audio_title": "Audio-uitvoerapparaat",
         "audio_desc": "Stel het standaard audiokanaal in voor WhatsApp",
-        "cli_title": "Globale KDE Sneltoetsen (CLI Integratie):",
-        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Venster tonen/verbergen)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (8 uur dempen)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Applicatie netjes afsluiten)"
+        "cli_title": "Beschikbare CLI-terminalcommando's:",
+        "cli_hint": "• matrixwhisper.py --toggle  ➔  Venster tonen/verbergen\n• matrixwhisper.py --mute    ➔  8 uur dempen\n• matrixwhisper.py --quit    ➔  Applicatie netjes afsluiten"
     },
     "pt": {
         "title": "Configurações",
@@ -306,7 +306,7 @@ TRANSLATIONS = {
         "cache_desc": "Termina a sessão, apaga os cookies e limpa a cache local",
         "cache_btn": "Redefinir Sessão & Cache",
         "about_desc": "Um client WhatsApp nativo e altamente otimizado para desktops Linux.",
-        "tray_whisper": "Sussurrando em segundo plano...",
+        "tray_whisper": "Sussurrando em segundo tempo...",
         "tray_open": "Abrir",
         "tray_quit": "Sair",
         "tray_mute_shortcut": "Silenciar áudio (Atalho 8h)",
@@ -317,11 +317,11 @@ TRANSLATIONS = {
         "start_desc": "Minimizar diretamente para a bandeja ao iniciar",
         "audio_title": "Dispositivo de saída de áudio",
         "audio_desc": "Definir o canal de áudio padrão para o WhatsApp",
-        "cli_title": "Atalhos globais do KDE (Integração CLI):",
-        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Alternar visibilidade da janela)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Silenciar por 8h)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Fechar o aplicativo limpamente)"
+        "cli_title": "Comandos de terminal CLI disponíveis:",
+        "cli_hint": "• matrixwhisper.py --toggle  ➔  Alternar visibilidade da janela\n• matrixwhisper.py --mute    ➔  Silenciar por 8h\n• matrixwhisper.py --quit    ➔  Fechar o aplicativo em background"
     },
     "pl": {
-        "title": "Uawnia",
+        "title": "Ustawienia",
         "as_title": "Autostart systemu",
         "as_desc": "Uruchom MatrixWhisper automatisch przy starcie komputera",
         "dm_title": "Wygląd (Ciemny motyw)",
@@ -360,8 +360,8 @@ TRANSLATIONS = {
         "start_desc": "Minimalizuj bezpośrednio do zasobnika systemowego przy uruchomieniu",
         "audio_title": "Urządzenie wyjściowe audio",
         "audio_desc": "Ustaw domyślny kanał audio dla WhatsApp",
-        "cli_title": "Globalne skróty KDE (Integracja CLI):",
-        "cli_hint": "• Ctrl+Meta+W ➔  matrixwhisper.py --toggle  (Pokaż/ukryj okno)\n• Ctrl+Meta+M ➔  matrixwhisper.py --mute    (Wycisz na 8 godz.)\n• Ctrl+Meta+Q ➔  matrixwhisper.py --quit    (Czyste zakończenie aplikacji)"
+        "cli_title": "Dostępne polecenia terminala CLI:",
+        "cli_hint": "• matrixwhisper.py --toggle  ➔  Pokaż/ukryj okno\n• matrixwhisper.py --mute    ➔  Wycisz na 8 godz.\n• matrixwhisper.py --quit    ➔  Czyste zakończenie aplikacji w tle"
     }
 }
 
@@ -453,7 +453,7 @@ class MatrixWhisper(QMainWindow):
         super().__init__()
 
         self.app_name = "MatrixWhisper"
-        self.app_version = "2.7.5"
+        self.app_version = "2.7.6"
         self.setWindowTitle(self.app_name)
         self.resize(1150, 750)
 
@@ -912,6 +912,7 @@ class MatrixWhisper(QMainWindow):
         self.dl_path_label = QLabel()
         self.dl_path_label.setStyleSheet("color: #25D366; font-size: 10pt; font-family: monospace;")
         dl_text_layout.addWidget(self.dl_title)
+        dl_path_layout = QVBoxLayout()
         dl_text_layout.addWidget(self.dl_path_label)
         download_layout.addLayout(dl_text_layout)
         download_layout.addStretch()
@@ -1074,32 +1075,34 @@ class MatrixWhisper(QMainWindow):
 
     def init_single_instance_server(self):
         self.instance_server = QLocalServer(self)
-        QLocalServer.removeServer("matrixwhisper_socket")
-        self.instance_server.listen("matrixwhisper_socket")
+        runtime_dir = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.RuntimeLocation)
+        self.socket_path = os.path.join(runtime_dir, "matrixwhisper_socket")
+
+        QLocalServer.removeServer(self.socket_path)
+        if not self.instance_server.listen(self.socket_path):
+            print(f"[MatrixWhisper] Server error: {self.instance_server.errorString()}")
         self.instance_server.newConnection.connect(self.handle_remote_activation)
 
     def handle_remote_activation(self):
         socket = self.instance_server.nextPendingConnection()
         if socket:
-            socket.readyRead.connect(lambda: self.process_remote_command(socket))
+            if socket.waitForReadyRead(500):
+                self.process_remote_command(socket)
 
     def process_remote_command(self, socket):
         cmd = socket.readAll().data().decode().strip()
-        if cmd == "toggle":
-            if self.isVisible() and not self.isMinimized():
+        if cmd in ["toggle", "show"]:
+            if cmd == "toggle" and self.isVisible() and not self.isMinimized():
                 self.hide()
             else:
-                self.show()
+                self.showNormal() if self.isMinimized() else self.show()
+                self.setWindowState(self.windowState() & ~Qt.WindowState.WindowMinimized | Qt.WindowState.WindowActive)
                 self.raise_()
                 self.activateWindow()
         elif cmd == "mute":
             self.activate_smart_mute(8)
         elif cmd == "quit":
             self.quit_application()
-        elif cmd == "show":
-            self.show()
-            self.raise_()
-            self.activateWindow()
         socket.close()
 
     def select_download_directory(self):
@@ -1551,30 +1554,25 @@ if __name__ == "__main__":
     parser.add_argument("--toggle", action="store_true", help="Blendet das Fenster der laufenden Instanz ein oder aus")
     parser.add_argument("--mute", action="store_true", help="Schaltet die laufende Instanz sofort für 8 Stunden lautlos")
     parser.add_argument("--quit", action="store_true", help="Beendet die im Hintergrund laufende Instanz sauber")
-
-    # Mappings für die OS-spezifischen Hotkey-Strings hinzufügen
-    parser.add_argument("--ctrl-meta-w", action="store_true", dest="toggle", help="Shortcut-Alias für --toggle")
-    parser.add_argument("--ctrl-meta-m", action="store_true", dest="mute", help="Shortcut-Alias für --mute")
-    parser.add_argument("--ctrl-meta-q", action="store_true", dest="quit", help="Shortcut-Alias für --quit")
-
     args = parser.parse_args()
 
     # 2. IPC Socket-Check: Läuft bereits eine Instanz?
+    runtime_dir = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.RuntimeLocation)
+    socket_path = os.path.join(runtime_dir, "matrixwhisper_socket")
+
     socket = QLocalSocket()
-    socket.connectToServer("matrixwhisper_socket")
+    socket.connectToServer(socket_path)
 
     if socket.waitForConnected(500):
-        if args.toggle:
-            socket.write(b"toggle")
-        elif args.mute:
-            socket.write(b"mute")
-        elif args.quit:
-            socket.write(b"quit")
-        else:
-            socket.write(b"show")
+        cmd = "show"
+        if args.toggle: cmd = "toggle"
+        elif args.mute: cmd = "mute"
+        elif args.quit: cmd = "quit"
 
-        socket.waitForBytesWritten()
-        socket.close()
+        socket.write(cmd.encode())
+        socket.flush()
+        socket.waitForBytesWritten(500)
+        socket.disconnectFromServer()
         sys.exit(0)
 
     # 3. Master-Instanz initialisieren, falls noch kein Server läuft

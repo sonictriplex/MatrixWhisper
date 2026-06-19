@@ -135,23 +135,19 @@ python3 matrixwhisper.py --show
 
 ## 🗺️ Roadmap / Bekannte Probleme / Known Issues
 
-### 1. `--show`-Argument fehlt im Parser / `--show` argument missing in parser
+### 1. ✅ `--show`-Argument fehlt im Parser / `--show` argument missing in parser
 
-**🇩🇪** Die README erwähnt den Befehl `python3 matrixwhisper.py --show`, aber der Argument-Parser in `matrixwhisper.py` kennt dieses Argument nicht. Ein Aufruf mit `--show` führt zu einem Fehler.  
-**Lösung:** `parser.add_argument("--show", action="store_true")` im `__main__`-Block ergänzen.
+**🇩🇪** **Erledigt** – Der Parser enthält jetzt `parser.add_argument("--show", action="store_true")` (ab Version 2.8.0). Der Befehl `python3 matrixwhisper.py --show` funktioniert wie in der README beschrieben.
 
-**🇬🇧** The README mentions the command `python3 matrixwhisper.py --show`, but the argument parser in `matrixwhisper.py` does not know this argument. Calling `--show` results in an error.  
-**Solution:** Add `parser.add_argument("--show", action="store_true")` in the `__main__` block.
+**🇬🇧** **Fixed** – The parser now includes `parser.add_argument("--show", action="store_true")` (since v2.8.0). The command `python3 matrixwhisper.py --show` works as described in the README.
 
 ---
 
-### 2. Smart-Mute-Timer funktioniert nicht / Smart Mute timer not working
+### 2. ✅ Smart-Mute-Timer funktioniert nicht / Smart Mute timer not working
 
-**🇩🇪** In `activate_smart_mute` wird `self.mute_timer.singleShot(...)` verwendet. `singleShot` ist eine statische Methode, die keinen Timer zurückgibt. Der erstellte `QTimer` wird nie gestartet, sodass die Stummschaltung nie automatisch aufgehoben wird.  
-**Lösung:** Stattdessen `self.mute_timer.timeout.connect(self.deactivate_smart_mute)` und `self.mute_timer.start(hours * 3600000)` verwenden.
+**🇩🇪** **Erledigt** – Die Methode `activate_smart_mute` verwendet jetzt korrekt `self.mute_timer.timeout.connect(self.deactivate_smart_mute)` und `self.mute_timer.start(milliseconds)`. Die Stummschaltung wird nach Ablauf der eingestellten Zeit automatisch aufgehoben (ab Version 2.8.0).
 
-**🇬🇧** In `activate_smart_mute`, `self.mute_timer.singleShot(...)` is used. `singleShot` is a static method that does not return a timer. The created `QTimer` is never started, so the mute is never automatically deactivated.  
-**Solution:** Use `self.mute_timer.timeout.connect(self.deactivate_smart_mute)` and `self.mute_timer.start(hours * 3600000)` instead.
+**🇬🇧** **Fixed** – The `activate_smart_mute` method now correctly uses `self.mute_timer.timeout.connect(self.deactivate_smart_mute)` and `self.mute_timer.start(milliseconds)`. The mute is automatically deactivated after the set time (since v2.8.0).
 
 ---
 

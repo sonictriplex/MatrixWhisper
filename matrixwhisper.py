@@ -116,7 +116,7 @@ TRANSLATIONS = {
         "tb_title": "Cerrar a la bandeja (Segundo plano)",
         "tb_desc": "Ocultar la ventana en la bandeja del sistema al cerrar ('X')",
         "nt_title": "Notificaciones nativas del sistema",
-        "nt_desc": "Establece si las notificaciones web deben aparecer como notificaciones del sistema quando la ventana está cerrada",
+        "nt_desc": "Establece si las notificaciones web devem aparecer como notificaciones del sistema quando la ventana está cerrada",
         "gpu_title": "Modo ahorro de energía (Drossel GPU)",
         "gpu_desc": "Desactivar la aceleración por hardware de WebEngine",
         "gpu_active": "Estado: GPU desactivada (Ahorro de energía activo) ⚠️",
@@ -453,7 +453,7 @@ class MatrixWhisper(QMainWindow):
         super().__init__()
 
         self.app_name = "MatrixWhisper"
-        self.app_version = "2.7.6"
+        self.app_version = "2.7.7"
         self.setWindowTitle(self.app_name)
         self.resize(1150, 750)
 
@@ -492,7 +492,7 @@ class MatrixWhisper(QMainWindow):
         self.profile.setSpellCheckEnabled(True)
         if self.selected_language == "system":
             try:
-                sys_lang = locale.getdefaultlocale()[0].split("_")[0]
+                sys_lang = (locale.getlocale()[0] or "de").split("_")[0]
                 self.profile.setSpellCheckLanguages([sys_lang, "en-US"])
             except Exception:
                 self.profile.setSpellCheckLanguages(["de", "en-US"])
@@ -912,7 +912,6 @@ class MatrixWhisper(QMainWindow):
         self.dl_path_label = QLabel()
         self.dl_path_label.setStyleSheet("color: #25D366; font-size: 10pt; font-family: monospace;")
         dl_text_layout.addWidget(self.dl_title)
-        dl_path_layout = QVBoxLayout()
         dl_text_layout.addWidget(self.dl_path_label)
         download_layout.addLayout(dl_text_layout)
         download_layout.addStretch()
@@ -1130,7 +1129,7 @@ class MatrixWhisper(QMainWindow):
         if self.selected_language != "system":
             return self.selected_language if self.selected_language in TRANSLATIONS else "en"
         try:
-            sys_locale = locale.getdefaultlocale()[0]
+            sys_locale = locale.getlocale()[0]
             if sys_locale:
                 lang_code = sys_locale.split("_")[0]
                 if lang_code in TRANSLATIONS:
@@ -1224,7 +1223,7 @@ class MatrixWhisper(QMainWindow):
     def resolve_http_language_string(self):
         if self.selected_language == "system":
             try:
-                sys_locale = locale.getdefaultlocale()[0]
+                sys_locale = locale.getlocale()[0]
                 if sys_locale:
                     sys_lang = sys_locale.replace("_", "-")
                     return f"{sys_lang},{sys_lang[:2]};q=0.9,en-US;q=0.8,en;q=0.7"

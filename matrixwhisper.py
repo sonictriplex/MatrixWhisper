@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QSystemTrayIcon, QMenu,
                              QWidget, QHBoxLayout, QVBoxLayout, QPushButton,
                              QStackedWidget, QCheckBox, QLabel, QFrame, QSlider,
-                             QComboBox, QScrollArea, QFileDialog)
+                             QComboBox, QScrollArea, QFileDialog, QListWidget)
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage, QWebEngineNotification
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
@@ -19,10 +19,13 @@ from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolyg
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 from PyQt6.QtMultimedia import QMediaDevices, QAudioDevice
 
-# --- TRANSLATION DICTIONARY (INTERNATIONALIZATION) ---
+# --- TRANSLATION DICTIONARY (INTERNATIONALIZATION COMPLETE) ---
 TRANSLATIONS = {
     "de": {
         "title": "Einstellungen",
+        "tab_general": " Allgemein",
+        "tab_media": " Audio & Medien",
+        "tab_advanced": " Erweitert",
         "as_title": "Systemstart (Autostart)",
         "as_desc": "Startet MatrixWhisper automatisch mit dem Computer",
         "dm_title": "Erscheinungsbild (Dark Theme)",
@@ -66,6 +69,9 @@ TRANSLATIONS = {
     },
     "en": {
         "title": "Settings",
+        "tab_general": " General",
+        "tab_media": " Audio & Media",
+        "tab_advanced": " Advanced",
         "as_title": "System Startup (Autostart)",
         "as_desc": "Launch MatrixWhisper automatically when starting the computer",
         "dm_title": "Appearance (Dark Theme)",
@@ -109,6 +115,9 @@ TRANSLATIONS = {
     },
     "es": {
         "title": "Ajustes",
+        "tab_general": " General",
+        "tab_media": " Audio y Medios",
+        "tab_advanced": " Avanzado",
         "as_title": "Inicio del sistema (Autostart)",
         "as_desc": "Iniciar MatrixWhisper automáticamente con el ordenador",
         "dm_title": "Apariencia (Tema oscuro)",
@@ -152,6 +161,9 @@ TRANSLATIONS = {
     },
     "fr": {
         "title": "Paramètres",
+        "tab_general": " Général",
+        "tab_media": " Audio & Médias",
+        "tab_advanced": " Avancé",
         "as_title": "Démarrage du système (Autostart)",
         "as_desc": "Lancer MatrixWhisper automatiquement avec l'ordinateur",
         "dm_title": "Apparence (Thème sombre)",
@@ -195,6 +207,9 @@ TRANSLATIONS = {
     },
     "it": {
         "title": "Impostazioni",
+        "tab_general": " Generale",
+        "tab_media": " Audio & Media",
+        "tab_advanced": " Avanzate",
         "as_title": "Avvio automatico",
         "as_desc": "Avvia automaticamente MatrixWhisper all'accensione del computer",
         "dm_title": "Aspetto (Tema scuro)",
@@ -238,6 +253,9 @@ TRANSLATIONS = {
     },
     "nl": {
         "title": "Instellingen",
+        "tab_general": " Algemeen",
+        "tab_media": " Audio & Media",
+        "tab_advanced": " Geavanceerd",
         "as_title": "Systeemstart (Autostart)",
         "as_desc": "MatrixWhisper automatisch starten bij het opstarten van de computer",
         "dm_title": "Uiterlijk (Donker thema)",
@@ -281,6 +299,9 @@ TRANSLATIONS = {
     },
     "pt": {
         "title": "Configurações",
+        "tab_general": " Geral",
+        "tab_media": " Áudio e Mídia",
+        "tab_advanced": " Avançado",
         "as_title": "Iniciar com o sistema",
         "as_desc": "Iniciar o MatrixWhisper automaticamente ao ligar o computador",
         "dm_title": "Aparência (Tema escuro)",
@@ -322,6 +343,9 @@ TRANSLATIONS = {
     },
     "pl": {
         "title": "Ustawienia",
+        "tab_general": " Ogólne",
+        "tab_media": " Audio i Media",
+        "tab_advanced": " Zaawansowane",
         "as_title": "Autostart systemu",
         "as_desc": "Uruchom MatrixWhisper automatisch przy starcie komputera",
         "dm_title": "Wygląd (Ciemny motyw)",
@@ -364,7 +388,6 @@ TRANSLATIONS = {
         "cli_hint": "• matrixwhisper.py --toggle  ➔  Pokaż/ukryj okno\n• matrixwhisper.py --mute    ➔  Wycisz na 8 godz.\n• matrixwhisper.py --quit    ➔  Czyste zakończenie aplikacji w tle"
     }
 }
-
 
 # --- NATIV GEZEICHNETER SWITCH-TOGGLE ---
 class SwitchToggle(QCheckBox):
@@ -420,7 +443,6 @@ class SwitchToggle(QCheckBox):
         painter.end()
 
 
-# --- CUSTOM PAGE-KLASSE FÜR HYPERLINKS ---
 class CustomWebEnginePage(QWebEnginePage):
     def __init__(self, profile, parent=None):
         super().__init__(profile, parent)
@@ -436,10 +458,8 @@ class CustomWebEnginePage(QWebEnginePage):
         interceptor_view = QWebEngineView()
         interceptor_page = QWebEnginePage(self.profile(), interceptor_view)
         interceptor_view.setPage(interceptor_page)
-
         interceptor_page.urlChanged.connect(lambda url: QDesktopServices.openUrl(url))
         self._link_interceptors.append(interceptor_view)
-
         QTimer.singleShot(1000, lambda: self._clean_interceptor(interceptor_view))
         return interceptor_page
 
@@ -453,7 +473,7 @@ class MatrixWhisper(QMainWindow):
         super().__init__()
 
         self.app_name = "MatrixWhisper"
-        self.app_version = "2.7.7"
+        self.app_version = "2.8.0"
         self.setWindowTitle(self.app_name)
         self.resize(1150, 750)
 
@@ -490,15 +510,11 @@ class MatrixWhisper(QMainWindow):
         self.profile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.ForcePersistentCookies)
 
         self.profile.setSpellCheckEnabled(True)
-        if self.selected_language == "system":
-            try:
-                sys_lang = (locale.getlocale()[0] or "de").split("_")[0]
-                self.profile.setSpellCheckLanguages([sys_lang, "en-US"])
-            except Exception:
-                self.profile.setSpellCheckLanguages(["de", "en-US"])
-        else:
-            lang_code = "en-US" if self.selected_language == "en" else self.selected_language
-            self.profile.setSpellCheckLanguages([lang_code])
+        try:
+            sys_lang = (locale.getlocale()[0] or "de").split("_")[0]
+            self.profile.setSpellCheckLanguages([sys_lang, "en-US"])
+        except Exception:
+            self.profile.setSpellCheckLanguages(["de", "en-US"])
 
         self.profile.setNotificationPresenter(self.handle_web_notification)
         self.profile.downloadRequested.connect(self.handle_download_requested)
@@ -516,26 +532,13 @@ class MatrixWhisper(QMainWindow):
         )
         self.profile.setHttpUserAgent(chrome_user_agent)
 
-        fake_storage_script = QWebEngineScript()
-        fake_storage_script.setSourceCode("""
-            if (navigator.storage && navigator.storage.persist) {
-                navigator.storage.persist = function() { return Promise.resolve(true); };
-            }
-            if (navigator.storage && navigator.storage.persisted) {
-                navigator.storage.persisted = function() { return Promise.resolve(true); };
-            }
-        """)
-        fake_storage_script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentCreation)
-        fake_storage_script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
-        fake_storage_script.setRunsOnSubFrames(True)
-        self.profile.scripts().insert(fake_storage_script)
-
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QHBoxLayout(central_widget)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
+        # --- SIDEBAR MAIN ---
         self.sidebar = QFrame()
         self.sidebar.setFixedWidth(60)
         self.sidebar.setStyleSheet("""
@@ -553,7 +556,6 @@ class MatrixWhisper(QMainWindow):
         self.btn_chat.setIconSize(QSize(24, 24))
         self.btn_chat.setCheckable(True)
         self.btn_chat.setChecked(True)
-        self.btn_chat.setToolTip("Chats")
 
         self.btn_settings = QPushButton()
         self.btn_settings.setIcon(self.draw_vector_sliders_icon())
@@ -572,470 +574,223 @@ class MatrixWhisper(QMainWindow):
         self.browser = QWebEngineView()
         self.web_page = CustomWebEnginePage(self.profile, self.browser)
         self.browser.setPage(self.web_page)
-
         self.browser.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.browser.setUrl(QUrl("https://web.whatsapp.com"))
         self.container.addWidget(self.browser)
 
-        # --- EINSTELLUNGSSEITE ARCHITEKTUR ---
+        # --- OPTION B: SETTINGS INTERFACE WITH SUB-SIDEBAR ---
         self.settings_page = QWidget()
         self.settings_page.setStyleSheet("background-color: #1a1d24; color: #ffffff;")
+        settings_main_layout = QHBoxLayout(self.settings_page)
+        settings_main_layout.setContentsMargins(0, 0, 0, 0)
+        settings_main_layout.setSpacing(0)
 
-        page_main_layout = QVBoxLayout(self.settings_page)
-        page_main_layout.setContentsMargins(30, 30, 30, 30)
-        page_main_layout.setSpacing(14)
-
-        self.title_label = QLabel()
-        self.title_label.setFont(QFont("sans-serif", 18, QFont.Weight.Bold))
-        page_main_layout.addWidget(self.title_label)
-
-        line = QFrame()
-        line.setFrameShape(QFrame.Shape.HLine)
-        line.setFrameShadow(QFrame.Shadow.Sunken)
-        line.setStyleSheet("background-color: #2c313c;")
-        page_main_layout.addWidget(line)
-
-        card_style = """
-            QFrame { background-color: #1e222b; border-radius: 12px; border: 1px solid #2c313c; }
-            QLabel { border: none; background: transparent; }
-        """
-
-        # --- SCROLL AREA ENGINE ---
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setFrameShape(QFrame.Shape.NoFrame)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        scroll_area.setStyleSheet("""
-            QScrollArea { background-color: transparent; border: none; }
-            QScrollBar:vertical {
+        # Sub-Sidebar für Einstellungen
+        self.sub_sidebar = QListWidget()
+        self.sub_sidebar.setFixedWidth(180)
+        self.sub_sidebar.setStyleSheet("""
+            QListWidget {
+                background-color: #1e222b;
                 border: none;
-                background: #1a1d24;
-                width: 8px;
-                margin: 0px;
+                border-right: 1px solid #2c313c;
+                padding-top: 20px;
             }
-            QScrollBar::handle:vertical {
-                background: #2c313c;
-                min-height: 20px;
-                border-radius: 4px;
+            QListWidget::item {
+                color: #a0a0a0;
+                padding: 12px 15px;
+                margin: 4px 8px;
+                border-radius: 6px;
+                font-weight: bold;
             }
-            QScrollBar::handle:vertical:hover {
-                background: #25D366;
-            }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                border: none;
-                background: none;
-            }
-        """)
-
-        scroll_content = QWidget()
-        scroll_content.setStyleSheet("background-color: #1a1d24;")
-        settings_layout = QVBoxLayout(scroll_content)
-        settings_layout.setContentsMargins(0, 5, 10, 5)
-        settings_layout.setSpacing(14)
-
-        # --- CARD 1: SYSTEMSTART ---
-        autostart_frame = QFrame()
-        autostart_frame.setStyleSheet(card_style)
-        autostart_layout = QHBoxLayout(autostart_frame)
-        autostart_layout.setContentsMargins(15, 12, 15, 12)
-        as_icon = QLabel("⚙️")
-        as_icon.setFont(QFont("sans-serif", 20))
-        autostart_layout.addWidget(as_icon)
-        as_text_layout = QVBoxLayout()
-        self.as_title = QLabel()
-        self.as_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.as_desc = QLabel()
-        self.as_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        as_text_layout.addWidget(self.as_title)
-        as_text_layout.addWidget(self.as_desc)
-        autostart_layout.addLayout(as_text_layout)
-        autostart_layout.addStretch()
-        self.cb_autostart = SwitchToggle()
-        self.cb_autostart.setChecked(os.path.exists(self.autostart_file))
-        self.cb_autostart.thumb_position = 27.0 if self.cb_autostart.isChecked() else 3.0
-        self.cb_autostart.toggled.connect(self.toggle_autostart)
-        autostart_layout.addWidget(self.cb_autostart)
-        settings_layout.addWidget(autostart_frame)
-
-        # --- CARD 2: DARK THEME ---
-        darkmode_frame = QFrame()
-        darkmode_frame.setStyleSheet(card_style)
-        darkmode_layout = QHBoxLayout(darkmode_frame)
-        darkmode_layout.setContentsMargins(15, 12, 15, 12)
-        dm_icon = QLabel("🌙")
-        dm_icon.setFont(QFont("sans-serif", 20))
-        darkmode_layout.addWidget(dm_icon)
-        dm_text_layout = QVBoxLayout()
-        self.dm_title = QLabel()
-        self.dm_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.dm_desc = QLabel()
-        self.dm_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        dm_text_layout.addWidget(self.dm_title)
-        dm_text_layout.addWidget(self.dm_desc)
-        darkmode_layout.addLayout(dm_text_layout)
-        darkmode_layout.addStretch()
-        self.cb_darkmode = SwitchToggle()
-        self.cb_darkmode.setChecked(True)
-        self.cb_darkmode.thumb_position = 27.0 if self.cb_darkmode.isChecked() else 3.0
-        self.cb_darkmode.toggled.connect(self.toggle_darkmode)
-        darkmode_layout.addWidget(self.cb_darkmode)
-        settings_layout.addWidget(darkmode_frame)
-
-        # --- CARD 3: TRAY BEHAVIOR ---
-        tray_behavior_frame = QFrame()
-        tray_behavior_frame.setStyleSheet(card_style)
-        tray_behavior_layout = QHBoxLayout(tray_behavior_frame)
-        tray_behavior_layout.setContentsMargins(15, 12, 15, 12)
-        tb_icon = QLabel("📥")
-        tb_icon.setFont(QFont("sans-serif", 20))
-        tray_behavior_layout.addWidget(tb_icon)
-        tb_text_layout = QVBoxLayout()
-        self.tb_title = QLabel()
-        self.tb_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.tb_desc = QLabel()
-        self.tb_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        tb_text_layout.addWidget(self.tb_title)
-        tb_text_layout.addWidget(self.tb_desc)
-        tray_behavior_layout.addLayout(tb_text_layout)
-        tray_behavior_layout.addStretch()
-        self.cb_tray_behavior = SwitchToggle()
-        self.cb_tray_behavior.setChecked(self.minimize_to_tray)
-        self.cb_tray_behavior.thumb_position = 27.0 if self.cb_tray_behavior.isChecked() else 3.0
-        self.cb_tray_behavior.toggled.connect(self.toggle_tray_behavior)
-        tray_behavior_layout.addWidget(self.cb_tray_behavior)
-        settings_layout.addWidget(tray_behavior_frame)
-
-        # --- CARD 3.5: NATIVE NOTIFICATIONS TOGGLE ---
-        nt_frame = QFrame()
-        nt_frame.setStyleSheet(card_style)
-        nt_layout = QHBoxLayout(nt_frame)
-        nt_layout.setContentsMargins(15, 12, 15, 12)
-        nt_icon_lbl = QLabel("🔔")
-        nt_icon_lbl.setFont(QFont("sans-serif", 20))
-        nt_layout.addWidget(nt_icon_lbl)
-        nt_text_layout = QVBoxLayout()
-        self.nt_title = QLabel()
-        self.nt_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.nt_desc = QLabel()
-        self.nt_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        nt_text_layout.addWidget(self.nt_title)
-        nt_text_layout.addWidget(self.nt_desc)
-        nt_layout.addLayout(nt_text_layout)
-        nt_layout.addStretch()
-        self.cb_native_notifications = SwitchToggle()
-        self.cb_native_notifications.setChecked(self.native_notifications)
-        self.cb_native_notifications.thumb_position = 27.0 if self.cb_native_notifications.isChecked() else 3.0
-        self.cb_native_notifications.toggled.connect(self.toggle_native_notifications)
-        nt_layout.addWidget(self.cb_native_notifications)
-        settings_layout.addWidget(nt_frame)
-
-        # --- CARD 4: GPU THROTTLE ---
-        gpu_frame = QFrame()
-        gpu_frame.setStyleSheet(card_style)
-        gpu_layout = QHBoxLayout(gpu_frame)
-        gpu_layout.setContentsMargins(15, 12, 15, 12)
-        gpu_icon = QLabel("🔋")
-        gpu_icon.setFont(QFont("sans-serif", 20))
-        gpu_layout.addWidget(gpu_icon)
-        gpu_text_layout = QVBoxLayout()
-        self.gpu_title = QLabel()
-        self.gpu_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.gpu_status_label = QLabel()
-        self.gpu_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        gpu_text_layout.addWidget(self.gpu_title)
-        gpu_text_layout.addWidget(self.gpu_status_label)
-        gpu_layout.addLayout(gpu_text_layout)
-        gpu_layout.addStretch()
-        self.cb_gpu_accel = SwitchToggle()
-        self.cb_gpu_accel.setChecked(self.disable_gpu_accel)
-        self.cb_gpu_accel.thumb_position = 27.0 if self.cb_gpu_accel.isChecked() else 3.0
-        self.cb_gpu_accel.toggled.connect(self.toggle_gpu_acceleration)
-        gpu_layout.addWidget(self.cb_gpu_accel)
-        settings_layout.addWidget(gpu_frame)
-
-        # --- CARD 5: SMART MUTE ---
-        mute_frame = QFrame()
-        mute_frame.setStyleSheet(card_style + """
-            QPushButton { background-color: #3e4451; color: #ffffff; border-radius: 6px; padding: 8px 16px; border: none; }
-            QPushButton:hover { background-color: #4c5264; }
-        """)
-        mute_layout = QHBoxLayout(mute_frame)
-        mute_layout.setContentsMargins(15, 12, 15, 12)
-        mute_icon_label = QLabel("📢")
-        mute_icon_label.setFont(QFont("sans-serif", 20))
-        mute_layout.addWidget(mute_icon_label)
-        mute_text_layout = QVBoxLayout()
-        self.mute_title = QLabel()
-        self.mute_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.mute_status_label = QLabel()
-        self.mute_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        mute_text_layout.addWidget(self.mute_title)
-        mute_text_layout.addWidget(self.mute_status_label)
-        mute_layout.addLayout(mute_text_layout)
-        mute_layout.addStretch()
-        self.btn_mute_1h = QPushButton()
-        self.btn_mute_8h = QPushButton()
-        self.btn_mute_reset = QPushButton()
-        self.btn_mute_1h.clicked.connect(lambda: self.activate_smart_mute(1))
-        self.btn_mute_8h.clicked.connect(lambda: self.activate_smart_mute(8))
-        self.btn_mute_reset.clicked.connect(self.deactivate_smart_mute)
-        mute_layout.addWidget(self.btn_mute_1h)
-        mute_layout.addWidget(self.btn_mute_8h)
-        mute_layout.addWidget(self.btn_mute_reset)
-        settings_layout.addWidget(mute_frame)
-
-        # --- CARD 6: SPRACHEINSTELLUNGEN ---
-        lang_frame = QFrame()
-        lang_frame.setStyleSheet(card_style + """
-            QComboBox {
+            QListWidget::item:hover {
                 background-color: #2c313c;
                 color: #ffffff;
-                border: 1px solid #4c5264;
-                border-radius: 6px;
-                padding: 5px 10px;
-                min-width: 160px;
             }
-            QComboBox:hover { background-color: #3e4451; }
-            QComboBox QAbstractItemView {
-                background-color: #1e222b;
+            QListWidget::item:selected {
+                background-color: #25D366;
                 color: #ffffff;
-                selection-background-color: #25D366;
-                selection-color: #ffffff;
-                border: 1px solid #4c5264;
             }
         """)
-        lang_layout = QHBoxLayout(lang_frame)
-        lang_layout.setContentsMargins(15, 12, 15, 12)
-        lang_icon = QLabel("🌐")
-        lang_icon.setFont(QFont("sans-serif", 20))
-        lang_layout.addWidget(lang_icon)
-        lang_text_layout = QVBoxLayout()
-        self.lang_title = QLabel()
-        self.lang_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.lang_status_label = QLabel()
-        self.lang_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        lang_text_layout.addWidget(self.lang_title)
-        lang_text_layout.addWidget(self.lang_status_label)
-        lang_layout.addLayout(lang_text_layout)
-        lang_layout.addStretch()
-        self.combo_lang = QComboBox()
-        self.combo_lang.addItem("Systemstandard", "system")
-        self.combo_lang.addItem("Deutsch (DE)", "de")
-        self.combo_lang.addItem("English (US)", "en")
-        self.combo_lang.addItem("Español (ES)", "es")
-        self.combo_lang.addItem("Français (FR)", "fr")
-        self.combo_lang.addItem("Italiano (IT)", "it")
-        self.combo_lang.addItem("Nederlands (NL)", "nl")
-        self.combo_lang.addItem("Português (PT)", "pt")
-        self.combo_lang.addItem("Polski (PL)", "pl")
-        index = self.combo_lang.findData(self.selected_language)
-        if index != -1: self.combo_lang.setCurrentIndex(index)
-        self.combo_lang.currentIndexChanged.connect(self.change_language_selection)
-        lang_layout.addWidget(self.combo_lang)
-        settings_layout.addWidget(lang_frame)
+        self.sub_sidebar.currentRowChanged.connect(self.switch_settings_tab)
+        settings_main_layout.addWidget(self.sub_sidebar)
 
-        # --- CARD 7: ZOOM FAKTOR BEREICH ---
-        zoom_frame = QFrame()
-        zoom_frame.setStyleSheet(card_style + """
-            QSlider::groove:horizontal { border: 1px solid #3e4451; height: 6px; background: #1a1d24; border-radius: 3px; }
-            QSlider::handle:horizontal { background: #25D366; border: 1px solid #25D366; width: 14px; height: 14px; margin: -5px 0; border-radius: 7px; }
-            QSlider::handle:horizontal:hover { background: #40f081; border: 1px solid #40f081; }
-        """)
-        zoom_layout = QHBoxLayout(zoom_frame)
-        zoom_layout.setContentsMargins(15, 12, 15, 12)
-        zoom_icon_label = QLabel("🔍")
-        zoom_icon_label.setFont(QFont("sans-serif", 20))
-        zoom_layout.addWidget(zoom_icon_label)
-        zoom_text_layout = QVBoxLayout()
-        self.zoom_title = QLabel()
-        self.zoom_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.zoom_desc_label = QLabel()
-        self.zoom_desc_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        zoom_text_layout.addWidget(self.zoom_title)
-        zoom_text_layout.addWidget(self.zoom_desc_label)
-        zoom_layout.addLayout(zoom_text_layout)
-        zoom_layout.addStretch()
-        self.zoom_slider = QSlider(Qt.Orientation.Horizontal)
-        self.zoom_slider.setMinimum(80)
-        self.zoom_slider.setMaximum(130)
-        self.zoom_slider.setFixedWidth(200)
-        self.zoom_slider.valueChanged.connect(self.update_zoom_factor)
-        zoom_layout.addWidget(self.zoom_slider)
-        self.lbl_percent = QLabel("")
-        self.lbl_percent.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
-        self.lbl_percent.setStyleSheet("color: #25D366; background: transparent; border: none;")
-        self.lbl_percent.setFixedWidth(50)
-        self.lbl_percent.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        zoom_layout.addWidget(self.lbl_percent)
-        settings_layout.addWidget(zoom_frame)
+        # Rechter Content-Bereich für Tabs
+        right_panel = QWidget()
+        right_layout = QVBoxLayout(right_panel)
+        right_layout.setContentsMargins(30, 25, 30, 25)
+        right_layout.setSpacing(15)
 
-        # --- CARD 8: CACHE RESET ENGINE ---
-        cache_frame = QFrame()
-        cache_frame.setStyleSheet(card_style + """
-            QPushButton { background-color: #e03131; color: #ffffff; border-radius: 6px; padding: 8px 16px; border: none; font-weight: bold; }
-            QPushButton:hover { background-color: #ff4a4a; }
-        """)
-        cache_layout = QHBoxLayout(cache_frame)
-        cache_layout.setContentsMargins(15, 12, 15, 12)
-        cache_icon = QLabel("🗑️")
-        cache_icon.setFont(QFont("sans-serif", 20))
-        cache_layout.addWidget(cache_icon)
-        cache_text_layout = QVBoxLayout()
-        self.cache_title = QLabel()
-        self.cache_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.cache_desc = QLabel()
-        self.cache_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        cache_text_layout.addWidget(self.cache_title)
-        cache_text_layout.addWidget(self.cache_desc)
-        cache_layout.addLayout(cache_text_layout)
-        cache_layout.addStretch()
-        self.btn_reset_cache = QPushButton()
-        self.btn_reset_cache.clicked.connect(self.reset_cache_and_session)
-        cache_layout.addWidget(self.btn_reset_cache)
-        settings_layout.addWidget(cache_frame)
+        self.title_label = QLabel()
+        self.title_label.setFont(QFont("sans-serif", 16, QFont.Weight.Bold))
+        right_layout.addWidget(self.title_label)
 
-        # --- CARD 8.2: DOWNLOAD DIRECTORY ENGINE ---
-        download_frame = QFrame()
-        download_frame.setStyleSheet(card_style + """
-            QPushButton { background-color: #3e4451; color: #ffffff; border-radius: 6px; padding: 8px 16px; border: none; }
-            QPushButton:hover { background-color: #4c5264; }
-        """)
-        download_layout = QHBoxLayout(download_frame)
-        download_layout.setContentsMargins(15, 12, 15, 12)
-        dl_icon = QLabel("📂")
-        dl_icon.setFont(QFont("sans-serif", 20))
-        download_layout.addWidget(dl_icon)
-        dl_text_layout = QVBoxLayout()
-        self.dl_title = QLabel()
-        self.dl_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.dl_path_label = QLabel()
-        self.dl_path_label.setStyleSheet("color: #25D366; font-size: 10pt; font-family: monospace;")
-        dl_text_layout.addWidget(self.dl_title)
-        dl_text_layout.addWidget(self.dl_path_label)
-        download_layout.addLayout(dl_text_layout)
-        download_layout.addStretch()
-        self.btn_choose_dl = QPushButton()
-        self.btn_choose_dl.clicked.connect(self.select_download_directory)
-        download_layout.addWidget(self.btn_choose_dl)
-        settings_layout.addWidget(download_frame)
+        self.settings_tabs = QStackedWidget()
+        card_style = "QFrame { background-color: #1e222b; border-radius: 12px; border: 1px solid #2c313c; } QLabel { border: none; background: transparent; }"
 
-        # --- CARD 8.5: STARTUP BEHAVIOR (START MINIMIZED) ---
-        start_behavior_frame = QFrame()
-        start_behavior_frame.setStyleSheet(card_style)
-        start_behavior_layout = QHBoxLayout(start_behavior_frame)
-        start_behavior_layout.setContentsMargins(15, 12, 15, 12)
-        sb_icon = QLabel("🚀")
-        sb_icon.setFont(QFont("sans-serif", 20))
-        start_behavior_layout.addWidget(sb_icon)
-        sb_text_layout = QVBoxLayout()
-        self.start_title = QLabel()
-        self.start_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.start_desc = QLabel()
-        self.start_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        sb_text_layout.addWidget(self.start_title)
-        sb_text_layout.addWidget(self.start_desc)
-        start_behavior_layout.addLayout(sb_text_layout)
-        start_behavior_layout.addStretch()
-        self.cb_start_minimized = SwitchToggle()
-        self.cb_start_minimized.setChecked(self.start_minimized)
-        self.cb_start_minimized.thumb_position = 27.0 if self.start_minimized else 3.0
-        self.cb_start_minimized.toggled.connect(self.toggle_start_minimized)
-        start_behavior_layout.addWidget(self.cb_start_minimized)
-        settings_layout.addWidget(start_behavior_frame)
+        # --- TAB 1: ALLGEMEIN ---
+        tab_gen_widget = QScrollArea()
+        tab_gen_widget.setWidgetResizable(True)
+        tab_gen_widget.setFrameShape(QFrame.Shape.NoFrame)
+        tab_gen_content = QWidget()
+        tab_gen_layout = QVBoxLayout(tab_gen_content)
+        tab_gen_layout.setSpacing(12)
 
-        # --- CARD 8.8: AUDIO OUTPUT INTERFACE ---
-        audio_frame = QFrame()
-        audio_frame.setStyleSheet(card_style + """
-            QComboBox {
-                background-color: #2c313c; color: #ffffff; border: 1px solid #4c5264;
-                border-radius: 6px; padding: 5px 10px; min-width: 200px;
-            }
-            QComboBox:hover { background-color: #3e4451; }
-            QComboBox QAbstractItemView { background-color: #1e222b; color: #ffffff; selection-background-color: #25D366; }
-        """)
-        audio_layout = QHBoxLayout(audio_frame)
-        audio_layout.setContentsMargins(15, 12, 15, 12)
-        audio_icon = QLabel("🎧")
-        audio_icon.setFont(QFont("sans-serif", 20))
-        audio_layout.addWidget(audio_icon)
-        audio_text_layout = QVBoxLayout()
-        self.audio_title = QLabel()
-        self.audio_title.setFont(QFont("sans-serif", 12, QFont.Weight.Bold))
-        self.audio_desc = QLabel()
-        self.audio_desc.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        audio_text_layout.addWidget(self.audio_title)
-        audio_text_layout.addWidget(self.audio_desc)
-        audio_layout.addLayout(audio_text_layout)
-        audio_layout.addStretch()
-        self.combo_audio = QComboBox()
-        self.populate_audio_devices()
-        self.combo_audio.currentIndexChanged.connect(self.change_audio_device)
-        audio_layout.addWidget(self.combo_audio)
-        settings_layout.addWidget(audio_frame)
+        # Autostart Card
+        f1 = QFrame(); f1.setStyleSheet(card_style); l1 = QHBoxLayout(f1)
+        self.as_title = QLabel(); self.as_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.as_desc = QLabel(); self.as_desc.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v1 = QVBoxLayout(); v1.addWidget(self.as_title); v1.addWidget(self.as_desc); l1.addLayout(v1); l1.addStretch()
+        self.cb_autostart = SwitchToggle(); self.cb_autostart.setChecked(os.path.exists(self.autostart_file)); self.cb_autostart.toggled.connect(self.toggle_autostart); l1.addWidget(self.cb_autostart)
+        tab_gen_layout.addWidget(f1)
 
-        # ScrollArea-Inhalt mappen
-        scroll_area.setWidget(scroll_content)
-        page_main_layout.addWidget(scroll_area)
+        # Tray Behavior Card
+        f2 = QFrame(); f2.setStyleSheet(card_style); l2 = QHBoxLayout(f2)
+        self.tb_title = QLabel(); self.tb_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.tb_desc = QLabel(); self.tb_desc.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v2 = QVBoxLayout(); v2.addWidget(self.tb_title); v2.addWidget(self.tb_desc); l2.addLayout(v2); l2.addStretch()
+        self.cb_tray_behavior = SwitchToggle(); self.cb_tray_behavior.setChecked(self.minimize_to_tray); self.cb_tray_behavior.toggled.connect(self.toggle_tray_behavior); l2.addWidget(self.cb_tray_behavior)
+        tab_gen_layout.addWidget(f2)
 
-        # --- CARD 9: FIXED FOOTER ("ÜBER DIESE APP") ---
-        about_frame = QFrame()
-        about_frame.setStyleSheet(card_style)
-        about_layout = QHBoxLayout(about_frame)
-        about_layout.setContentsMargins(20, 15, 20, 15)
-        about_layout.setSpacing(20)
+        # Tray Start Card
+        f3 = QFrame(); f3.setStyleSheet(card_style); l3 = QHBoxLayout(f3)
+        self.start_title = QLabel(); self.start_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.start_desc = QLabel(); self.start_desc.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v3 = QVBoxLayout(); v3.addWidget(self.start_title); v3.addWidget(self.start_desc); l3.addLayout(v3); l3.addStretch()
+        self.cb_start_minimized = SwitchToggle(); self.cb_start_minimized.setChecked(self.start_minimized); self.cb_start_minimized.toggled.connect(self.toggle_start_minimized); l3.addWidget(self.cb_start_minimized)
+        tab_gen_layout.addWidget(f3)
+
+        # Language Profile Card
+        f4 = QFrame(); f4.setStyleSheet(card_style + "QComboBox { background-color: #2c313c; color: #ffffff; border: 1px solid #4c5264; border-radius: 6px; padding: 5px; min-width: 150px; }")
+        l4 = QHBoxLayout(f4); v4 = QVBoxLayout()
+        self.lang_title = QLabel(); self.lang_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.lang_status_label = QLabel(); self.lang_status_label.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v4.addWidget(self.lang_title); v4.addWidget(self.lang_status_label); l4.addLayout(v4); l4.addStretch()
+        self.combo_lang = QComboBox(); self.combo_lang.addItem("Systemstandard", "system"); self.combo_lang.addItem("Deutsch (DE)", "de"); self.combo_lang.addItem("English (US)", "en"); self.combo_lang.addItem("Español (ES)", "es"); self.combo_lang.addItem("Français (FR)", "fr"); self.combo_lang.addItem("Italiano (IT)", "it"); self.combo_lang.addItem("Nederlands (NL)", "nl"); self.combo_lang.addItem("Português (PT)", "pt"); self.combo_lang.addItem("Polski (PL)", "pl")
+        self.combo_lang.currentIndexChanged.connect(self.change_language_selection); l4.addWidget(self.combo_lang)
+        tab_gen_layout.addWidget(f4)
+
+        tab_gen_layout.addStretch()
+        tab_gen_widget.setWidget(tab_gen_content)
+        self.settings_tabs.addWidget(tab_gen_widget)
+
+        # --- TAB 2: AUDIO & MEDIEN ---
+        tab_med_widget = QScrollArea()
+        tab_med_widget.setWidgetResizable(True)
+        tab_med_widget.setFrameShape(QFrame.Shape.NoFrame)
+        tab_med_content = QWidget()
+        tab_med_layout = QVBoxLayout(tab_med_content)
+        tab_med_layout.setSpacing(12)
+
+        # Audio Output Card
+        f5 = QFrame(); f5.setStyleSheet(card_style + "QComboBox { background-color: #2c313c; color: #ffffff; border: 1px solid #4c5264; border-radius: 6px; padding: 5px; min-width: 200px; }")
+        l5 = QHBoxLayout(f5); v5 = QVBoxLayout()
+        self.audio_title = QLabel(); self.audio_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.audio_desc = QLabel(); self.audio_desc.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v5.addWidget(self.audio_title); v5.addWidget(self.audio_desc); l5.addLayout(v5); l5.addStretch()
+        self.combo_audio = QComboBox(); self.populate_audio_devices(); self.combo_audio.currentIndexChanged.connect(self.change_audio_device); l5.addWidget(self.combo_audio)
+        tab_med_layout.addWidget(f5)
+
+        # Smart Mute Card
+        f6 = QFrame(); f6.setStyleSheet(card_style + "QPushButton { background-color: #3e4451; color: #ffffff; border-radius: 6px; padding: 6px 12px; border: none; } QPushButton:hover { background-color: #4c5264; }")
+        l6 = QHBoxLayout(f6); v6 = QVBoxLayout()
+        self.mute_title = QLabel(); self.mute_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.mute_status_label = QLabel(); self.mute_status_label.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v6.addWidget(self.mute_title); v6.addWidget(self.mute_status_label); l6.addLayout(v6); l6.addStretch()
+        self.btn_mute_1h = QPushButton(); self.btn_mute_8h = QPushButton(); self.btn_mute_reset = QPushButton()
+        self.btn_mute_1h.clicked.connect(lambda: self.activate_smart_mute(1)); self.btn_mute_8h.clicked.connect(lambda: self.activate_smart_mute(8)); self.btn_mute_reset.clicked.connect(self.deactivate_smart_mute)
+        l6.addWidget(self.btn_mute_1h); l6.addWidget(self.btn_mute_8h); l6.addWidget(self.btn_mute_reset)
+        tab_med_layout.addWidget(f6)
+
+        # Download Directory Card
+        f7 = QFrame(); f7.setStyleSheet(card_style + "QPushButton { background-color: #3e4451; color: #ffffff; border-radius: 6px; padding: 6px 12px; border: none; }")
+        l7 = QHBoxLayout(f7); v7 = QVBoxLayout()
+        self.dl_title = QLabel(); self.dl_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.dl_path_label = QLabel(); self.dl_path_label.setStyleSheet("color: #25D366; font-size: 9.5pt; font-family: monospace;")
+        v7.addWidget(self.dl_title); v7.addWidget(self.dl_path_label); l7.addLayout(v7); l7.addStretch()
+        self.btn_choose_dl = QPushButton(); self.btn_choose_dl.clicked.connect(self.select_download_directory); l7.addWidget(self.btn_choose_dl)
+        tab_med_layout.addWidget(f7)
+
+        # Native Notifications Card
+        f8 = QFrame(); f8.setStyleSheet(card_style); l8 = QHBoxLayout(f8)
+        self.nt_title = QLabel(); self.nt_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.nt_desc = QLabel(); self.nt_desc.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v8 = QVBoxLayout(); v8.addWidget(self.nt_title); v8.addWidget(self.nt_desc); l8.addLayout(v8); l8.addStretch()
+        self.cb_native_notifications = SwitchToggle(); self.cb_native_notifications.setChecked(self.native_notifications); self.cb_native_notifications.toggled.connect(self.toggle_native_notifications); l8.addWidget(self.cb_native_notifications)
+        tab_med_layout.addWidget(f8)
+
+        tab_med_layout.addStretch()
+        tab_med_widget.setWidget(tab_med_content)
+        self.settings_tabs.addWidget(tab_med_widget)
+
+        # --- TAB 3: ERWEITERT ---
+        tab_adv_widget = QScrollArea()
+        tab_adv_widget.setWidgetResizable(True)
+        tab_adv_widget.setFrameShape(QFrame.Shape.NoFrame)
+        tab_adv_content = QWidget()
+        tab_adv_layout = QVBoxLayout(tab_adv_content)
+        tab_adv_layout.setSpacing(12)
+
+        # Dark Theme Card
+        f9 = QFrame(); f9.setStyleSheet(card_style); l9 = QHBoxLayout(f9)
+        self.dm_title = QLabel(); self.dm_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.dm_desc = QLabel(); self.dm_desc.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v9 = QVBoxLayout(); v9.addWidget(self.dm_title); v9.addWidget(self.dm_desc); l9.addLayout(v9); l9.addStretch()
+        self.cb_darkmode = SwitchToggle(); self.cb_darkmode.setChecked(True); self.cb_darkmode.toggled.connect(self.toggle_darkmode); l9.addWidget(self.cb_darkmode)
+        tab_adv_layout.addWidget(f9)
+
+        # Zoom Slider Card
+        f10 = QFrame(); f10.setStyleSheet(card_style + "QSlider::groove:horizontal { border: 1px solid #3e4451; height: 6px; background: #1a1d24; border-radius: 3px; } QSlider::handle:horizontal { background: #25D366; width: 14px; height: 14px; margin: -5px 0; border-radius: 7px; }")
+        l10 = QHBoxLayout(f10); v10 = QVBoxLayout()
+        self.zoom_title = QLabel(); self.zoom_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.zoom_desc_label = QLabel(); self.zoom_desc_label.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v10.addWidget(self.zoom_title); v10.addWidget(self.zoom_desc_label); l10.addLayout(v10); l10.addStretch()
+        self.zoom_slider = QSlider(Qt.Orientation.Horizontal); self.zoom_slider.setMinimum(80); self.zoom_slider.setMaximum(130); self.zoom_slider.setFixedWidth(150); self.zoom_slider.valueChanged.connect(self.update_zoom_factor); l10.addWidget(self.zoom_slider)
+        self.lbl_percent = QLabel(); self.lbl_percent.setFont(QFont("sans-serif", 11, QFont.Weight.Bold)); self.lbl_percent.setStyleSheet("color: #25D366;"); self.lbl_percent.setFixedWidth(45); self.lbl_percent.setAlignment(Qt.AlignmentFlag.AlignRight); l10.addWidget(self.lbl_percent)
+        tab_adv_layout.addWidget(f10)
+
+        # GPU Throttle Card
+        f11 = QFrame(); f11.setStyleSheet(card_style); l11 = QHBoxLayout(f11)
+        self.gpu_title = QLabel(); self.gpu_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.gpu_status_label = QLabel(); self.gpu_status_label.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v11 = QVBoxLayout(); v11.addWidget(self.gpu_title); v11.addWidget(self.gpu_status_label); l11.addLayout(v11); l11.addStretch()
+        self.cb_gpu_accel = SwitchToggle(); self.cb_gpu_accel.setChecked(self.disable_gpu_accel); self.cb_gpu_accel.toggled.connect(self.toggle_gpu_acceleration); l11.addWidget(self.cb_gpu_accel)
+        tab_adv_layout.addWidget(f11)
+
+        # Cache Clean Card
+        f12 = QFrame(); f12.setStyleSheet(card_style + "QPushButton { background-color: #e03131; color: #ffffff; border-radius: 6px; padding: 6px 12px; border: none; font-weight: bold; } QPushButton:hover { background-color: #ff4a4a; }")
+        l12 = QHBoxLayout(f12); v12 = QVBoxLayout()
+        self.cache_title = QLabel(); self.cache_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.cache_desc = QLabel(); self.cache_desc.setStyleSheet("color: #a0a0a0; font-size: 9.5pt;")
+        v12.addWidget(self.cache_title); v12.addWidget(self.cache_desc); l12.addLayout(v12); l12.addStretch()
+        self.btn_reset_cache = QPushButton(); self.btn_reset_cache.clicked.connect(self.reset_cache_and_session); l12.addWidget(self.btn_reset_cache)
+        tab_adv_layout.addWidget(f12)
+
+        tab_adv_layout.addStretch()
+        tab_adv_widget.setWidget(tab_adv_content)
+        self.settings_tabs.addWidget(tab_adv_widget)
+
+        right_layout.addWidget(self.settings_tabs)
+
+        # --- UNBEWEGLICHER INLINE FOOTER ---
+        about_frame = QFrame(); about_frame.setStyleSheet(card_style); about_layout = QHBoxLayout(about_frame)
         logo_label = QLabel()
-        if os.path.exists(self.icon_path):
-            logo_pixmap = QPixmap(self.icon_path).scaled(54, 54, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-            logo_label.setPixmap(logo_pixmap)
-        else:
-            logo_label.setText("🤖")
-            logo_label.setFont(QFont("sans-serif", 28))
+        if os.path.exists(self.icon_path): logo_label.setPixmap(QPixmap(self.icon_path).scaled(42, 42, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+        else: logo_label.setText("🤖")
         about_layout.addWidget(logo_label)
         text_layout = QVBoxLayout()
-        text_layout.setSpacing(2)
-        app_title = QLabel(f"{self.app_name}")
-        app_title.setFont(QFont("sans-serif", 13, QFont.Weight.Bold))
-        app_title.setStyleSheet("color: #25D366;")
-        self.app_version_lbl = QLabel(f"Version {self.app_version} (Advanced Desktop Build)")
-        self.app_version_lbl.setFont(QFont("sans-serif", 10))
-        self.app_version_lbl.setStyleSheet("color: #a0a0a0;")
-        self.app_desc_lbl = QLabel()
-        self.app_desc_lbl.setFont(QFont("sans-serif", 10))
-        self.app_desc_lbl.setStyleSheet("color: #d1d5db;")
+        app_title = QLabel(self.app_name); app_title.setFont(QFont("sans-serif", 11, QFont.Weight.Bold)); app_title.setStyleSheet("color: #25D366;")
+        self.app_version_lbl = QLabel(f"Version {self.app_version} (Modular Tabbed Design)")
+        self.app_version_lbl.setStyleSheet("color: #a0a0a0; font-size: 9pt;")
+        self.app_desc_lbl = QLabel(); self.app_desc_lbl.setStyleSheet("color: #d1d5db; font-size: 9pt;")
+        self.lbl_cli_title = QLabel(); self.lbl_cli_title.setFont(QFont("sans-serif", 9, QFont.Weight.Bold)); self.lbl_cli_title.setStyleSheet("color: #25D366;")
+        self.lbl_cli_hint = QLabel(); self.lbl_cli_hint.setFont(QFont("monospace", 8)); self.lbl_cli_hint.setStyleSheet("color: #a0a0a0;")
+        text_layout.addWidget(app_title); text_layout.addWidget(self.app_version_lbl); text_layout.addWidget(self.app_desc_lbl); text_layout.addWidget(self.lbl_cli_title); text_layout.addWidget(self.lbl_cli_hint)
+        about_layout.addLayout(text_layout); about_layout.addStretch()
+        right_layout.addWidget(about_frame)
 
-        # Trennlinie für die CLI-Sektion im Footer
-        cli_line = QFrame()
-        cli_line.setFrameShape(QFrame.Shape.HLine)
-        cli_line.setStyleSheet("background-color: #2c313c; margin-top: 5px; margin-bottom: 5px;")
-
-        # CLI-Shortcut Titel & Details
-        self.lbl_cli_title = QLabel()
-        self.lbl_cli_title.setFont(QFont("sans-serif", 10, QFont.Weight.Bold))
-        self.lbl_cli_title.setStyleSheet("color: #25D366;")
-        self.lbl_cli_hint = QLabel()
-        self.lbl_cli_hint.setFont(QFont("monospace", 9))
-        self.lbl_cli_hint.setStyleSheet("color: #a0a0a0; line-height: 1.2;")
-
-        app_specs = QLabel("Pure Python 3 & PyQt6 | Native Translation Dictionary Engines")
-        specs_font = QFont("sans-serif", 9)
-        specs_font.setItalic(True)
-        app_specs.setFont(specs_font)
-        app_specs.setStyleSheet("color: #71717a;")
-
-        text_layout.addWidget(app_title)
-        text_layout.addWidget(self.app_version_lbl)
-        text_layout.addWidget(self.app_desc_lbl)
-        text_layout.addWidget(cli_line)
-        text_layout.addWidget(self.lbl_cli_title)
-        text_layout.addWidget(self.lbl_cli_hint)
-        text_layout.addWidget(app_specs)
-        about_layout.addLayout(text_layout)
-        about_layout.addStretch()
-
-        page_main_layout.addWidget(about_frame)
-
+        settings_main_layout.addWidget(right_panel)
         self.container.addWidget(self.settings_page)
+
         main_layout.addWidget(self.sidebar)
         main_layout.addWidget(self.container)
 
@@ -1044,7 +799,6 @@ class MatrixWhisper(QMainWindow):
         self.browser.loadFinished.connect(self.apply_darkmode_on_load)
 
         self.retranslate_ui()
-
         self.tray_icon = QSystemTrayIcon(self)
         self.update_app_icons(0)
         self.setup_tray_menu()
@@ -1056,8 +810,7 @@ class MatrixWhisper(QMainWindow):
         self.is_initializing = False
 
     def populate_audio_devices(self):
-        self.combo_audio.blockSignals(True)
-        self.combo_audio.clear()
+        self.combo_audio.blockSignals(True); self.combo_audio.clear()
         default_device = QMediaDevices.defaultAudioOutput()
         self.combo_audio.addItem(f"Systemstandard ({default_device.description()})", "default")
         for device in QMediaDevices.audioOutputs():
@@ -1067,149 +820,94 @@ class MatrixWhisper(QMainWindow):
 
     def change_audio_device(self, index):
         device_id_str = self.combo_audio.itemData(index)
-        if device_id_str == "default":
-            self.profile.setAudioMuted(False)
-        else:
-            print(f"[MatrixWhisper] Routing Audio Stream to Device-ID: {device_id_str}")
+        if device_id_str != "default": print(f"[MatrixWhisper] Routing Audio Stream to Device-ID: {device_id_str}")
 
     def init_single_instance_server(self):
         self.instance_server = QLocalServer(self)
         runtime_dir = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.RuntimeLocation)
         self.socket_path = os.path.join(runtime_dir, "matrixwhisper_socket")
-
         QLocalServer.removeServer(self.socket_path)
-        if not self.instance_server.listen(self.socket_path):
-            print(f"[MatrixWhisper] Server error: {self.instance_server.errorString()}")
+        self.instance_server.listen(self.socket_path)
         self.instance_server.newConnection.connect(self.handle_remote_activation)
 
     def handle_remote_activation(self):
         socket = self.instance_server.nextPendingConnection()
-        if socket:
-            if socket.waitForReadyRead(500):
-                self.process_remote_command(socket)
+        if socket and socket.waitForReadyRead(500): self.process_remote_command(socket)
 
     def process_remote_command(self, socket):
         cmd = socket.readAll().data().decode().strip()
         if cmd in ["toggle", "show"]:
-            if cmd == "toggle" and self.isVisible() and not self.isMinimized():
-                self.hide()
+            if cmd == "toggle" and self.isVisible() and not self.isMinimized(): self.hide()
             else:
                 self.showNormal() if self.isMinimized() else self.show()
                 self.setWindowState(self.windowState() & ~Qt.WindowState.WindowMinimized | Qt.WindowState.WindowActive)
-                self.raise_()
-                self.activateWindow()
-        elif cmd == "mute":
-            self.activate_smart_mute(8)
-        elif cmd == "quit":
-            self.quit_application()
+                self.raise_(); self.activateWindow()
+        elif cmd == "mute": self.activate_smart_mute(8)
+        elif cmd == "quit": self.quit_application()
         socket.close()
 
     def select_download_directory(self):
         dir_path = QFileDialog.getExistingDirectory(self, "Download Ordner wählen", self.download_dir)
-        if dir_path:
-            self.download_dir = dir_path
-            self.dl_path_label.setText(self.download_dir)
-            self.save_settings()
+        if dir_path: self.download_dir = dir_path; self.dl_path_label.setText(self.download_dir); self.save_settings()
 
-    def toggle_start_minimized(self, checked):
-        self.start_minimized = checked
-        self.save_settings()
+    def toggle_start_minimized(self, checked): self.start_minimized = checked; self.save_settings()
 
     def handle_download_requested(self, download_item):
         filename = download_item.downloadFileName() if hasattr(download_item, 'downloadFileName') else os.path.basename(download_item.suggestedFileName())
-        download_item.setDownloadDirectory(self.download_dir)
-        download_item.setDownloadFileName(filename)
-        download_item.accept()
+        download_item.setDownloadDirectory(self.download_dir); download_item.setDownloadFileName(filename); download_item.accept()
 
-    def quit_application(self):
-        self.exiting = True
-        QApplication.instance().quit()
+    def quit_application(self): self.exiting = True; QApplication.instance().quit()
 
     def determine_ui_language_key(self):
-        if self.selected_language != "system":
-            return self.selected_language if self.selected_language in TRANSLATIONS else "en"
+        if self.selected_language != "system": return self.selected_language if self.selected_language in TRANSLATIONS else "en"
         try:
             sys_locale = locale.getlocale()[0]
-            if sys_locale:
-                lang_code = sys_locale.split("_")[0]
-                if lang_code in TRANSLATIONS:
-                    return lang_code
-        except Exception:
-            pass
+            if sys_locale and sys_locale.split("_")[0] in TRANSLATIONS: return sys_locale.split("_")[0]
+        except Exception: pass
         return "en"
 
     def retranslate_ui(self):
-        lang = self.ui_lang
-        t = TRANSLATIONS[lang]
+        lang = self.ui_lang; t = TRANSLATIONS[lang]
+        self.btn_settings.setToolTip(t["title"]); self.title_label.setText(t["title"])
 
-        self.btn_settings.setToolTip(t["title"])
-        self.title_label.setText(t["title"])
-        self.as_title.setText(t["as_title"])
-        self.as_desc.setText(t["as_desc"])
-        self.dm_title.setText(t["dm_title"])
-        self.dm_desc.setText(t["dm_desc"])
-        self.tb_title.setText(t["tb_title"])
-        self.tb_desc.setText(t["tb_desc"])
-        self.nt_title.setText(t["nt_title"])
-        self.nt_desc.setText(t["nt_desc"])
-        self.gpu_title.setText(t["gpu_title"])
-        self.mute_title.setText(t["mute_title"])
-        self.btn_mute_1h.setText(t["mute_btn_1h"])
-        self.btn_mute_8h.setText(t["mute_btn_8h"])
-        self.btn_mute_reset.setText(t["mute_btn_reset"])
-        self.lang_title.setText(t["lang_title"])
-        self.zoom_title.setText(t["zoom_title"])
-        self.zoom_desc_label.setText(t["zoom_desc"])
-        self.cache_title.setText(t["cache_title"])
-        self.cache_desc.setText(t["cache_desc"])
-        self.btn_reset_cache.setText(t["cache_btn"])
-        self.app_desc_lbl.setText(t["about_desc"])
-        self.dl_title.setText(t["dl_title"])
-        self.btn_choose_dl.setText(t["dl_btn"])
-        self.start_title.setText(t["start_title"])
-        self.start_desc.setText(t["start_desc"])
-        self.audio_title.setText(t["audio_title"])
-        self.audio_desc.setText(t["audio_desc"])
-        self.lbl_cli_title.setText(t["cli_title"])
-        self.lbl_cli_hint.setText(t["cli_hint"])
+        # Sub-Sidebar Items füllen
+        self.sub_sidebar.blockSignals(True); self.sub_sidebar.clear()
+        self.sub_sidebar.addItem("⚙️" + t["tab_general"])
+        self.sub_sidebar.addItem("🎧" + t["tab_media"])
+        self.sub_sidebar.addItem("🛠️" + t["tab_advanced"])
+        self.sub_sidebar.setCurrentRow(self.settings_tabs.currentIndex())
+        self.sub_sidebar.blockSignals(False)
 
-        resolved = self.resolve_http_language_string().split(",")[0]
-        self.lang_status_label.setText(f"{t['lang_header']} {resolved}")
+        self.as_title.setText(t["as_title"]); self.as_desc.setText(t["as_desc"])
+        self.dm_title.setText(t["dm_title"]); self.dm_desc.setText(t["dm_desc"])
+        self.tb_title.setText(t["tb_title"]); self.tb_desc.setText(t["tb_desc"])
+        self.nt_title.setText(t["nt_title"]); self.nt_desc.setText(t["nt_desc"])
+        self.gpu_title.setText(t["gpu_title"]); self.mute_title.setText(t["mute_title"])
+        self.btn_mute_1h.setText(t["mute_btn_1h"]); self.btn_mute_8h.setText(t["mute_btn_8h"]); self.btn_mute_reset.setText(t["mute_btn_reset"])
+        self.lang_title.setText(t["lang_title"]); self.zoom_title.setText(t["zoom_title"]); self.zoom_desc_label.setText(t["zoom_desc"])
+        self.cache_title.setText(t["cache_title"]); self.cache_desc.setText(t["cache_desc"]); self.btn_reset_cache.setText(t["cache_btn"])
+        self.app_desc_lbl.setText(t["about_desc"]); self.dl_title.setText(t["dl_title"]); self.btn_choose_dl.setText(t["dl_btn"])
+        self.start_title.setText(t["start_title"]); self.start_desc.setText(t["start_desc"])
+        self.audio_title.setText(t["audio_title"]); self.audio_desc.setText(t["audio_desc"])
+        self.lbl_cli_title.setText(t["cli_title"]); self.lbl_cli_hint.setText(t["cli_hint"])
+        self.lang_status_label.setText(f"{t['lang_header']} {self.resolve_http_language_string().split(',')[0]}")
+
+    def switch_settings_tab(self, index): self.settings_tabs.setCurrentIndex(index)
 
     def setup_tray_menu(self):
-        t = TRANSLATIONS[self.ui_lang]
-
-        if hasattr(self, 'tray_menu') and self.tray_menu:
-            self.tray_menu.clear()
-        else:
-            self.tray_menu = QMenu()
-
-        show_action = QAction(t["tray_open"], self)
-        quit_action = QAction(t["tray_quit"], self)
-
-        self.mute_tray_action = QAction(t["tray_mute_shortcut"], self)
-        self.mute_tray_action.setCheckable(True)
-
-        if self.mute_until_time and self.mute_until_time > datetime.now():
-            self.mute_tray_action.setChecked(True)
-
+        t = TRANSLATIONS[self.ui_lang]; self.tray_menu = QMenu()
+        show_action = QAction(t["tray_open"], self); quit_action = QAction(t["tray_quit"], self)
+        self.mute_tray_action = QAction(t["tray_mute_shortcut"], self); self.mute_tray_action.setCheckable(True)
+        if self.mute_until_time and self.mute_until_time > datetime.now(): self.mute_tray_action.setChecked(True)
         self.mute_tray_action.toggled.connect(self.toggle_tray_mute_from_action)
-
-        show_action.triggered.connect(self.show)
-        quit_action.triggered.connect(self.quit_application)
-
-        self.tray_menu.addAction(show_action)
-        self.tray_menu.addSeparator()
-        self.tray_menu.addAction(self.mute_tray_action)
-        self.tray_menu.addSeparator()
-        self.tray_menu.addAction(quit_action)
+        show_action.triggered.connect(self.show); quit_action.triggered.connect(self.quit_application)
+        self.tray_menu.addAction(show_action); self.tray_menu.addSeparator(); self.tray_menu.addAction(self.mute_tray_action); self.tray_menu.addSeparator(); self.tray_menu.addAction(quit_action)
         self.tray_icon.setContextMenu(self.tray_menu)
 
     def preload_config_metadata(self):
         if os.path.exists(self.config_path):
             try:
-                with open(self.config_path, "r", encoding="utf-8") as f:
-                    config = json.load(f)
+                with open(self.config_path, "r", encoding="utf-8") as f: config = json.load(f)
                 self.zoom_factor = config.get("zoom_factor", 1.1)
                 self.selected_language = config.get("language_selection", "system")
                 self.minimize_to_tray = config.get("minimize_to_tray", True)
@@ -1217,232 +915,85 @@ class MatrixWhisper(QMainWindow):
                 self.disable_gpu_accel = config.get("disable_gpu_acceleration", False)
                 self.download_dir = config.get("download_directory", os.path.expanduser("~/Downloads"))
                 self.start_minimized = config.get("start_minimized", False)
-            except Exception as e:
-                print(f"Fehler beim Preload der Config: {e}")
+            except Exception: pass
 
     def resolve_http_language_string(self):
-        if self.selected_language == "system":
-            try:
-                sys_locale = locale.getlocale()[0]
-                if sys_locale:
-                    sys_lang = sys_locale.replace("_", "-")
-                    return f"{sys_lang},{sys_lang[:2]};q=0.9,en-US;q=0.8,en;q=0.7"
-            except Exception:
-                pass
-            return "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"
-        elif self.selected_language == "de": return "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"
-        elif self.selected_language == "en": return "en-US,en;q=0.9"
-        elif self.selected_language == "es": return "es-ES,es;q=0.9,en-US;q=0.8,en;q=0.7"
-        elif self.selected_language == "fr": return "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7"
-        elif self.selected_language == "it": return "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7"
-        elif self.selected_language == "nl": return "nl-NL,nl;q=0.9,en-US;q=0.8,en;q=0.7"
-        elif self.selected_language == "pt": return "pt-PT,pt;q=0.9,en-US;q=0.8,en;q=0.7"
-        elif self.selected_language == "pl": return "pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7"
-        return "de-DE,de;q=0.9"
+        if self.selected_language != "system": return f"{self.selected_language}-{self.selected_language.upper()},{self.selected_language};q=0.9"
+        return "de-DE,de;q=0.9,en-US;q=0.8"
 
     def sync_loaded_settings_to_ui(self):
         t = TRANSLATIONS[self.ui_lang]
-        if os.path.exists(self.config_path):
-            try:
-                with open(self.config_path, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-                mute_until_str = config.get("mute_until", None)
-                if mute_until_str:
-                    mute_until = datetime.fromisoformat(mute_until_str)
-                    if mute_until > datetime.now():
-                        remaining_seconds = (mute_until - datetime.now()).total_seconds()
-                        remaining_hours = max(1, math.ceil(remaining_seconds / 3600.0))
-                        self.activate_smart_mute(remaining_hours)
-                    else:
-                        self.mute_status_label.setText(t["mute_active"])
-                else:
-                    self.mute_status_label.setText(t["mute_active"])
-            except Exception as e:
-                print(f"Fehler beim Sync der Config: {e}")
-        else:
-            self.mute_status_label.setText(t["mute_active"])
-
-        self.zoom_slider.setValue(int(self.zoom_factor * 100))
-        self.lbl_percent.setText(f"{int(self.zoom_factor * 100)}%")
-        self.browser.setZoomFactor(self.zoom_factor)
-
-        if self.disable_gpu_accel:
-            self.gpu_status_label.setText(t["gpu_active"])
-            self.gpu_status_label.setStyleSheet("color: #e03131; font-weight: bold; font-size: 10pt;")
-        else:
-            self.gpu_status_label.setText(t["gpu_reboot_off"])
-
-        self.dl_path_label.setText(self.download_dir)
-        self.cb_start_minimized.setChecked(self.start_minimized)
-        self.cb_start_minimized.thumb_position = 27.0 if self.start_minimized else 3.0
+        self.mute_status_label.setText(t["mute_active"])
+        self.zoom_slider.setValue(int(self.zoom_factor * 100)); self.lbl_percent.setText(f"{int(self.zoom_factor * 100)}%"); self.browser.setZoomFactor(self.zoom_factor)
+        if self.disable_gpu_accel: self.gpu_status_label.setText(t["gpu_active"]); self.gpu_status_label.setStyleSheet("color: #e03131; font-weight: bold;")
+        else: self.gpu_status_label.setText(t["gpu_reboot_off"])
+        self.dl_path_label.setText(self.download_dir); index = self.combo_lang.findData(self.selected_language)
+        if index != -1: self.combo_lang.setCurrentIndex(index)
 
     def save_settings(self):
         if self.is_initializing: return
-        config = {
-            "zoom_factor": self.zoom_factor,
-            "language_selection": self.selected_language,
-            "minimize_to_tray": self.minimize_to_tray,
-            "native_notifications": self.native_notifications,
-            "disable_gpu_acceleration": self.disable_gpu_accel,
-            "mute_until": self.mute_until_time.isoformat() if self.mute_until_time else None,
-            "download_directory": self.download_dir,
-            "start_minimized": self.start_minimized
-        }
+        config = {"zoom_factor": self.zoom_factor, "language_selection": self.selected_language, "minimize_to_tray": self.minimize_to_tray, "native_notifications": self.native_notifications, "disable_gpu_acceleration": self.disable_gpu_accel, "download_directory": self.download_dir, "start_minimized": self.start_minimized}
         try:
-            with open(self.config_path, "w", encoding="utf-8") as f:
-                json.dump(config, f, indent=4)
-        except Exception as e:
-            print(f"Fehler beim Speichern der Konfiguration: {e}")
+            with open(self.config_path, "w", encoding="utf-8") as f: json.dump(config, f, indent=4)
+        except Exception: pass
 
-    def toggle_tray_behavior(self, checked):
-        self.minimize_to_tray = checked
-        self.save_settings()
-
-    def toggle_native_notifications(self, checked):
-        self.native_notifications = checked
-        self.save_settings()
+    def toggle_tray_behavior(self, checked): self.minimize_to_tray = checked; self.save_settings()
+    def toggle_native_notifications(self, checked): self.native_notifications = checked; self.save_settings()
 
     def handle_web_notification(self, notification: QWebEngineNotification):
         if self.native_notifications and (not self.isVisible() or self.isMinimized()):
-            self.tray_icon.showMessage(
-                notification.title(),
-                notification.message(),
-                QSystemTrayIcon.MessageIcon.Information,
-                4000
-            )
+            self.tray_icon.showMessage(notification.title(), notification.message(), QSystemTrayIcon.MessageIcon.Information, 4000)
         notification.accept()
 
     def reset_cache_and_session(self):
-        self.browser.setUrl(QUrl("about:blank"))
-        self.profile.clearHttpCache()
-        self.profile.cookieStore().deleteAllCookies()
-
+        self.browser.setUrl(QUrl("about:blank")); self.profile.clearHttpCache(); self.profile.cookieStore().deleteAllCookies()
         try:
-            if os.path.exists(self.storage_path):
-                shutil.rmtree(self.storage_path)
-            if os.path.exists(self.cache_path):
-                shutil.rmtree(self.cache_path)
-            os.makedirs(self.storage_path, exist_ok=True)
-            os.makedirs(self.cache_path, exist_ok=True)
-        except Exception as e:
-            print(f"Fehler beim physischen Löschen des Caches: {e}")
-
-        self.browser.setUrl(QUrl("https://web.whatsapp.com"))
-        self.switch_view(0)
+            if os.path.exists(self.storage_path): shutil.rmtree(self.storage_path)
+            if os.path.exists(self.cache_path): shutil.rmtree(self.cache_path)
+            os.makedirs(self.storage_path, exist_ok=True); os.makedirs(self.cache_path, exist_ok=True)
+        except Exception: pass
+        self.browser.setUrl(QUrl("https://web.whatsapp.com")); self.switch_view(0)
 
     def toggle_gpu_acceleration(self, checked):
-        self.disable_gpu_accel = checked
-        self.save_settings()
-        t = TRANSLATIONS[self.ui_lang]
-        if checked:
-            self.gpu_status_label.setText(t["gpu_reboot_on"])
-            self.gpu_status_label.setStyleSheet("color: #e03131; font-weight: bold; font-size: 10pt;")
-        else:
-            self.gpu_status_label.setText(t["gpu_reboot_off"])
-            self.gpu_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
+        self.disable_gpu_accel = checked; self.save_settings(); t = TRANSLATIONS[self.ui_lang]
+        self.gpu_status_label.setText(t["gpu_reboot_on"] if checked else t["gpu_reboot_off"])
 
     def change_language_selection(self, index):
-        self.selected_language = self.combo_lang.itemData(index)
-        self.save_settings()
-        self.ui_lang = self.determine_ui_language_key()
-        self.retranslate_ui()
-        self.setup_tray_menu()
-
-        t = TRANSLATIONS[self.ui_lang]
-        resolved = self.resolve_http_language_string().split(",")[0]
-        self.lang_status_label.setText(f"{t['lang_reboot']} {resolved} ⚠️")
-        self.lang_status_label.setStyleSheet("color: #e03131; font-weight: bold; font-size: 10pt;")
+        self.selected_language = self.combo_lang.itemData(index); self.save_settings(); self.ui_lang = self.determine_ui_language_key(); self.retranslate_ui(); self.setup_tray_menu()
 
     def activate_smart_mute(self, hours):
         if self.mute_timer: self.mute_timer.stop()
-        self.browser.page().setAudioMuted(True)
-        self.mute_until_time = datetime.now() + timedelta(hours=hours)
-        formatted_time = self.mute_until_time.strftime("%H:%M")
-
-        if self.ui_lang == "de": prefix = "Stumm bis"
-        else: prefix = "Muted until"
-
-        self.mute_status_label.setText(f"{prefix} {formatted_time}")
-        self.mute_status_label.setStyleSheet("color: #e03131; font-weight: bold; font-size: 10pt;")
-        if hours == 8:
-            self.mute_tray_action.blockSignals(True)
-            self.mute_tray_action.setChecked(True)
-            self.mute_tray_action.blockSignals(False)
-        self.save_settings()
-        self.mute_timer = QTimer(self)
-        self.mute_timer.singleShot(hours * 3600000, self.deactivate_smart_mute)
+        self.browser.page().setAudioMuted(True); self.mute_until_time = datetime.now() + timedelta(hours=hours)
+        self.mute_status_label.setText(f"Stumm bis {self.mute_until_time.strftime('%H:%M')}"); self.save_settings()
+        self.mute_timer = QTimer(self); self.mute_timer.singleShot(hours * 3600000, self.deactivate_smart_mute)
 
     def deactivate_smart_mute(self):
-        self.browser.page().setAudioMuted(False)
-        t = TRANSLATIONS[self.ui_lang]
-        self.mute_status_label.setText(t["mute_active"])
-        self.mute_status_label.setStyleSheet("color: #a0a0a0; font-size: 10pt;")
-        self.mute_tray_action.blockSignals(True)
-        self.mute_tray_action.setChecked(False)
-        self.mute_tray_action.blockSignals(False)
-        if self.mute_timer:
-            self.mute_timer.stop()
-            self.mute_timer = None
-        self.mute_until_time = None
-        self.save_settings()
+        self.browser.page().setAudioMuted(False); t = TRANSLATIONS[self.ui_lang]; self.mute_status_label.setText(t["mute_active"])
+        if self.mute_timer: self.mute_timer.stop(); self.mute_timer = None
+        self.mute_until_time = None; self.save_settings()
 
-    def toggle_tray_mute_from_action(self, checked):
-        if checked: self.activate_smart_mute(8)
-        else: self.deactivate_smart_mute()
-
-    def update_zoom_factor(self, value):
-        self.zoom_factor = value / 100.0
-        self.browser.setZoomFactor(self.zoom_factor)
-        self.lbl_percent.setText(f"{value}%")
-        self.save_settings()
+    def toggle_tray_mute_from_action(self, checked): self.activate_smart_mute(8) if checked else self.deactivate_smart_mute()
+    def update_zoom_factor(self, value): self.zoom_factor = value / 100.0; self.browser.setZoomFactor(self.zoom_factor); self.lbl_percent.setText(f"{value}%"); self.save_settings()
 
     def draw_vector_chat_icon(self):
-        pixmap = QPixmap(32, 32)
-        pixmap.fill(Qt.GlobalColor.transparent)
-        painter = QPainter(pixmap)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        pen = QPen(QColor("#25D366"), 2)
-        pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
-        painter.setPen(pen)
-        rect = QRectF(2, 4, 28, 19)
-        painter.drawRoundedRect(rect, 5, 5)
-        triangle = QPolygonF()
-        triangle.append(QPointF(6.0, 23.0))
-        triangle.append(QPointF(12.0, 23.0))
-        triangle.append(QPointF(6.0, 28.0))
-        painter.drawPolygon(triangle)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(QColor("#1e222b"))
-        painter.drawRect(QRectF(6.5, 22.0, 5.0, 2.0))
-        painter.end()
-        return QIcon(pixmap)
+        p = QPixmap(32, 32); p.fill(Qt.GlobalColor.transparent); painter = QPainter(p); painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        pen = QPen(QColor("#25D366"), 2); pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin); painter.setPen(pen); painter.drawRoundedRect(QRectF(2, 4, 28, 19), 5, 5)
+        t = QPolygonF([QPointF(6.0, 23.0), QPointF(12.0, 23.0), QPointF(6.0, 28.0)]); painter.drawPolygon(t); painter.setPen(Qt.PenStyle.NoPen); painter.setBrush(QColor("#1e222b")); painter.drawRect(QRectF(6.5, 22.0, 5.0, 2.0)); painter.end()
+        return QIcon(p)
 
     def draw_vector_sliders_icon(self):
-        pixmap = QPixmap(32, 32)
-        pixmap.fill(Qt.GlobalColor.transparent)
-        painter = QPainter(pixmap)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        pen = QPen(QColor("#25D366"), 2)
-        painter.setPen(pen)
-        y_positions = [8.0, 16.0, 24.0]
-        knob_x_positions = [22.0, 10.0, 18.0]
-        for i in range(3):
-            y = y_positions[i]
-            kx = knob_x_positions[i]
-            painter.setBrush(Qt.BrushStyle.NoBrush)
-            painter.drawLine(QPointF(4.0, y), QPointF(28.0, y))
-            painter.setBrush(QColor("#1e222b"))
-            painter.drawEllipse(QPointF(kx, y), 3.0, 3.0)
+        p = QPixmap(32, 32); p.fill(Qt.GlobalColor.transparent); painter = QPainter(p); painter.setRenderHint(QPainter.RenderHint.Antialiasing); painter.setPen(QPen(QColor("#25D366"), 2))
+        for y, kx in [(8.0, 22.0), (16.0, 10.0), (24.0, 18.0)]: painter.setBrush(Qt.BrushStyle.NoBrush); painter.drawLine(QPointF(4.0, y), QPointF(28.0, y)); painter.setBrush(QColor("#1e222b")); painter.drawEllipse(QPointF(kx, y), 3.0, 3.0)
         painter.end()
-        return QIcon(pixmap)
+        return QIcon(p)
 
-    def switch_view(self, index):
-        self.container.setCurrentIndex(index)
-        self.btn_chat.setChecked(index == 0)
-        self.btn_settings.setChecked(index == 1)
+    def switch_view(self, index): self.container.setCurrentIndex(index); self.btn_chat.setChecked(index == 0); self.btn_settings.setChecked(index == 1)
+    def handle_permission_requested(self, request): request.grant()
+    def toggle_darkmode(self, checked): self.browser.page().runJavaScript(f"document.body.classList.{'add' if checked else 'remove'}('dark');")
 
-    def handle_permission_requested(self, request):
-        request.grant()
+    def apply_darkmode_on_load(self, success):
+        if success and self.cb_darkmode.isChecked():
+            self.toggle_darkmode(True)
 
     def toggle_autostart(self, checked):
         if checked:
@@ -1460,105 +1011,55 @@ StartupWMClass=matrixwhisper.py
 X-GNOME-Autostart-enabled=true
 """
             try:
-                with open(self.autostart_file, "w", encoding="utf-8") as f:
-                    f.write(desktop_entry)
+                with open(self.autostart_file, "w", encoding="utf-8") as f: f.write(desktop_entry)
                 os.chmod(self.autostart_file, 0o755)
-            except Exception as e:
-                print(f"Fehler beim Erstellen des Autostarts: {e}")
-                self.cb_autostart.setChecked(False)
+            except Exception: self.cb_autostart.setChecked(False)
         else:
             if os.path.exists(self.autostart_file):
                 try: os.remove(self.autostart_file)
-                except Exception as e: print(f"Fehler beim Löschen des Autostarts: {e}")
-
-    def toggle_darkmode(self, checked):
-        if checked: self.browser.page().runJavaScript("document.body.classList.add('dark');")
-        else: self.browser.page().runJavaScript("document.body.classList.remove('dark');")
-
-    def apply_darkmode_on_load(self, success):
-        if success and self.cb_darkmode.isChecked(): self.toggle_darkmode(True)
-
-    def create_badge_icon(self, count):
-        if not os.path.exists(self.icon_path): return QIcon.fromTheme("mail-message")
-        base_pixmap = QPixmap(self.icon_path)
-        if base_pixmap.isNull(): return QIcon.fromTheme("mail-message")
-        if count > 0:
-            badge_pixmap = base_pixmap.copy()
-            painter = QPainter(badge_pixmap)
-            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            w = badge_pixmap.width()
-            radius = int(w * 0.28)
-            center_x = w - radius - 1
-            center_y = radius + 1
-            painter.setPen(Qt.PenStyle.NoPen)
-            painter.setBrush(QColor(239, 68, 68))
-            painter.drawEllipse(QPoint(center_x, center_y), radius, radius)
-            text = str(count) if count < 10 else "9+"
-            font = QFont("sans-serif", int(radius * 1.25), QFont.Weight.Bold)
-            painter.setFont(font)
-            painter.setPen(QColor(255, 255, 255))
-            painter.drawText(center_x - radius, center_y - radius, radius * 2, radius * 2, Qt.AlignmentFlag.AlignCenter, text)
-            painter.end()
-            return QIcon(badge_pixmap)
-        return QIcon(base_pixmap)
-
-    def update_app_icons(self, count):
-        icon = self.create_badge_icon(count)
-        self.setWindowIcon(icon)
-        if hasattr(self, 'tray_icon'): self.tray_icon.setIcon(icon)
+                except Exception: pass
 
     def check_notifications(self, title):
-        match = re.search(r'\((\d+)\)', title)
-        if match:
-            anzahl = int(match.group(1))
-            self.setWindowTitle(f"{self.app_name} ({anzahl} ungelesen)")
-            self.tray_icon.setToolTip(f"{self.app_name}: {anzahl} ungelesene Nachrichten")
-            self.update_app_icons(anzahl)
-            if self.cb_darkmode.isChecked(): self.toggle_darkmode(True)
-        else:
-            self.setWindowTitle(self.app_name)
-            self.tray_icon.setToolTip(self.app_name)
-            self.update_app_icons(0)
+        m = re.search(r'\((\d+)\)', title)
+        if m:
+            a = int(m.group(1)); self.setWindowTitle(f"{self.app_name} ({a} ungelesen)"); self.tray_icon.setToolTip(f"{self.app_name}: {a} ungelesene Nachrichten"); self.update_app_icons(a)
+        else: self.setWindowTitle(self.app_name); self.tray_icon.setToolTip(self.app_name); self.update_app_icons(0)
+
+    def update_app_icons(self, count):
+        if not os.path.exists(self.icon_path): return
+        bp = QPixmap(self.icon_path)
+        if count > 0:
+            badge = bp.copy(); painter = QPainter(badge); painter.setRenderHint(QPainter.RenderHint.Antialiasing); w = badge.width(); r = int(w * 0.28); cx, cy = w - r - 1, r + 1
+            painter.setPen(Qt.PenStyle.NoPen); painter.setBrush(QColor(239, 68, 68)); painter.drawEllipse(QPoint(cx, cy), r, r)
+            painter.setFont(QFont("sans-serif", int(r * 1.25), QFont.Weight.Bold)); painter.setPen(QColor(255, 255, 255)); painter.drawText(cx - r, cy - r, r * 2, r * 2, Qt.AlignmentFlag.AlignCenter, str(count) if count < 10 else "9+"); painter.end()
+            self.setWindowIcon(QIcon(badge)); self.tray_icon.setIcon(QIcon(badge))
+        else: self.setWindowIcon(QIcon(bp)); self.tray_icon.setIcon(QIcon(bp))
 
     def closeEvent(self, event):
-        if self.exiting:
-            event.accept()
-            return
-
-        if self.minimize_to_tray:
-            event.ignore()
-            self.hide()
-            t = TRANSLATIONS[self.ui_lang]
-            self.tray_icon.showMessage(
-                self.app_name, t["tray_whisper"],
-                QSystemTrayIcon.MessageIcon.Information, 2000
-            )
-        else:
-            self.quit_application()
+        if self.exiting: event.accept()
+        elif self.minimize_to_tray: event.ignore(); self.hide()
+        else: self.quit_application()
 
     def tray_icon_activated(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
             if self.isVisible(): self.hide()
             else:
                 self.show()
-                self.raise_()
-                self.activateWindow()
+                self.setWindowState(self.windowState() & ~Qt.WindowState.WindowMinimized | Qt.WindowState.WindowActive)
+                self.raise_(); self.activateWindow()
+
 
 if __name__ == "__main__":
     script_directory = os.path.dirname(os.path.abspath(__file__))
-
-    # 1. Argument-Parser für CLI definieren
     parser = argparse.ArgumentParser(description="MatrixWhisper CLI Controller")
-    parser.add_argument("--minimized", action="store_true", help="Startet die App direkt minimiert im System-Tray")
-    parser.add_argument("--toggle", action="store_true", help="Blendet das Fenster der laufenden Instanz ein oder aus")
-    parser.add_argument("--mute", action="store_true", help="Schaltet die laufende Instanz sofort für 8 Stunden lautlos")
-    parser.add_argument("--quit", action="store_true", help="Beendet die im Hintergrund laufende Instanz sauber")
+    parser.add_argument("--minimized", action="store_true")
+    parser.add_argument("--toggle", action="store_true")
+    parser.add_argument("--mute", action="store_true")
+    parser.add_argument("--quit", action="store_true")
     args = parser.parse_args()
 
-    # 2. IPC Socket-Check: Läuft bereits eine Instanz?
     runtime_dir = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.RuntimeLocation)
     socket_path = os.path.join(runtime_dir, "matrixwhisper_socket")
-
     socket = QLocalSocket()
     socket.connectToServer(socket_path)
 
@@ -1567,33 +1068,16 @@ if __name__ == "__main__":
         if args.toggle: cmd = "toggle"
         elif args.mute: cmd = "mute"
         elif args.quit: cmd = "quit"
-
-        socket.write(cmd.encode())
-        socket.flush()
-        socket.waitForBytesWritten(500)
-        socket.disconnectFromServer()
+        socket.write(cmd.encode()); socket.flush(); socket.waitForBytesWritten(500); socket.disconnectFromServer()
         sys.exit(0)
-
-    # 3. Master-Instanz initialisieren, falls noch kein Server läuft
-    gitignore_file = os.path.join(script_directory, ".gitignore")
-    if not os.path.exists(gitignore_file):
-        try:
-            with open(gitignore_file, "w", encoding="utf-8") as f:
-                f.write("config.json\n__pycache__/\n*.pyc\n")
-        except Exception:
-            pass
 
     cfg_file = os.path.join(script_directory, "config.json")
     if os.path.exists(cfg_file):
         try:
-            with open(cfg_file, "r", encoding="utf-8") as f:
-                raw_cfg = json.load(f)
+            with open(cfg_file, "r", encoding="utf-8") as f: raw_cfg = json.load(f)
             if raw_cfg.get("disable_gpu_acceleration", False):
-                sys.argv.append("--disable-gpu")
-                sys.argv.append("--disable-software-rasterizer")
-                print("[MatrixWhisper] Power saver active: Hardware acceleration throttle enabled.")
-        except Exception:
-            pass
+                sys.argv.extend(["--disable-gpu", "--disable-software-rasterizer"])
+        except Exception: pass
 
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
@@ -1601,10 +1085,5 @@ if __name__ == "__main__":
     app.setApplicationName("MatrixWhisper")
 
     window = MatrixWhisper()
-
-    if args.minimized or window.start_minimized:
-        pass
-    else:
-        window.show()
-
+    if not (args.minimized or window.start_minimized): window.show()
     sys.exit(app.exec())

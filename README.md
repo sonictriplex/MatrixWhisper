@@ -2,7 +2,7 @@
   <img src="media/media-matrix-logo.png" alt="MatrixWhisper Logo" width="128" height="128">
 </p>
 
-<h1 align="center">MatrixWhisper v2.7.5</h1>
+<h1 align="center">MatrixWhisper v2.7.6</h1>
 
 <p align="center">
   <strong>Ein hochoptimierter, nativer WhatsApp Web Client für Linux Desktops.</strong><br>

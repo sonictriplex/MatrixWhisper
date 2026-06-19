@@ -133,6 +133,22 @@ python3 matrixwhisper.py --show
 
 ---
 
+## 🗺️ Roadmap / Bekannte Probleme
+
+### 1. `--show`-Argument fehlt im Parser
+Die README erwähnt den Befehl `python3 matrixwhisper.py --show`, aber der Argument-Parser in `matrixwhisper.py` kennt dieses Argument nicht. Ein Aufruf mit `--show` führt zu einem Fehler.  
+**Lösung:** `parser.add_argument("--show", action="store_true")` im `__main__`-Block ergänzen.
+
+### 2. Smart-Mute-Timer funktioniert nicht
+In `activate_smart_mute` wird `self.mute_timer.singleShot(...)` verwendet. `singleShot` ist eine statische Methode, die keinen Timer zurückgibt. Der erstellte `QTimer` wird nie gestartet, sodass die Stummschaltung nie automatisch aufgehoben wird.  
+**Lösung:** Stattdessen `self.mute_timer.timeout.connect(self.deactivate_smart_mute)` und `self.mute_timer.start(hours * 3600000)` verwenden.
+
+### 3. Audio-Ausgabegerät-Umleitung nicht implementiert
+Die Methode `change_audio_device` gibt nur eine Print-Anweisung aus, leitet den Audio-Stream aber nicht tatsächlich um. Die Auswahl in den Einstellungen hat derzeit keine Wirkung.  
+**Lösung:** Eine echte Qt-Multimedia-Routing-Implementierung einbauen (z. B. `QAudioSink` mit dem gewählten Gerät).
+
+---
+
 ## 📄 Lizenz / License
 
 Dieses Projekt ist unter der **MIT License** lizenziert – siehe die Datei `LICENSE` für Details.

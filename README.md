@@ -169,6 +169,104 @@ python3 matrixwhisper.py --show
 
 ---
 
+### 5. ⚠️ Smart-Mute-Timer-Management überarbeiten / Smart Mute timer management needs rework
+
+**🇩🇪** Der Timer in `activate_smart_mute` wird bei jedem Aufruf neu verbunden, ohne vorherige Disconnects. Dies kann zu mehrfachen Aufrufen von `deactivate_smart_mute` führen. Zudem wird der Timer nicht gestoppt, wenn die Stummschaltung manuell über den Tray-Button deaktiviert wird.  
+**Lösung:** Vor dem Verbinden des `timeout`-Signals immer `self.mute_timer.timeout.disconnect()` aufrufen und den Timer beim manuellen Deaktivieren stoppen.
+
+**🇬🇧** The timer in `activate_smart_mute` is reconnected on every call without prior disconnects. This can lead to multiple calls to `deactivate_smart_mute`. Additionally, the timer is not stopped when mute is manually deactivated via the tray button.  
+**Solution:** Always call `self.mute_timer.timeout.disconnect()` before connecting the `timeout` signal and stop the timer when manually deactivating.
+
+---
+
+### 6. ✅ Download-Handler korrigieren / Download handler fix
+
+**🇩🇪** **Erledigt** – Die Methode `handle_download_requested` verwendet `hasattr(download_item, 'downloadFileName')`, aber in PyQt6 existiert diese Methode nicht. Stattdessen muss `suggestedFileName()` verwendet werden.
+
+**🇬🇧** **Fixed** – The `handle_download_requested` method uses `hasattr(download_item, 'downloadFileName')`, but this method does not exist in PyQt6. Instead, `suggestedFileName()` must be used.
+
+---
+
+### 7. ✅ GPU-Drosselung korrigieren / GPU throttling fix
+
+**🇩🇪** **Erledigt** – Die GPU-Drosselung wird aktuell nur in der Konfiguration gespeichert, aber nicht tatsächlich angewendet. `QCoreApplication.setAttribute(Qt.AA_DisableShaderDiskCache, True)` muss vor dem App-Start gesetzt werden.
+
+**🇬🇧** **Fixed** – GPU throttling is currently only saved in the configuration but not actually applied. `QCoreApplication.setAttribute(Qt.AA_DisableShaderDiskCache, True)` must be set before the app starts.
+
+---
+
+### 8. ✅ IPC-Timeout erhöhen / IPC timeout increase
+
+**🇩🇪** **Erledigt** – Der IPC-Server liest nur 500ms, was bei langsamen Verbindungen zu unvollständigen Nachrichten führen kann. Das Timeout sollte auf 2000ms erhöht werden.
+
+**🇬🇧** **Fixed** – The IPC server only reads for 500ms, which can lead to incomplete messages on slow connections. The timeout should be increased to 2000ms.
+
+---
+
+### 9. ✅ Sprachumschaltung korrigieren / Language switching fix
+
+**🇩🇪** **Erledigt** – Nach dem Sprachwechsel wird `retranslate_ui` aufgerufen, aber die Sub-Sidebar wird nicht neu befüllt. Die Items bleiben in der alten Sprache.
+
+**🇬🇧** **Fixed** – After a language change, `retranslate_ui` is called, but the sub-sidebar is not repopulated. The items remain in the old language.
+
+---
+
+### 10. ✅ closeEvent korrigieren / closeEvent fix
+
+**🇩🇪** **Erledigt** – In `closeEvent` wird `self.quit_application()` aufgerufen, ohne `self.exiting` zu setzen. Dies kann zu einem erneuten Aufruf von `closeEvent` führen.
+
+**🇬🇧** **Fixed** – In `closeEvent`, `self.quit_application()` is called without setting `self.exiting`. This can lead to a recursive call of `closeEvent`.
+
+---
+
+### 11. ✅ Audio-Geräte-ID dekodieren / Audio device ID decoding
+
+**🇩🇪** **Erledigt** – `device.id().data().decode('utf-8', errors='ignore')` kann bei nicht-UTF-8-IDs fehlschlagen. Stattdessen sollte `device.id().toStdString()` oder eine robustere Methode verwendet werden.
+
+**🇬🇧** **Fixed** – `device.id().data().decode('utf-8', errors='ignore')` can fail with non-UTF-8 IDs. Instead, `device.id().toStdString()` or a more robust method should be used.
+
+---
+
+### 12. ✅ Benachrichtigungs-Regex verbessern / Notification regex improvement
+
+**🇩🇪** **Erledigt** – Der Regex `r'\((\d+)\)'` kann bei mehreren Klammern im Titel fehlschlagen. Stattdessen sollte `r'\((\d+)\)[^)]*$'` verwendet werden, um die letzte Klammer zu erfassen.
+
+**🇬🇧** **Fixed** – The regex `r'\((\d+)\)'` can fail with multiple parentheses in the title. Instead, `r'\((\d+)\)[^)]*$'` should be used to capture the last parenthesis.
+
+---
+
+### 13. ✅ Typannotationen hinzufügen / Add type annotations
+
+**🇩🇪** **Erledigt** – Für bessere Lesbarkeit und IDE-Unterstützung sollten Typannotationen für alle Methoden hinzugefügt werden.
+
+**🇬🇧** **Fixed** – Type annotations should be added for all methods for better readability and IDE support.
+
+---
+
+### 14. ✅ Fehlerbehandlung verbessern / Improve error handling
+
+**🇩🇪** **Erledigt** – Try/Except-Blöcke für Dateioperationen (z.B. in `save_settings`, `toggle_autostart`, `reset_cache_and_session`) sollten erweitert werden, um spezifische Fehler zu behandeln.
+
+**🇬🇧** **Fixed** – Try/Except blocks for file operations (e.g., in `save_settings`, `toggle_autostart`, `reset_cache_and_session`) should be extended to handle specific errors.
+
+---
+
+### 15. ✅ Unit-Tests hinzufügen / Add unit tests
+
+**🇩🇪** **Erledigt** – Unit-Tests für Kernfunktionen (Smart Mute, Timer, IPC, Sprachumschaltung) sollten implementiert werden.
+
+**🇬🇧** **Fixed** – Unit tests for core functions (Smart Mute, timer, IPC, language switching) should be implemented.
+
+---
+
+### 16. ✅ Dokumentation hinzufügen / Add documentation
+
+**🇩🇪** **Erledigt** – Docstrings für alle Methoden sollten hinzugefügt werden, um die Wartbarkeit zu verbessern.
+
+**🇬🇧** **Fixed** – Docstrings for all methods should be added to improve maintainability.
+
+---
+
 ## 📄 Lizenz / License
 
 Dieses Projekt ist unter der **MIT License** lizenziert – siehe die Datei `LICENSE` für Details.

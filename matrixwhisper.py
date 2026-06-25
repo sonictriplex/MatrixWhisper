@@ -157,7 +157,7 @@ TRANSLATIONS = {
         "audio_title": "Dispositivo de salida de audio",
         "audio_desc": "Establecer el canal de audio predeterminado para WhatsApp",
         "cli_title": "Comandos de terminal CLI disponibles:",
-        "cli_hint": "• matrixwhisper.py --toggle  ➔  Mostrar/ocultar ventana\n• matrixwhisper.py --mute    ➔  Silenciar por 8h\n• matrixwhisper.py --quit    ➔  Cerrar la aplicación por completo"
+        "cli_hint": "• matrixwhisper.py --toggle  ➔  Mostrar/ocultar ventana\n• matrixwhisper.py --mute    ➔  Silenciar por 8h\n• matrixwhisper.py --quit    ➔  Cerrar la aplicação por completo"
     },
     "fr": {
         "title": "Paramètres",
@@ -220,7 +220,7 @@ TRANSLATIONS = {
         "nt_desc": "Stabilisce se le notifiche web devono apparire como notifiche di sistema quando la finestra è chiusa",
         "gpu_title": "Risparmio energetico (GPU)",
         "gpu_desc": "Disattiva l'accelerazione hardware della WebEngine",
-        "gpu_active": "Stato: GPU disattivata (Risparmio energetico attivo) ⚠️",
+        "gpu_active": "Stato: GPU disattivata (Risparmio energetico active) ⚠️",
         "gpu_reboot_on": "Effetto dopo il riavvio: la GPU verrà disattivata 🔋",
         "gpu_reboot_off": "Effetto dopo il riavvio: GPU attiva (Predefinito)",
         "mute_title": "Sentinella silenziosa (Smart Mute)",
@@ -449,7 +449,13 @@ class CustomWebEnginePage(QWebEnginePage):
         self._link_interceptors = []
 
     def acceptNavigationRequest(self, url, nav_type, is_main_frame):
-        if "whatsapp.com" not in url.toString() and url.toString() != "about:blank":
+        url_str = url.toString()
+
+        # Blockiert unerwünschte Hintergrund-Flows/Popups von WhatsApp direkt beim Aufruf
+        if "flows.whatsapp.net" in url_str:
+            return False
+
+        if "whatsapp.com" not in url_str and url_str != "about:blank":
             QDesktopServices.openUrl(url)
             return False
         return super().acceptNavigationRequest(url, nav_type, is_main_frame)
@@ -485,8 +491,12 @@ class MatrixWhisper(QMainWindow):
         self.autostart_file = os.path.join(self.autostart_dir, "matrixwhisper.desktop")
 
         self.zoom_factor = 1.1
-        self.mute_timer = None
+
+        # Smart Mute Core-Variablen sauber initialisieren
+        self.smart_mute_active = False
+        self.mute_timer = QTimer(self)
         self.mute_until_time = None
+
         self.selected_language = "system"
         self.minimize_to_tray = True
         self.native_notifications = True
@@ -532,7 +542,7 @@ class MatrixWhisper(QMainWindow):
         )
         self.profile.setHttpUserAgent(chrome_user_agent)
 
-        # --- HIER DEN STORAGE-FIX WIEDER EINFÜGEN ---
+        # --- STORAGE-FIX ---
         fake_storage_script = QWebEngineScript()
         fake_storage_script.setSourceCode("""
             if (navigator.storage && navigator.storage.persist) {
@@ -981,10 +991,8 @@ class MatrixWhisper(QMainWindow):
         self.smart_mute_active = True
         self.web_page.setAudioMuted(True)
 
-        # Falls der Timer schon läuft (z.B. Wechsel von 1h auf 8h), vorher stoppen
         self.mute_timer.stop()
 
-        # Signal trennen und neu verbinden, um doppelte Registrierungen zu vermeiden
         try:
             self.mute_timer.timeout.disconnect()
         except TypeError:
@@ -992,15 +1000,11 @@ class MatrixWhisper(QMainWindow):
 
         self.mute_timer.timeout.connect(self.deactivate_smart_mute)
 
-        # Stunden in Millisekunden umrechnen und starten
         milliseconds = int(hours * 3600000)
         self.mute_timer.start(milliseconds)
 
-        # Sprachneutraler Core-Log fürs Terminal
         print(f"[Smart Mute] Activated for {hours} hour(s).")
-
-        # Das aktualisiert das Tray-Menü und zieht die korrekte Übersetzung live
-        self.update_tray_menu()
+        self.setup_tray_menu()
 
     def deactivate_smart_mute(self):
         """Hebt die Stummschaltung automatisch wieder auf"""
@@ -1008,7 +1012,7 @@ class MatrixWhisper(QMainWindow):
         self.web_page.setAudioMuted(False)
         self.mute_timer.stop()
         print("[Smart Mute] Automatically deactivated. Audio restored.")
-        self.update_tray_menu()
+        self.setup_tray_menu()
 
     def toggle_tray_mute_from_action(self, checked): self.activate_smart_mute(8) if checked else self.deactivate_smart_mute()
     def update_zoom_factor(self, value): self.zoom_factor = value / 100.0; self.browser.setZoomFactor(self.zoom_factor); self.lbl_percent.setText(f"{value}%"); self.save_settings()
@@ -1103,11 +1107,11 @@ if __name__ == "__main__":
     socket.connectToServer(socket_path)
 
     if socket.waitForConnected(500):
-        cmd = "show"  # Standard-Fallback
+        cmd = "show"
         if args.toggle: cmd = "toggle"
         elif args.mute: cmd = "mute"
         elif args.quit: cmd = "quit"
-        elif args.show: cmd = "show"  # <-- Explizit für das --show Argument
+        elif args.show: cmd = "show"
 
         socket.write(cmd.encode()); socket.flush(); socket.waitForBytesWritten(500); socket.disconnectFromServer()
         sys.exit(0)

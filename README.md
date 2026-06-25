@@ -169,6 +169,102 @@ python3 matrixwhisper.py --show
 
 ---
 
+### 5. ✅ Smart-Mute-Timer-Management überarbeiten / Smart Mute timer management rework
+
+**🇩🇪** **Erledigt** – Der Timer in `activate_smart_mute` wird jetzt korrekt mit `self.mute_timer.timeout.disconnect()` vor dem Verbinden getrennt. Der Timer wird beim manuellen Deaktivieren über den Tray-Button gestoppt.
+
+**🇬🇧** **Fixed** – The timer in `activate_smart_mute` is now correctly disconnected with `self.mute_timer.timeout.disconnect()` before reconnecting. The timer is stopped when manually deactivated via the tray button.
+
+---
+
+### 6. ✅ Download-Handler korrigieren / Download handler fix
+
+**🇩🇪** **Erledigt** – Die Methode `handle_download_requested` verwendet jetzt korrekt `suggestedFileName()` anstelle von `downloadFileName()`.
+
+**🇬🇧** **Fixed** – The `handle_download_requested` method now correctly uses `suggestedFileName()` instead of `downloadFileName()`.
+
+---
+
+### 7. ✅ GPU-Drosselung korrigieren / GPU throttling fix
+
+**🇩🇪** **Erledigt** – Die GPU-Drosselung wird jetzt korrekt vor dem App-Start mit `QCoreApplication.setAttribute(Qt.AA_DisableShaderDiskCache, True)` angewendet.
+
+**🇬🇧** **Fixed** – GPU throttling is now correctly applied before app start with `QCoreApplication.setAttribute(Qt.AA_DisableShaderDiskCache, True)`.
+
+---
+
+### 8. ✅ IPC-Timeout erhöhen / IPC timeout increase
+
+**🇩🇪** **Erledigt** – Der IPC-Server liest jetzt mit `waitForReadyRead(2000)` statt 500ms.
+
+**🇬🇧** **Fixed** – The IPC server now reads with `waitForReadyRead(2000)` instead of 500ms.
+
+---
+
+### 9. ✅ Sprachumschaltung korrigieren / Language switching fix
+
+**🇩🇪** **Erledigt** – Nach dem Sprachwechsel wird die Sub-Sidebar jetzt korrekt neu befüllt.
+
+**🇬🇧** **Fixed** – After a language change, the sub-sidebar is now correctly repopulated.
+
+---
+
+### 10. ✅ closeEvent korrigieren / closeEvent fix
+
+**🇩🇪** **Erledigt** – `self.exiting` wird jetzt vor `self.quit_application()` gesetzt, um rekursive Aufrufe zu verhindern.
+
+**🇬🇧** **Fixed** – `self.exiting` is now set before `self.quit_application()` to prevent recursive calls.
+
+---
+
+### 11. ✅ Audio-Geräte-ID dekodieren / Audio device ID decoding
+
+**🇩🇪** **Erledigt** – Die Audio-Geräte-ID wird jetzt mit `device.id().toStdString()` dekodiert, um UTF-8-Probleme zu vermeiden.
+
+**🇬🇧** **Fixed** – The audio device ID is now decoded with `device.id().toStdString()` to avoid UTF-8 issues.
+
+---
+
+### 12. ✅ Benachrichtigungs-Regex verbessern / Notification regex improvement
+
+**🇩🇪** **Erledigt** – Der Regex `r'\((\d+)\)[^)]*$'` wird jetzt verwendet, um die letzte Klammer im Titel zu erfassen.
+
+**🇬🇧** **Fixed** – The regex `r'\((\d+)\)[^)]*$'` is now used to capture the last parenthesis in the title.
+
+---
+
+### 13. ⏳ Typannotationen hinzufügen / Add type annotations
+
+**🇩🇪** **Geplant** – Typannotationen für alle Methoden sollten hinzugefügt werden, um die Lesbarkeit und IDE-Unterstützung zu verbessern.
+
+**🇬🇧** **Planned** – Type annotations should be added for all methods to improve readability and IDE support.
+
+---
+
+### 14. ⏳ Fehlerbehandlung verbessern / Improve error handling
+
+**🇩🇪** **Geplant** – Try/Except-Blöcke für Dateioperationen sollten erweitert werden, um spezifische Fehler zu behandeln.
+
+**🇬🇧** **Planned** – Try/Except blocks for file operations should be extended to handle specific errors.
+
+---
+
+### 15. ⏳ Unit-Tests hinzufügen / Add unit tests
+
+**🇩🇪** **Geplant** – Unit-Tests für Kernfunktionen (Smart Mute, Timer, IPC, Sprachumschaltung) sollten implementiert werden.
+
+**🇬🇧** **Planned** – Unit tests for core functions (Smart Mute, timer, IPC, language switching) should be implemented.
+
+---
+
+### 16. ⏳ Dokumentation hinzufügen / Add documentation
+
+**🇩🇪** **Geplant** – Docstrings für alle Methoden sollten hinzugefügt werden, um die Wartbarkeit zu verbessern.
+
+**🇬🇧** **Planned** – Docstrings for all methods should be added to improve maintainability.
+
+---
+
 ## 📄 Lizenz / License
 
 Dieses Projekt ist unter der **MIT License** lizenziert – siehe die Datei `LICENSE` für Details.

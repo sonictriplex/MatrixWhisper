@@ -599,6 +599,7 @@ class MatrixWhisper(QMainWindow):
 
         self.browser = QWebEngineView()
         self.web_page = CustomWebEnginePage(self.profile, self.browser)
+        self.web_page.setParent(self.browser)
         self.browser.setPage(self.web_page)
         self.browser.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.browser.setUrl(QUrl("https://web.whatsapp.com"))

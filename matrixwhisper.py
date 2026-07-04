@@ -12,7 +12,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QSystemTrayIcon, QMenu,
                              QWidget, QHBoxLayout, QVBoxLayout, QPushButton,
                              QStackedWidget, QCheckBox, QLabel, QFrame, QSlider,
                              QComboBox, QScrollArea, QFileDialog, QListWidget)
-from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage, QWebEngineNotification
+from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty, QCoreApplication
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolygonF, QPen, QBrush, QDesktopServices
@@ -840,7 +840,7 @@ class MatrixWhisper(QMainWindow):
         self.combo_audio.addItem(f"Systemstandard ({default_device.description()})", "default")
         for device in QMediaDevices.audioOutputs():
             if device.id() != default_device.id():
-                self.combo_audio.addItem(device.description(), device.id().data().decode('utf-8', errors='ignore'))
+                self.combo_audio.addItem(device.description(), device.id().toStdString())
         self.combo_audio.blockSignals(False)
 
     def change_audio_device(self, index):

@@ -1,6 +1,22 @@
-# MatrixWhisper
+<p align="center">
+  <img src="media/media-matrix-logo.png" alt="MatrixWhisper Logo" width="128" height="128">
+</p>
 
-**Ein nativer WhatsApp-Client für Linux – leichtgewichtig, schnell und voller Funktionen.**
+<h1 align="center">MatrixWhisper</h1>
+
+<p align="center">
+  <strong>Ein nativer WhatsApp-Client für Linux – leichtgewichtig, schnell und voller Funktionen.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Lizenz-GPL--3.0-brightgreen" alt="GPL-3.0">
+  <img src="https://img.shields.io/badge/Plattform-Linux-blue" alt="Linux">
+  <img src="https://img.shields.io/badge/PyQt6-6.7-green" alt="PyQt6">
+</p>
+
+<p align="center">
+  <img src="media/screenshot.png" alt="Screenshot von MatrixWhisper" width="800">
+</p>
 
 MatrixWhisper ist ein maßgeschneiderter, nativer WhatsApp-Client für Linux-Desktops, basierend auf **PyQt6** und **QtWebEngine**. Im Gegensatz zu offiziellen Desktop-Apps oder generischen Wrappern verzichtet MatrixWhisper komplett auf das ressourcenfressende Electron-Framework und setzt stattdessen auf eine schlanke, native Qt6-Architektur.
 

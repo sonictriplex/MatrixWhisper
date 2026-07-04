@@ -840,7 +840,8 @@ class MatrixWhisper(QMainWindow):
         self.combo_audio.addItem(f"Systemstandard ({default_device.description()})", "default")
         for device in QMediaDevices.audioOutputs():
             if device.id() != default_device.id():
-                self.combo_audio.addItem(device.description(), device.id().toStdString())
+                device_id_str = bytes(device.id()).decode('utf-8', errors='replace')
+                self.combo_audio.addItem(device.description(), device_id_str)
         self.combo_audio.blockSignals(False)
 
     def change_audio_device(self, index):

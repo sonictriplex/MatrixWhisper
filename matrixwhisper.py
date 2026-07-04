@@ -922,8 +922,6 @@ class MatrixWhisper(QMainWindow):
 
     def setup_tray_menu(self):
         t = TRANSLATIONS[self.ui_lang]
-        if hasattr(self, 'tray_menu') and self.tray_menu is not None:
-            self.tray_menu.deleteLater()
         self.tray_menu = QMenu()
         show_action = QAction(t["tray_open"], self); quit_action = QAction(t["tray_quit"], self)
         self.mute_tray_action = QAction(t["tray_mute_shortcut"], self); self.mute_tray_action.setCheckable(True)

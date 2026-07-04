@@ -1036,7 +1036,8 @@ class MatrixWhisper(QMainWindow):
                 except (OSError, FileNotFoundError):
                     pass
             os.makedirs(self.storage_path, exist_ok=True); os.makedirs(self.cache_path, exist_ok=True)
-        except Exception: pass
+        except (OSError, FileNotFoundError):
+            pass
         self.browser.setUrl(QUrl("https://web.whatsapp.com")); self.switch_view(0)
 
     def toggle_gpu_acceleration(self, checked):

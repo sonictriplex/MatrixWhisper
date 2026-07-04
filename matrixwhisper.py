@@ -14,7 +14,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QSystemTrayIcon, QMenu,
                              QComboBox, QScrollArea, QFileDialog, QListWidget)
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage, QWebEngineNotification
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
+from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty, QCoreApplication
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolygonF, QPen, QBrush, QDesktopServices
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 from PyQt6.QtMultimedia import QMediaDevices, QAudioDevice
@@ -857,7 +857,7 @@ class MatrixWhisper(QMainWindow):
 
     def handle_remote_activation(self):
         socket = self.instance_server.nextPendingConnection()
-        if socket and socket.waitForReadyRead(500): self.process_remote_command(socket)
+        if socket and socket.waitForReadyRead(2000): self.process_remote_command(socket)
 
     def process_remote_command(self, socket):
         cmd = socket.readAll().data().decode().strip()
@@ -920,7 +920,10 @@ class MatrixWhisper(QMainWindow):
     def switch_settings_tab(self, index): self.settings_tabs.setCurrentIndex(index)
 
     def setup_tray_menu(self):
-        t = TRANSLATIONS[self.ui_lang]; self.tray_menu = QMenu()
+        t = TRANSLATIONS[self.ui_lang]
+        if self.tray_menu:
+            self.tray_menu.deleteLater()
+        self.tray_menu = QMenu()
         show_action = QAction(t["tray_open"], self); quit_action = QAction(t["tray_quit"], self)
         self.mute_tray_action = QAction(t["tray_mute_shortcut"], self); self.mute_tray_action.setCheckable(True)
         if self.mute_until_time and self.mute_until_time > datetime.now(): self.mute_tray_action.setChecked(True)
@@ -943,7 +946,15 @@ class MatrixWhisper(QMainWindow):
             except Exception: pass
 
     def resolve_http_language_string(self):
-        if self.selected_language != "system": return f"{self.selected_language}-{self.selected_language.upper()},{self.selected_language};q=0.9"
+        if self.selected_language != "system":
+            return f"{self.selected_language}-{self.selected_language.upper()},{self.selected_language};q=0.9"
+        try:
+            sys_locale = locale.getlocale()[0]
+            if sys_locale:
+                lang = sys_locale.split("_")[0]
+                return f"{sys_locale},{lang};q=0.9,en-US;q=0.8"
+        except Exception:
+            pass
         return "de-DE,de;q=0.9,en-US;q=0.8"
 
     def sync_loaded_settings_to_ui(self):

@@ -472,6 +472,7 @@ class CustomWebEnginePage(QWebEnginePage):
     def _clean_interceptor(self, view):
         if view in self._link_interceptors:
             self._link_interceptors.remove(view)
+            view.deleteLater()
 
 
 class MatrixWhisper(QMainWindow):
@@ -850,9 +851,13 @@ class MatrixWhisper(QMainWindow):
         
         sink_id = "" if device_id_str == "default" else device_id_str
         
+        # Sicher: sink_id via JSON-Encoding escapen, um XSS zu verhindern
+        import json
+        safe_sink_id = json.dumps(sink_id)
+        
         js_code = f"""
         (function() {{
-            const sinkId = '{sink_id}';
+            const sinkId = {safe_sink_id};
             const audios = document.querySelectorAll('audio, video');
             
             audios.forEach(audio => {{
@@ -1019,8 +1024,16 @@ class MatrixWhisper(QMainWindow):
     def reset_cache_and_session(self):
         self.browser.setUrl(QUrl("about:blank")); self.profile.clearHttpCache(); self.profile.cookieStore().deleteAllCookies()
         try:
-            if os.path.exists(self.storage_path): shutil.rmtree(self.storage_path)
-            if os.path.exists(self.cache_path): shutil.rmtree(self.cache_path)
+            if os.path.exists(self.storage_path):
+                try:
+                    shutil.rmtree(self.storage_path)
+                except (OSError, FileNotFoundError):
+                    pass
+            if os.path.exists(self.cache_path):
+                try:
+                    shutil.rmtree(self.cache_path)
+                except (OSError, FileNotFoundError):
+                    pass
             os.makedirs(self.storage_path, exist_ok=True); os.makedirs(self.cache_path, exist_ok=True)
         except Exception: pass
         self.browser.setUrl(QUrl("https://web.whatsapp.com")); self.switch_view(0)
@@ -1091,7 +1104,7 @@ Version=1.0
 Type=Application
 Name=MatrixWhisper
 Comment=MatrixWhisper im Hintergrund starten (v{self.app_version})
-Exec=python3 {os.path.abspath(__file__)} --minimized
+Exec={sys.executable} {os.path.abspath(__file__)} --minimized
 Icon={self.icon_path}
 Terminal=false
 Categories=Network;InstantMessaging;

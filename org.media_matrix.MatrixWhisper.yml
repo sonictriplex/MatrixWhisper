@@ -31,8 +31,9 @@ modules:
   - name: matrixwhisper
     buildsystem: simple
     sources:
-      - type: dir
-        path: .
+      - type: git
+        url: https://github.com/sonictriplex/MatrixWhisper.git
+        commit: 09815a9174a059687d04fba822e92c4329caba57
     build-commands:
       # 1. Hauptverzeichnis für die App-Dateien erstellen und kopieren
       - mkdir -p /app/share/matrixwhisper
@@ -52,6 +53,6 @@ modules:
       - mkdir -p /app/share/metainfo
       - cp org.media_matrix.MatrixWhisper.metainfo.xml /app/share/metainfo/
 
-    # 5. Logo als offizielles System-Icon hinterlegen (Jetzt mit echten 512x512 Pixeln)
+      # 5. Logo als offizielles System-Icon hinterlegen (Jetzt mit echten 512x512 Pixeln)
       - mkdir -p /app/share/icons/hicolor/512x512/apps
       - cp media/media-matrix-logo-512.png /app/share/icons/hicolor/512x512/apps/org.media_matrix.MatrixWhisper.png

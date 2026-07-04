@@ -846,7 +846,43 @@ class MatrixWhisper(QMainWindow):
 
     def change_audio_device(self, index):
         device_id_str = self.combo_audio.itemData(index)
-        if device_id_str != "default": print(f"[MatrixWhisper] Routing Audio Stream to Device-ID: {device_id_str}")
+        print(f"[MatrixWhisper] Routing Audio Stream to Device-ID: {device_id_str}")
+        
+        sink_id = "" if device_id_str == "default" else device_id_str
+        
+        js_code = f"""
+        (function() {{
+            const sinkId = '{sink_id}';
+            const audios = document.querySelectorAll('audio, video');
+            
+            audios.forEach(audio => {{
+                if (typeof audio.setSinkId === 'function' && audio.sinkId !== sinkId) {{
+                    audio.setSinkId(sinkId)
+                        .then(() => console.log('Audio routed successfully to ' + sinkId))
+                        .catch(err => console.error('Audio routing failed:', err));
+                }}
+            }});
+
+            if (!window.matrixAudioHooked) {{
+                window.matrixAudioHooked = true;
+                const originalCreateElement = document.createElement;
+                document.createElement = function(tagName) {{
+                    const el = originalCreateElement.apply(this, arguments);
+                    if ((tagName.toLowerCase() === 'audio' || tagName.toLowerCase() === 'video') && sinkId) {{
+                        setTimeout(() => {{
+                            if (typeof el.setSinkId === 'function') {{
+                                el.setSinkId(sinkId).catch(e => console.error('Hooked sink error:', e));
+                            }}
+                        }}, 50);
+                    }}
+                    return el;
+                }};
+            }}
+        }})();
+        """
+        
+        if hasattr(self, 'browser') and self.browser.page():
+            self.browser.page().runJavaScript(js_code)
 
     def init_single_instance_server(self):
         self.instance_server = QLocalServer(self)

@@ -108,4 +108,4 @@ Dieses Projekt ist unter der **GPL-3.0** lizenziert – siehe die Datei `LICENSE
 
 ---
 
-~Entwickelt mit ❤️ von **sonictriplex**~
+Entwickelt mit ❤️ von **sonictriplex**

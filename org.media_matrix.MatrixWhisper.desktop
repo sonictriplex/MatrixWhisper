@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=MatrixWhisper
+Comment=Native WhatsApp Client with Advanced Audio Routing & Smart Mute
+Exec=matrixwhisper
+Icon=org.media_matrix.MatrixWhisper
+Terminal=false
+Categories=Network;InstantMessaging;Qt;
+StartupWMClass=matrixwhisper
+X-Flatpak-Tags=proprietary;

@@ -14,7 +14,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QSystemTrayIcon, QMenu,
                              QComboBox, QScrollArea, QFileDialog, QListWidget)
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEngineSettings, QWebEngineScript, QWebEnginePage, QWebEngineNotification
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty
+from PyQt6.QtCore import QUrl, QStandardPaths, Qt, QPoint, QSize, QRectF, QPointF, QTimer, QPropertyAnimation, pyqtProperty, QCoreApplication
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainter, QColor, QFont, QPolygonF, QPen, QBrush, QDesktopServices
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 from PyQt6.QtMultimedia import QMediaDevices, QAudioDevice
@@ -472,6 +472,7 @@ class CustomWebEnginePage(QWebEnginePage):
     def _clean_interceptor(self, view):
         if view in self._link_interceptors:
             self._link_interceptors.remove(view)
+            view.deleteLater()
 
 
 class MatrixWhisper(QMainWindow):
@@ -598,6 +599,7 @@ class MatrixWhisper(QMainWindow):
 
         self.browser = QWebEngineView()
         self.web_page = CustomWebEnginePage(self.profile, self.browser)
+        self.web_page.setParent(self.browser)
         self.browser.setPage(self.web_page)
         self.browser.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.browser.setUrl(QUrl("https://web.whatsapp.com"))
@@ -840,12 +842,53 @@ class MatrixWhisper(QMainWindow):
         self.combo_audio.addItem(f"Systemstandard ({default_device.description()})", "default")
         for device in QMediaDevices.audioOutputs():
             if device.id() != default_device.id():
-                self.combo_audio.addItem(device.description(), device.id().data().decode('utf-8', errors='ignore'))
+                device_id_str = bytes(device.id()).decode('utf-8', errors='replace')
+                self.combo_audio.addItem(device.description(), device_id_str)
         self.combo_audio.blockSignals(False)
 
     def change_audio_device(self, index):
         device_id_str = self.combo_audio.itemData(index)
-        if device_id_str != "default": print(f"[MatrixWhisper] Routing Audio Stream to Device-ID: {device_id_str}")
+        print(f"[MatrixWhisper] Routing Audio Stream to Device-ID: {device_id_str}")
+        
+        sink_id = "" if device_id_str == "default" else device_id_str
+        
+        # Sicher: sink_id via JSON-Encoding escapen, um XSS zu verhindern
+        import json
+        safe_sink_id = json.dumps(sink_id)
+        
+        js_code = f"""
+        (function() {{
+            const sinkId = {safe_sink_id};
+            const audios = document.querySelectorAll('audio, video');
+            
+            audios.forEach(audio => {{
+                if (typeof audio.setSinkId === 'function' && audio.sinkId !== sinkId) {{
+                    audio.setSinkId(sinkId)
+                        .then(() => console.log('Audio routed successfully to ' + sinkId))
+                        .catch(err => console.error('Audio routing failed:', err));
+                }}
+            }});
+
+            if (!window.matrixAudioHooked) {{
+                window.matrixAudioHooked = true;
+                const originalCreateElement = document.createElement;
+                document.createElement = function(tagName) {{
+                    const el = originalCreateElement.apply(this, arguments);
+                    if ((tagName.toLowerCase() === 'audio' || tagName.toLowerCase() === 'video') && sinkId) {{
+                        setTimeout(() => {{
+                            if (typeof el.setSinkId === 'function') {{
+                                el.setSinkId(sinkId).catch(e => console.error('Hooked sink error:', e));
+                            }}
+                        }}, 50);
+                    }}
+                    return el;
+                }};
+            }}
+        }})();
+        """
+        
+        if hasattr(self, 'browser') and self.browser.page():
+            self.browser.page().runJavaScript(js_code)
 
     def init_single_instance_server(self):
         self.instance_server = QLocalServer(self)
@@ -857,7 +900,7 @@ class MatrixWhisper(QMainWindow):
 
     def handle_remote_activation(self):
         socket = self.instance_server.nextPendingConnection()
-        if socket and socket.waitForReadyRead(500): self.process_remote_command(socket)
+        if socket and socket.waitForReadyRead(2000): self.process_remote_command(socket)
 
     def process_remote_command(self, socket):
         cmd = socket.readAll().data().decode().strip()
@@ -920,7 +963,8 @@ class MatrixWhisper(QMainWindow):
     def switch_settings_tab(self, index): self.settings_tabs.setCurrentIndex(index)
 
     def setup_tray_menu(self):
-        t = TRANSLATIONS[self.ui_lang]; self.tray_menu = QMenu()
+        t = TRANSLATIONS[self.ui_lang]
+        self.tray_menu = QMenu()
         show_action = QAction(t["tray_open"], self); quit_action = QAction(t["tray_quit"], self)
         self.mute_tray_action = QAction(t["tray_mute_shortcut"], self); self.mute_tray_action.setCheckable(True)
         if self.mute_until_time and self.mute_until_time > datetime.now(): self.mute_tray_action.setChecked(True)
@@ -943,7 +987,15 @@ class MatrixWhisper(QMainWindow):
             except Exception: pass
 
     def resolve_http_language_string(self):
-        if self.selected_language != "system": return f"{self.selected_language}-{self.selected_language.upper()},{self.selected_language};q=0.9"
+        if self.selected_language != "system":
+            return f"{self.selected_language}-{self.selected_language.upper()},{self.selected_language};q=0.9"
+        try:
+            sys_locale = locale.getlocale()[0]
+            if sys_locale:
+                lang = sys_locale.split("_")[0]
+                return f"{sys_locale},{lang};q=0.9,en-US;q=0.8"
+        except Exception:
+            pass
         return "de-DE,de;q=0.9,en-US;q=0.8"
 
     def sync_loaded_settings_to_ui(self):
@@ -973,10 +1025,19 @@ class MatrixWhisper(QMainWindow):
     def reset_cache_and_session(self):
         self.browser.setUrl(QUrl("about:blank")); self.profile.clearHttpCache(); self.profile.cookieStore().deleteAllCookies()
         try:
-            if os.path.exists(self.storage_path): shutil.rmtree(self.storage_path)
-            if os.path.exists(self.cache_path): shutil.rmtree(self.cache_path)
+            if os.path.exists(self.storage_path):
+                try:
+                    shutil.rmtree(self.storage_path)
+                except (OSError, FileNotFoundError):
+                    pass
+            if os.path.exists(self.cache_path):
+                try:
+                    shutil.rmtree(self.cache_path)
+                except (OSError, FileNotFoundError):
+                    pass
             os.makedirs(self.storage_path, exist_ok=True); os.makedirs(self.cache_path, exist_ok=True)
-        except Exception: pass
+        except (OSError, FileNotFoundError):
+            pass
         self.browser.setUrl(QUrl("https://web.whatsapp.com")); self.switch_view(0)
 
     def toggle_gpu_acceleration(self, checked):
@@ -1045,7 +1106,7 @@ Version=1.0
 Type=Application
 Name=MatrixWhisper
 Comment=MatrixWhisper im Hintergrund starten (v{self.app_version})
-Exec=python3 {os.path.abspath(__file__)} --minimized
+Exec={sys.executable} {os.path.abspath(__file__)} --minimized
 Icon={self.icon_path}
 Terminal=false
 Categories=Network;InstantMessaging;

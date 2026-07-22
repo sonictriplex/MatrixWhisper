@@ -1018,9 +1018,22 @@ class MatrixWhisper(QMainWindow):
     def toggle_native_notifications(self, checked): self.native_notifications = checked; self.save_settings()
 
     def handle_web_notification(self, notification: QWebEngineNotification):
-        if self.native_notifications and (not self.isVisible() or self.isMinimized()):
-            self.tray_icon.showMessage(notification.title(), notification.message(), QSystemTrayIcon.MessageIcon.Information, 4000)
-        notification.accept()
+        try:
+            if self.native_notifications and (not self.isVisible() or self.isMinimized()):
+                # Sicherstellen, dass Titel und Nachricht echte Strings sind (gegen None/Crash schützen)
+                title = str(notification.title()) if notification.title() else "WhatsApp"
+                msg = str(notification.message()) if notification.message() else "Neue Nachricht"
+
+                self.tray_icon.showMessage(
+                    title,
+                    msg,
+                    QSystemTrayIcon.MessageIcon.Information,
+                    4000
+                )
+            # Benachrichtigung im WebEngine-Kontext akzeptieren
+            notification.accept()
+        except Exception as e:
+            print(f"[MatrixWhisper] Notification Handling abgefangen: {e}")
 
     def reset_cache_and_session(self):
         self.browser.setUrl(QUrl("about:blank")); self.profile.clearHttpCache(); self.profile.cookieStore().deleteAllCookies()

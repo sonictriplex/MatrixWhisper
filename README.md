@@ -28,8 +28,6 @@
 
 MatrixWhisper ist ein maßgeschneiderter, nativer WhatsApp-Client für Linux-Desktops, basierend auf **PyQt6** und **QtWebEngine**. Im Gegensatz zu offiziellen Desktop-Apps oder generischen Wrappern verzichtet MatrixWhisper komplett auf das ressourcenfressende Electron-Framework und setzt stattdessen auf eine schlanke, native Qt6-Architektur.
 
-> **Wichtiger Hinweis:** Diese App wird unabhängig verteilt, weil die Flathub-Admins das Projekt fälschlicherweise blockiert haben. Wir unterstützen die Community weiterhin direkt über GitHub. Flatpak hat die Software ohne Prüfung nicht akzeptiert.
-
 ---
 
 ## Features
@@ -73,20 +71,10 @@ sudo pacman -S python-pyqt6 python-pyqt6-webengine
    cd MatrixWhisper
    ```
 
-2. Flatpak-Build ausführen:
+2. App starten:
    ```bash
-   flatpak-builder --user --install --force-clean build-dir org.media_matrix.MatrixWhisper.yml
+   python3 matrixwhisper.py
    ```
-
-3. App starten:
-   ```bash
-   flatpak run org.media_matrix.MatrixWhisper
-   ```
-
-Alternativ kann die App auch direkt mit Python gestartet werden:
-```bash
-python3 matrixwhisper.py
-```
 
 ---
 
